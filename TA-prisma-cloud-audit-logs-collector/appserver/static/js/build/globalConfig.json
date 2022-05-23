@@ -208,7 +208,7 @@
                             "label": "Access Key",
                             "help": "You can create a access key within your prisma cloud console from settings menu then access keys",
                             "required": true,
-                            "type": "text",
+                            "type": "password",
                             "validators": [
                                 {
                                     "type": "string",
@@ -216,17 +216,14 @@
                                     "maxLength": 8192,
                                     "errorMsg": "Max length of text input is 8192"
                                 }
-                            ],
-                            "options": {
-                                "placeholder": "00000000-0000-0000-0000-000000000000"
-                            }
+                            ]
                         },
                         {
                             "field": "secret_key",
                             "label": "Secret Key",
                             "help": "You can create a secret key within your prisma cloud console from settings menu then access key",
                             "required": true,
-                            "type": "text",
+                            "type": "password",
                             "validators": [
                                 {
                                     "type": "string",
