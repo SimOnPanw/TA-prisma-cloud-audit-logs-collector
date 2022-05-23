@@ -63,7 +63,9 @@ class NTLMConnectionPool(HTTPSConnectionPool):
         conn = HTTPSConnection(host=self.host, port=self.port)
 
         # Send negotiation message
-        headers[req_header] = "NTLM %s" % ntlm.create_NTLM_NEGOTIATE_MESSAGE(self.rawuser)
+        headers[req_header] = "NTLM %s" % ntlm.create_NTLM_NEGOTIATE_MESSAGE(
+            self.rawuser
+        )
         log.debug("Request headers: %s", headers)
         conn.request("GET", self.authurl, None, headers)
         res = conn.getresponse()
@@ -83,11 +85,17 @@ class NTLMConnectionPool(HTTPSConnectionPool):
             if s[:5] == "NTLM ":
                 auth_header_value = s[5:]
         if auth_header_value is None:
-            raise Exception("Unexpected %s response header: %s" % (resp_header, reshdr[resp_header]))
+            raise Exception(
+                "Unexpected %s response header: %s" % (resp_header, reshdr[resp_header])
+            )
 
         # Send authentication message
-        ServerChallenge, NegotiateFlags = ntlm.parse_NTLM_CHALLENGE_MESSAGE(auth_header_value)
-        auth_msg = ntlm.create_NTLM_AUTHENTICATE_MESSAGE(ServerChallenge, self.user, self.domain, self.pw, NegotiateFlags)
+        ServerChallenge, NegotiateFlags = ntlm.parse_NTLM_CHALLENGE_MESSAGE(
+            auth_header_value
+        )
+        auth_msg = ntlm.create_NTLM_AUTHENTICATE_MESSAGE(
+            ServerChallenge, self.user, self.domain, self.pw, NegotiateFlags
+        )
         headers[req_header] = "NTLM %s" % auth_msg
         log.debug("Request headers: %s", headers)
         conn.request("GET", self.authurl, None, headers)
@@ -117,4 +125,6 @@ class NTLMConnectionPool(HTTPSConnectionPool):
         if headers is None:
             headers = {}
         headers["Connection"] = "Keep-Alive"
-        return super(NTLMConnectionPool, self).urlopen(method, url, body, headers, retries, redirect, assert_same_host)
+        return super(NTLMConnectionPool, self).urlopen(
+            method, url, body, headers, retries, redirect, assert_same_host
+        )

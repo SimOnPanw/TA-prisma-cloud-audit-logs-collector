@@ -57,7 +57,9 @@ def long2ip(addr):
     if isinstance(addr, (int, long)):
         ip = long(addr)
         if ip >= 0 and ip < pow(2, 32):
-            return "{}.{}.{}.{}".format((ip >> 24) % 256, (ip >> 16) % 256, (ip >> 8) % 256, ip % 256)
+            return "{}.{}.{}.{}".format(
+                (ip >> 24) % 256, (ip >> 16) % 256, (ip >> 8) % 256, ip % 256
+            )
         else:
             raise ValueError("Invalid ip address, not in valid ip range.")
 
@@ -268,7 +270,7 @@ def expand_ip_range_to_cidr(ip_range, clean_single_ips=False):
 
             # Handle rollover when range_start is '0.0.0.0'
             if last_in_subnet == -1:
-                last_in_subnet = 2**32 - 1
+                last_in_subnet = 2 ** 32 - 1
 
             if last_in_subnet > range_end:
                 # reduce to the largest possible size and retry

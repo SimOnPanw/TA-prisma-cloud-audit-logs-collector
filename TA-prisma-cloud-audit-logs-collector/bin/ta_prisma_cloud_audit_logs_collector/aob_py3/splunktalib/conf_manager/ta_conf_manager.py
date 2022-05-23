@@ -26,7 +26,9 @@ class TAConfManager(object):
             appname = utils.get_appname_from_path(op.abspath(__file__))
         self._conf_file = conf.conf_file2name(conf_file)
         self._conf_mgr = conf.ConfManager(splunkd_uri, session_key, app_name=appname)
-        self._cred_mgr = cred.CredentialManager(splunkd_uri, session_key, app=appname, owner="nobody", realm=appname)
+        self._cred_mgr = cred.CredentialManager(
+            splunkd_uri, session_key, app=appname, owner="nobody", realm=appname
+        )
         self._keys = None
 
     def set_appname(self, appname):
@@ -60,7 +62,9 @@ class TAConfManager(object):
 
         stanza = self._delete_reserved_keys(stanza)
         encrypted_stanza = self._encrypt(stanza)
-        self._conf_mgr.create_stanza(self._conf_file, encrypted_stanza["name"], encrypted_stanza)
+        self._conf_mgr.create_stanza(
+            self._conf_file, encrypted_stanza["name"], encrypted_stanza
+        )
 
     def update(self, stanza):
         """
@@ -80,7 +84,9 @@ class TAConfManager(object):
         else:
             stanza = self._delete_reserved_keys(stanza)
             encrypted_stanza = self._encrypt(stanza)
-            self._conf_mgr.update_properties(self._conf_file, encrypted_stanza["name"], encrypted_stanza)
+            self._conf_mgr.update_properties(
+                self._conf_file, encrypted_stanza["name"], encrypted_stanza
+            )
 
     def delete(self, stanza_name):
         """
@@ -100,7 +106,9 @@ class TAConfManager(object):
         @return: dict object if sucess otherwise raise exception
         """
 
-        stanza = self._conf_mgr.get_stanza(self._conf_file, stanza_name, ret_metadata=return_acl)
+        stanza = self._conf_mgr.get_stanza(
+            self._conf_file, stanza_name, ret_metadata=return_acl
+        )
         stanza = self._decrypt(stanza)
         stanza["disabled"] = utils.is_true(stanza.get("disabled"))
         return stanza

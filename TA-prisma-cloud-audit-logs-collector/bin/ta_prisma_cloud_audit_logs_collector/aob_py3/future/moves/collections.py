@@ -2,7 +2,6 @@ from __future__ import absolute_import
 import sys
 
 from future.utils import PY2, PY26
-
 __future_module__ = True
 
 from collections import *

@@ -176,7 +176,9 @@ class Logs(with_metaclass(Singleton, object)):
                 return self._loggers[log_file]
 
             logger = logging.getLogger(log_file)
-            handler_exists = any([True for h in logger.handlers if h.baseFilename == log_file])
+            handler_exists = any(
+                [True for h in logger.handlers if h.baseFilename == log_file]
+            )
             if not handler_exists:
                 file_handler = logging.handlers.RotatingFileHandler(
                     log_file,

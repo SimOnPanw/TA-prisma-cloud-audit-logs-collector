@@ -27,11 +27,17 @@ class TaConfig(object):
         self._stanza_name = stanza_name
         self._log_suffix = log_suffix
         if self._stanza_name and self._log_suffix:
-            stulog.reset_logger(self._log_suffix + "_" + th.format_input_name_for_file(self._stanza_name))
+            stulog.reset_logger(
+                self._log_suffix
+                + "_"
+                + th.format_input_name_for_file(self._stanza_name)
+            )
             stulog.logger.info("Start {} task".format(self._stanza_name))
         self._task_configs = []
         self._client_schema = client_schema
-        self._server_info = sc.ServerInfo(meta_config[c.server_uri], meta_config[c.session_key])
+        self._server_info = sc.ServerInfo(
+            meta_config[c.server_uri], meta_config[c.session_key]
+        )
         self._all_conf_contents = {}
         self._get_division_settings = {}
         self._load_task_configs()
@@ -65,7 +71,9 @@ class TaConfig(object):
     def _generate_task_configs(self, all_conf_contents, divide_settings):
         all_task_configs = list()
         for division_endpoint, divide_setting in divide_settings.items():
-            task_configs = self._get_task_configs(all_conf_contents, division_endpoint, divide_setting)
+            task_configs = self._get_task_configs(
+                all_conf_contents, division_endpoint, divide_setting
+            )
             all_task_configs = all_task_configs + task_configs
 
         for task_config in all_task_configs:
@@ -82,10 +90,13 @@ class TaConfig(object):
             task_config[c.interval] = int(task_config[c.interval])
             if task_config[c.interval] <= 0:
                 raise ValueError(
-                    "The interval value {} is invalid. It " "should be a positive integer".format(task_config[c.interval])
+                    "The interval value {} is invalid. It "
+                    "should be a positive integer".format(task_config[c.interval])
                 )
         self._task_configs = all_task_configs
-        stulog.logger.info("Totally generated {} task configs".format(len(self._task_configs)))
+        stulog.logger.info(
+            "Totally generated {} task configs".format(len(self._task_configs))
+        )
 
     # Override this method if some transforms or validations needs to be done
     # before task_configs is exposed
@@ -100,7 +111,9 @@ class TaConfig(object):
             return "INFO"
         if not self._client_schema["basic"]["config_meta"].get("logging_setting"):
             return "INFO"
-        paths = self._client_schema["basic"]["config_meta"]["logging_setting"].split(">")
+        paths = self._client_schema["basic"]["config_meta"]["logging_setting"].split(
+            ">"
+        )
         global_setting = self.get_all_conf_contents()[paths[0].strip()]
         if not global_setting:
             return "INFO"
@@ -163,9 +176,13 @@ class TaConfig(object):
             times += 1
             if times % 2 == 0:
                 scale_task_config[key].sort()
-        return self._build_task_configs(scale_task_config, all_conf_contents, divide_setting, multi)
+        return self._build_task_configs(
+            scale_task_config, all_conf_contents, divide_setting, multi
+        )
 
-    def _build_task_configs(self, raw_task_config, all_conf_contents, divide_setting, length):
+    def _build_task_configs(
+        self, raw_task_config, all_conf_contents, divide_setting, length
+    ):
         task_configs = list()
         # split task configs
         for i in range(length):

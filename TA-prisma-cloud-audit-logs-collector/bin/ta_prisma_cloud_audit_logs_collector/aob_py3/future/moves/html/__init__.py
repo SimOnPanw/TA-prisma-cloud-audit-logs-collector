@@ -1,6 +1,5 @@
 from __future__ import absolute_import
 from future.utils import PY3
-
 __future_module__ = True
 
 if PY3:
@@ -21,12 +20,12 @@ else:
         characters, both double quote (") and single quote (') characters are also
         translated.
         """
-        s = s.replace("&", "&amp;")  # Must be done first!
+        s = s.replace("&", "&amp;") # Must be done first!
         s = s.replace("<", "&lt;")
         s = s.replace(">", "&gt;")
         if quote:
             s = s.replace('"', "&quot;")
-            s = s.replace("'", "&#x27;")
+            s = s.replace('\'', "&#x27;")
         return s
 
-    __all__ = ["escape"]
+    __all__ = ['escape']

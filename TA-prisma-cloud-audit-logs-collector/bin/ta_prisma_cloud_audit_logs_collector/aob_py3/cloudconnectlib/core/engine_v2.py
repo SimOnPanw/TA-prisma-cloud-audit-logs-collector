@@ -20,11 +20,11 @@ from collections import Iterable
 from ..common.log import get_cc_logger
 from os import path as op
 from .plugin import init_pipeline_plugins
-
 logger = get_cc_logger()
 
 
 class CloudConnectEngine(object):
+
     def __init__(self, max_workers=4):
         self._executor = cf.ThreadPoolExecutor(max_workers)
         self._pending_job_results = set()
@@ -32,7 +32,8 @@ class CloudConnectEngine(object):
         self._pending_jobs = []
         self._counter = 0
         self._lock = threading.RLock()
-        init_pipeline_plugins(op.join(op.dirname(op.dirname(__file__)), "plugin"))
+        init_pipeline_plugins(
+            op.join(op.dirname(op.dirname(__file__)), "plugin"))
 
     def start(self, jobs=None):
         """
@@ -53,7 +54,8 @@ class CloudConnectEngine(object):
                     break
                 # check the intermediate results to find the done jobs and not
                 # done jobs
-                done_and_not_done_jobs = cf.wait(self._pending_job_results, return_when=cf.FIRST_COMPLETED)
+                done_and_not_done_jobs = cf.wait(self._pending_job_results,
+                                                 return_when=cf.FIRST_COMPLETED)
                 self._pending_job_results = done_and_not_done_jobs.not_done
                 done_job_results = done_and_not_done_jobs.done
                 for future in done_job_results:
@@ -84,7 +86,8 @@ class CloudConnectEngine(object):
         result = self._executor.submit(self._invoke_job, job)
         self._pending_job_results.add(result)
         self._counter += 1
-        logger.debug("%s job(s) have been added to the engine now", self._counter)
+        logger.debug("%s job(s) have been added to the engine now",
+                     self._counter)
         return True
 
     def _invoke_job(self, job):

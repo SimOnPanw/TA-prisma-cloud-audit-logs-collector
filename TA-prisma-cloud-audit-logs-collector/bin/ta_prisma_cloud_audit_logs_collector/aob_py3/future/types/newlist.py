@@ -35,7 +35,6 @@ class newlist(with_metaclass(BaseNewList, _builtin_list)):
     """
     A backport of the Python 3 list object to Py2
     """
-
     def copy(self):
         """
         L.copy() -> list -- a shallow copy of L
@@ -65,7 +64,7 @@ class newlist(with_metaclass(BaseNewList, _builtin_list)):
         return newlist(super(newlist, self).__add__(value))
 
     def __radd__(self, left):
-        "left + self"
+        " left + self "
         try:
             return newlist(left) + self
         except:
@@ -93,4 +92,4 @@ class newlist(with_metaclass(BaseNewList, _builtin_list)):
         return len(self) > 0
 
 
-__all__ = ["newlist"]
+__all__ = ['newlist']

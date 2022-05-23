@@ -8,4 +8,5 @@ else:
     try:
         from tkMessageBox import *
     except ImportError:
-        raise ImportError("The tkMessageBox module is missing. Does your Py2 " "installation include tkinter?")
+        raise ImportError('The tkMessageBox module is missing. Does your Py2 '
+                          'installation include tkinter?')

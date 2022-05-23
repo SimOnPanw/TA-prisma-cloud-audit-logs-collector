@@ -39,7 +39,10 @@ class TestFormatChecker(TestCase):
     def test_it_can_register_checkers(self):
         checker = FormatChecker()
         checker.checks("boom")(boom)
-        self.assertEqual(checker.checkers, dict(FormatChecker.checkers, boom=(boom, ())))
+        self.assertEqual(
+            checker.checkers,
+            dict(FormatChecker.checkers, boom=(boom, ()))
+        )
 
     def test_it_catches_registered_errors(self):
         checker = FormatChecker()

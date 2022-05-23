@@ -8,8 +8,7 @@ class _PListBuilder(object):
     Helper class to allow construction of a list without
     having to reverse it in the end.
     """
-
-    __slots__ = ("_head", "_tail")
+    __slots__ = ('_head', '_tail')
 
     def __init__(self):
         self._head = _EMPTY_PLIST
@@ -36,7 +35,7 @@ class _PListBuilder(object):
 
 
 class _PListBase(object):
-    __slots__ = ("__weakref__",)
+    __slots__ = ('__weakref__',)
 
     # Selected implementations can be taken straight from the Sequence
     # class, other are less suitable. Especially those that work with
@@ -60,7 +59,6 @@ class _PListBase(object):
 
     def __repr__(self):
         return "plist({0})".format(list(self))
-
     __str__ = __repr__
 
     def cons(self, elem):
@@ -106,7 +104,6 @@ class _PListBase(object):
             head = head.rest
 
         return result
-
     __reversed__ = reverse
 
     def split(self, index):
@@ -219,7 +216,7 @@ class _PListBase(object):
             builder.append_elem(head.first)
             head = head.rest
 
-        raise ValueError("{0} not found in PList".format(elem))
+        raise ValueError('{0} not found in PList'.format(elem))
 
 
 class PList(_PListBase):
@@ -249,8 +246,7 @@ class PList(_PListBase):
     >>> y[:2]
     plist([3, 1])
     """
-
-    __slots__ = ("first", "rest")
+    __slots__ = ('first', 'rest')
 
     def __new__(cls, first, rest):
         instance = super(PList, cls).__new__(cls)
@@ -260,7 +256,6 @@ class PList(_PListBase):
 
     def __bool__(self):
         return True
-
     __nonzero__ = __bool__
 
 
@@ -273,7 +268,6 @@ class _EmptyPList(_PListBase):
 
     def __bool__(self):
         return False
-
     __nonzero__ = __bool__
 
     @property

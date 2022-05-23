@@ -31,7 +31,6 @@ def coerce_named_tuple(fn):
         if is_namedtuple(instance):
             instance = instance._asdict()
         return fn(validator, value, instance, schema)
-
     return coerced
 
 
@@ -124,8 +123,7 @@ class TestCustomTypes(TestCase):
         CustomValidator = extend(
             Draft4Validator,
             type_checker=Draft4Validator.TYPE_CHECKER.redefine(
-                "integer",
-                int_or_str_int,
+                "integer", int_or_str_int,
             ),
         )
         validator = CustomValidator({"type": "integer"})
@@ -142,8 +140,7 @@ class TestCustomTypes(TestCase):
         Point = namedtuple("Point", ["x", "y"])
 
         type_checker = Draft4Validator.TYPE_CHECKER.redefine(
-            "object",
-            is_object_or_named_tuple,
+            u"object", is_object_or_named_tuple,
         )
 
         CustomValidator = extend(Draft4Validator, type_checker=type_checker)
@@ -155,8 +152,7 @@ class TestCustomTypes(TestCase):
         schema = {"type": "object", "required": ["x"]}
 
         type_checker = Draft4Validator.TYPE_CHECKER.redefine(
-            "object",
-            is_object_or_named_tuple,
+            u"object", is_object_or_named_tuple,
         )
 
         CustomValidator = extend(Draft4Validator, type_checker=type_checker)
@@ -175,8 +171,7 @@ class TestCustomTypes(TestCase):
         }
 
         type_checker = Draft4Validator.TYPE_CHECKER.redefine(
-            "object",
-            is_object_or_named_tuple,
+            u"object", is_object_or_named_tuple,
         )
 
         CustomValidator = extend(

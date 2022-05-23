@@ -13,7 +13,7 @@ def validate_regex(regex):
     try:
         re.compile(regex)
     except sre_constants.error as e:
-        raise ValueError("Invalid regular expression: {0}".format(e))
+        raise ValueError('Invalid regular expression: {0}'.format(e))
 
 
 def validate(value_or_var, validator):

@@ -295,7 +295,9 @@ class PoolManager(RequestMethods):
         not used.
         """
         u = parse_url(url)
-        return self.connection_from_host(u.host, port=u.port, scheme=u.scheme, pool_kwargs=pool_kwargs)
+        return self.connection_from_host(
+            u.host, port=u.port, scheme=u.scheme, pool_kwargs=pool_kwargs
+        )
 
     def _merge_pool_kwargs(self, override):
         """
@@ -326,7 +328,9 @@ class PoolManager(RequestMethods):
         if self.proxy is None:
             return False
 
-        return not connection_requires_http_tunnel(self.proxy, self.proxy_config, parsed_url.scheme)
+        return not connection_requires_http_tunnel(
+            self.proxy, self.proxy_config, parsed_url.scheme
+        )
 
     def _validate_proxy_scheme_url_selection(self, url_scheme):
         """
@@ -341,7 +345,8 @@ class PoolManager(RequestMethods):
 
         if six.PY2 and not self.proxy_config.use_forwarding_for_https:
             raise ProxySchemeUnsupported(
-                "Contacting HTTPS destinations through HTTPS proxies " "'via CONNECT tunnels' is not supported in Python 2"
+                "Contacting HTTPS destinations through HTTPS proxies "
+                "'via CONNECT tunnels' is not supported in Python 2"
             )
 
     def urlopen(self, method, url, redirect=True, **kw):
@@ -387,7 +392,9 @@ class PoolManager(RequestMethods):
         # Strip headers marked as unsafe to forward to the redirected location.
         # Check remove_headers_on_redirect to avoid a potential network call within
         # conn.is_same_host() which may use socket.gethostbyname() in the future.
-        if retries.remove_headers_on_redirect and not conn.is_same_host(redirect_location):
+        if retries.remove_headers_on_redirect and not conn.is_same_host(
+            redirect_location
+        ):
             headers = list(six.iterkeys(kw["headers"]))
             for header in headers:
                 if header.lower() in retries.remove_headers_on_redirect:
@@ -489,7 +496,9 @@ class ProxyManager(PoolManager):
 
     def connection_from_host(self, host, port=None, scheme="http", pool_kwargs=None):
         if scheme == "https":
-            return super(ProxyManager, self).connection_from_host(host, port, scheme, pool_kwargs=pool_kwargs)
+            return super(ProxyManager, self).connection_from_host(
+                host, port, scheme, pool_kwargs=pool_kwargs
+            )
 
         return super(ProxyManager, self).connection_from_host(
             self.proxy.host, self.proxy.port, self.proxy.scheme, pool_kwargs=pool_kwargs

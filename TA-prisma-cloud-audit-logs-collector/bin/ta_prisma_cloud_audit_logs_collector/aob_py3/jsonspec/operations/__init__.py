@@ -5,7 +5,8 @@
 
 from __future__ import absolute_import
 
-__all__ = ["check", "remove", "add", "replace", "move", "copy", "Error", "NonexistentTarget", "Target"]
+__all__ = ['check', 'remove', 'add', 'replace', 'move', 'copy',
+           'Error', 'NonexistentTarget', 'Target']
 
 from .exceptions import Error, NonexistentTarget
 from .bases import Target

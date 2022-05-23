@@ -1,4 +1,4 @@
-"""
+u"""
 Fixer to remove function annotations
 """
 
@@ -6,12 +6,10 @@ from lib2to3 import fixer_base
 from lib2to3.pgen2 import token
 from lib2to3.fixer_util import syms
 
-warning_text = "Removing function annotations completely."
-
+warning_text = u"Removing function annotations completely."
 
 def param_without_annotations(node):
     return node.children[0]
-
 
 class FixAnnotations(fixer_base.BaseFix):
 
@@ -22,23 +20,22 @@ class FixAnnotations(fixer_base.BaseFix):
             self.warned = True
             self.warning(node, reason=reason)
 
-    PATTERN = """
+    PATTERN = u"""
               funcdef< 'def' any parameters< '(' [params=any] ')' > ['->' ret=any] ':' any* >
               """
 
     def transform(self, node, results):
-        """
+        u"""
         This just strips annotations from the funcdef completely.
         """
-        params = results.get("params")
-        ret = results.get("ret")
+        params = results.get(u"params")
+        ret = results.get(u"ret")
         if ret is not None:
-            assert ret.prev_sibling.type == token.RARROW, "Invalid return annotation"
+            assert ret.prev_sibling.type == token.RARROW, u"Invalid return annotation"
             self.warn_once(node, reason=warning_text)
             ret.prev_sibling.remove()
             ret.remove()
-        if params is None:
-            return
+        if params is None: return
         if params.type == syms.typedargslist:
             # more than one param in a typedargslist
             for param in params.children:

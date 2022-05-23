@@ -112,7 +112,9 @@ class Config(object):
         """
         log('"load" method in', level=logging.DEBUG)
 
-        ret = {meta_field: getattr(self, meta_field) for meta_field in Config.META_FIELDS}
+        ret = {
+            meta_field: getattr(self, meta_field) for meta_field in Config.META_FIELDS
+        }
 
         for ep_id, ep in self._endpoints.items():
             data = {"output_mode": "json", "--cred--": "1"}
@@ -149,7 +151,9 @@ class Config(object):
         log('"load" method out', level=logging.DEBUG)
         return ret
 
-    def update_items(self, endpoint_id, item_names, field_names, data, raise_if_failed=False):
+    def update_items(
+        self, endpoint_id, item_names, field_names, data, raise_if_failed=False
+    ):
         """Update items in specified endpoint with given fields in data
         :param endpoint_id: endpoint id in schema, the key name in schema
         :param item_names: a list of item name
@@ -172,17 +176,24 @@ class Config(object):
         """
         log(
             '"update_items" method in',
-            msgx="endpoint_id=%s, item_names=%s, field_names=%s" % (endpoint_id, item_names, field_names),
+            msgx="endpoint_id=%s, item_names=%s, field_names=%s"
+            % (endpoint_id, item_names, field_names),
             level=logging.DEBUG,
         )
 
-        assert endpoint_id in self._endpoints, "Unexpected endpoint id in given schema - {ep_id}" "".format(ep_id=endpoint_id)
+        assert (
+            endpoint_id in self._endpoints
+        ), "Unexpected endpoint id in given schema - {ep_id}" "".format(
+            ep_id=endpoint_id
+        )
 
         item_names_failed = []
         for item_name in item_names:
             item_data = data.get(item_name, {})
             post_data = {
-                field_name: self.dump_value(endpoint_id, item_name, field_name, item_data[field_name])
+                field_name: self.dump_value(
+                    endpoint_id, item_name, field_name, item_data[field_name]
+                )
                 for field_name in field_names
                 if field_name in item_data
             }
@@ -198,10 +209,13 @@ class Config(object):
                 retry=3,
             )
             if resp is None or resp.status not in (200, 201):
-                msg = 'Fail to update item "{item}" in endpoint "{ep_id}"' " - {err}".format(
-                    ep_id=endpoint_id,
-                    item=item_name,
-                    err=code_to_msg(resp, cont) if resp else cont,
+                msg = (
+                    'Fail to update item "{item}" in endpoint "{ep_id}"'
+                    " - {err}".format(
+                        ep_id=endpoint_id,
+                        item=item_name,
+                        err=code_to_msg(resp, cont) if resp else cont,
+                    )
                 )
                 log(msg, level=logging.ERROR)
                 if raise_if_failed:
@@ -221,7 +235,10 @@ class Config(object):
         ep_full = (
             endpoint[1:].strip("/")
             if endpoint.startswith(Config.NON_PROC_ENDPOINT)
-            else "{endpoint}" "".format(endpoint=(self._rest_prefix + self._endpoints[endpoint_id]["endpoint"]))
+            else "{endpoint}"
+            "".format(
+                endpoint=(self._rest_prefix + self._endpoints[endpoint_id]["endpoint"])
+            )
         )
         ep_uri = (
             None
@@ -234,7 +251,13 @@ class Config(object):
                 endpoint_full=ep_full,
             )
         )
-        url = ep_uri if item_name is None else "{ep_uri}/{item_name}".format(ep_uri=ep_uri, item_name=quote(item_name))
+        url = (
+            ep_uri
+            if item_name is None
+            else "{ep_uri}/{item_name}".format(
+                ep_uri=ep_uri, item_name=quote(item_name)
+            )
+        )
         if item_name is None:
             url += "?count=-1"
         log('"make_uri" method', msgx="url=%s" % url, level=logging.DEBUG)
@@ -256,7 +279,11 @@ class Config(object):
             raise ConfigException(msg)
 
         ret = {
-            name: {key: self.load_value(endpoint_id, name, key, val) for key, val in ent.items() if not key.startswith("eai:")}
+            name: {
+                key: self.load_value(endpoint_id, name, key, val)
+                for key, val in ent.items()
+                if not key.startswith("eai:")
+            }
             for name, ent in ret.items()
         }
         return ret
@@ -272,11 +299,17 @@ class Config(object):
             log(exc, level=logging.ERROR, need_tb=True)
             raise ConfigException(exc)
 
-        ucc_config_schema.update({key: val for key, val in Config.META_FIELDS_DEFAULT.items() if key not in ucc_config_schema})
+        ucc_config_schema.update(
+            {
+                key: val
+                for key, val in Config.META_FIELDS_DEFAULT.items()
+                if key not in ucc_config_schema
+            }
+        )
         for field in Config.META_FIELDS:
-            assert field in ucc_config_schema and isinstance(ucc_config_schema[field], basestring), (
-                'Missing or invalid field "%s" in given schema' % field
-            )
+            assert field in ucc_config_schema and isinstance(
+                ucc_config_schema[field], basestring
+            ), ('Missing or invalid field "%s" in given schema' % field)
             setattr(self, field, ucc_config_schema[field])
 
         self._endpoints = {}
@@ -284,7 +317,9 @@ class Config(object):
             if key.startswith("_"):
                 continue
 
-            assert isinstance(val, dict), 'The schema of endpoint "%s" should be dict' % key
+            assert isinstance(val, dict), (
+                'The schema of endpoint "%s" should be dict' % key
+            )
             assert "endpoint" in val, 'The endpoint "%s" has no endpoint entry' % key
 
             self._endpoints[key] = val

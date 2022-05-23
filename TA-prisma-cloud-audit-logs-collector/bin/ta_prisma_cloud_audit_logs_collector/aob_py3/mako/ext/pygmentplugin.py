@@ -124,7 +124,9 @@ class MakoJavascriptLexer(DelegatingLexer):
     aliases = ["js+mako", "javascript+mako"]
 
     def __init__(self, **options):
-        super(MakoJavascriptLexer, self).__init__(JavascriptLexer, MakoLexer, **options)
+        super(MakoJavascriptLexer, self).__init__(
+            JavascriptLexer, MakoLexer, **options
+        )
 
 
 class MakoCssLexer(DelegatingLexer):
@@ -135,7 +137,9 @@ class MakoCssLexer(DelegatingLexer):
         super(MakoCssLexer, self).__init__(CssLexer, MakoLexer, **options)
 
 
-pygments_html_formatter = HtmlFormatter(cssclass="syntax-highlighted", linenos=True)
+pygments_html_formatter = HtmlFormatter(
+    cssclass="syntax-highlighted", linenos=True
+)
 
 
 def syntax_highlight(filename="", language=None):
@@ -145,5 +149,9 @@ def syntax_highlight(filename="", language=None):
     else:
         python_lexer = PythonLexer()
     if filename.startswith("memory:") or language == "mako":
-        return lambda string: highlight(string, mako_lexer, pygments_html_formatter)
-    return lambda string: highlight(string, python_lexer, pygments_html_formatter)
+        return lambda string: highlight(
+            string, mako_lexer, pygments_html_formatter
+        )
+    return lambda string: highlight(
+        string, python_lexer, pygments_html_formatter
+    )

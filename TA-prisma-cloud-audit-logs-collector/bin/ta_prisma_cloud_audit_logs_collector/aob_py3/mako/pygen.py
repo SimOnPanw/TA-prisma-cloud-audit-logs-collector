@@ -84,7 +84,11 @@ class PythonPrinter(object):
             self._flush_adjusted_lines()
             self.in_indent_lines = True
 
-        if line is None or re.match(r"^\s*#", line) or re.match(r"^\s*$", line):
+        if (
+            line is None
+            or re.match(r"^\s*#", line)
+            or re.match(r"^\s*$", line)
+        ):
             hastext = False
         else:
             hastext = True
@@ -100,7 +104,9 @@ class PythonPrinter(object):
                 # probably put extra closures - the resulting
                 # module wont compile.
                 if len(self.indent_detail) == 0:
-                    raise exceptions.SyntaxException("Too many whitespace closures")
+                    raise exceptions.SyntaxException(
+                        "Too many whitespace closures"
+                    )
                 self.indent_detail.pop()
 
         if line is None:
@@ -130,7 +136,9 @@ class PythonPrinter(object):
                 # its not a "compound" keyword.  but lets also
                 # test for valid Python keywords that might be indenting us,
                 # else assume its a non-indenting line
-                m2 = re.match(r"^\s*(def|class|else|elif|except|finally)", line)
+                m2 = re.match(
+                    r"^\s*(def|class|else|elif|except|finally)", line
+                )
                 if m2:
                     self.indent += 1
                     self.indent_detail.append(indentor)
@@ -188,7 +196,9 @@ class PythonPrinter(object):
         stripspace is a string of space that will be truncated from the
         start of the line before indenting."""
 
-        return re.sub(r"^%s" % stripspace, self.indentstring * self.indent, line)
+        return re.sub(
+            r"^%s" % stripspace, self.indentstring * self.indent, line
+        )
 
     def _reset_multi_line_flags(self):
         """reset the flags which would indicate we are in a backslashed

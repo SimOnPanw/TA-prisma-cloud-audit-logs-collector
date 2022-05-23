@@ -46,7 +46,9 @@ class _InstanceOfValidator(object):
             )
 
     def __repr__(self):
-        return "<instance_of validator for type {type!r}>".format(type=self.type)
+        return "<instance_of validator for type {type!r}>".format(
+            type=self.type
+        )
 
 
 def instance_of(type):
@@ -78,14 +80,18 @@ class _MatchesReValidator(object):
         if not self.match_func(value):
             raise ValueError(
                 "'{name}' must match regex {regex!r}"
-                " ({value!r} doesn't)".format(name=attr.name, regex=self.regex.pattern, value=value),
+                " ({value!r} doesn't)".format(
+                    name=attr.name, regex=self.regex.pattern, value=value
+                ),
                 attr,
                 self.regex,
                 value,
             )
 
     def __repr__(self):
-        return "<matches_re validator for pattern {regex!r}>".format(regex=self.regex)
+        return "<matches_re validator for pattern {regex!r}>".format(
+            regex=self.regex
+        )
 
 
 def matches_re(regex, flags=0, func=None):
@@ -108,7 +114,14 @@ def matches_re(regex, flags=0, func=None):
     valid_funcs = (fullmatch, None, re.search, re.match)
     if func not in valid_funcs:
         raise ValueError(
-            "'func' must be one of %s." % (", ".join(sorted(e and e.__name__ or "None" for e in set(valid_funcs))),)
+            "'func' must be one of %s."
+            % (
+                ", ".join(
+                    sorted(
+                        e and e.__name__ or "None" for e in set(valid_funcs)
+                    )
+                ),
+            )
         )
 
     pattern = re.compile(regex, flags)
@@ -137,14 +150,18 @@ class _ProvidesValidator(object):
         if not self.interface.providedBy(value):
             raise TypeError(
                 "'{name}' must provide {interface!r} which {value!r} "
-                "doesn't.".format(name=attr.name, interface=self.interface, value=value),
+                "doesn't.".format(
+                    name=attr.name, interface=self.interface, value=value
+                ),
                 attr,
                 self.interface,
                 value,
             )
 
     def __repr__(self):
-        return "<provides validator for interface {interface!r}>".format(interface=self.interface)
+        return "<provides validator for interface {interface!r}>".format(
+            interface=self.interface
+        )
 
 
 def provides(interface):
@@ -175,7 +192,9 @@ class _OptionalValidator(object):
         self.validator(inst, attr, value)
 
     def __repr__(self):
-        return "<optional validator for {what} or None>".format(what=repr(self.validator))
+        return "<optional validator for {what} or None>".format(
+            what=repr(self.validator)
+        )
 
 
 def optional(validator):
@@ -208,11 +227,15 @@ class _InValidator(object):
 
         if not in_options:
             raise ValueError(
-                "'{name}' must be in {options!r} (got {value!r})".format(name=attr.name, options=self.options, value=value)
+                "'{name}' must be in {options!r} (got {value!r})".format(
+                    name=attr.name, options=self.options, value=value
+                )
             )
 
     def __repr__(self):
-        return "<in_ validator with options {options!r}>".format(options=self.options)
+        return "<in_ validator with options {options!r}>".format(
+            options=self.options
+        )
 
 
 def in_(options):
@@ -240,9 +263,14 @@ class _IsCallableValidator(object):
         We use a callable class to be able to change the ``__repr__``.
         """
         if not callable(value):
-            message = "'{name}' must be callable " "(got {value!r} that is a {actual!r})."
+            message = (
+                "'{name}' must be callable "
+                "(got {value!r} that is a {actual!r})."
+            )
             raise NotCallableError(
-                msg=message.format(name=attr.name, value=value, actual=value.__class__),
+                msg=message.format(
+                    name=attr.name, value=value, actual=value.__class__
+                ),
                 value=value,
             )
 
@@ -268,7 +296,9 @@ def is_callable():
 @attrs(repr=False, slots=True, hash=True)
 class _DeepIterable(object):
     member_validator = attrib(validator=is_callable())
-    iterable_validator = attrib(default=None, validator=optional(is_callable()))
+    iterable_validator = attrib(
+        default=None, validator=optional(is_callable())
+    )
 
     def __call__(self, inst, attr, value):
         """
@@ -282,9 +312,14 @@ class _DeepIterable(object):
 
     def __repr__(self):
         iterable_identifier = (
-            "" if self.iterable_validator is None else " {iterable!r}".format(iterable=self.iterable_validator)
+            ""
+            if self.iterable_validator is None
+            else " {iterable!r}".format(iterable=self.iterable_validator)
         )
-        return ("<deep_iterable validator for{iterable_identifier}" " iterables of {member!r}>").format(
+        return (
+            "<deep_iterable validator for{iterable_identifier}"
+            " iterables of {member!r}>"
+        ).format(
             iterable_identifier=iterable_identifier,
             member=self.member_validator,
         )
@@ -323,9 +358,9 @@ class _DeepMapping(object):
             self.value_validator(inst, attr, value[key])
 
     def __repr__(self):
-        return ("<deep_mapping validator for objects mapping {key!r} to {value!r}>").format(
-            key=self.key_validator, value=self.value_validator
-        )
+        return (
+            "<deep_mapping validator for objects mapping {key!r} to {value!r}>"
+        ).format(key=self.key_validator, value=self.value_validator)
 
 
 def deep_mapping(key_validator, value_validator, mapping_validator=None):

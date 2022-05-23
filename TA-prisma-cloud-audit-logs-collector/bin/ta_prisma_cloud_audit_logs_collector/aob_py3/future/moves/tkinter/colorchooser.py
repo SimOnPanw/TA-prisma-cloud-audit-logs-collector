@@ -8,4 +8,5 @@ else:
     try:
         from tkColorChooser import *
     except ImportError:
-        raise ImportError("The tkColorChooser module is missing. Does your Py2 " "installation include tkinter?")
+        raise ImportError('The tkColorChooser module is missing. Does your Py2 '
+                          'installation include tkinter?')

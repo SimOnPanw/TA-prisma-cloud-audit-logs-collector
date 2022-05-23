@@ -24,7 +24,7 @@ missing = type("MissingType", (), {"__repr__": lambda x: "missing"})()
 # internal code
 internal_code = set()
 
-concat = "".join
+concat = u"".join
 
 _slash_escape = "\\/" not in json.dumps("/")
 
@@ -193,7 +193,11 @@ def urlize(text, trim_url_limit=None, rel=None, target=None):
 
     If target is not None, a target attribute will be added to the link.
     """
-    trim_url = lambda x, limit=trim_url_limit: limit is not None and (x[:limit] + (len(x) >= limit and "..." or "")) or x
+    trim_url = (
+        lambda x, limit=trim_url_limit: limit is not None
+        and (x[:limit] + (len(x) >= limit and "..." or ""))
+        or x
+    )
     words = re.split(r"(\s+)", text_type(escape(text)))
     rel_attr = rel and ' rel="%s"' % text_type(escape(rel)) or ""
     target_attr = target and ' target="%s"' % escape(target) or ""
@@ -222,7 +226,11 @@ def urlize(text, trim_url_limit=None, rel=None, target=None):
             and not middle.startswith("https://")
             and len(middle) > 0
             and middle[0] in _letters + _digits
-            and (middle.endswith(".org") or middle.endswith(".net") or middle.endswith(".com"))
+            and (
+                middle.endswith(".org")
+                or middle.endswith(".net")
+                or middle.endswith(".com")
+            )
         ):
             middle = '<a href="http://%s"%s%s>%s</a>' % (
                 middle,
@@ -239,12 +247,17 @@ def urlize(text, trim_url_limit=None, rel=None, target=None):
                 trim_url(middle),
             )
 
-        if "@" in middle and not middle.startswith("www.") and ":" not in middle and re.match(r"^\S+@\w[\w.-]*\.\w+$", middle):
+        if (
+            "@" in middle
+            and not middle.startswith("www.")
+            and ":" not in middle
+            and re.match(r"^\S+@\w[\w.-]*\.\w+$", middle)
+        ):
             middle = '<a href="mailto:%s">%s</a>' % (middle, middle)
 
         words[i] = head + middle + tail
 
-    return "".join(words)
+    return u"".join(words)
 
 
 def generate_lorem_ipsum(n=5, html=True, min=20, max=100):
@@ -284,7 +297,7 @@ def generate_lorem_ipsum(n=5, html=True, min=20, max=100):
             p.append(word)
 
         # ensure that the paragraph ends with a dot.
-        p = " ".join(p)
+        p = u" ".join(p)
         if p.endswith(","):
             p = p[:-1] + "."
         elif not p.endswith("."):
@@ -292,8 +305,8 @@ def generate_lorem_ipsum(n=5, html=True, min=20, max=100):
         result.append(p)
 
     if not html:
-        return "\n\n".join(result)
-    return Markup("\n".join("<p>%s</p>" % escape(x) for x in result))
+        return u"\n\n".join(result)
+    return Markup(u"\n".join(u"<p>%s</p>" % escape(x) for x in result))
 
 
 def unicode_urlencode(obj, charset="utf-8", for_qs=False):
@@ -464,7 +477,8 @@ class LRUCache(object):
     def iteritems(self):
         """Iterate over all items."""
         warnings.warn(
-            "'iteritems()' will be removed in version 3.0. Use" " 'iter(cache.items())' instead.",
+            "'iteritems()' will be removed in version 3.0. Use"
+            " 'iter(cache.items())' instead.",
             DeprecationWarning,
             stacklevel=2,
         )
@@ -477,7 +491,8 @@ class LRUCache(object):
     def itervalue(self):
         """Iterate over all values."""
         warnings.warn(
-            "'itervalue()' will be removed in version 3.0. Use" " 'iter(cache.values())' instead.",
+            "'itervalue()' will be removed in version 3.0. Use"
+            " 'iter(cache.values())' instead.",
             DeprecationWarning,
             stacklevel=2,
         )
@@ -486,7 +501,8 @@ class LRUCache(object):
     def itervalues(self):
         """Iterate over all values."""
         warnings.warn(
-            "'itervalues()' will be removed in version 3.0. Use" " 'iter(cache.values())' instead.",
+            "'itervalues()' will be removed in version 3.0. Use"
+            " 'iter(cache.values())' instead.",
             DeprecationWarning,
             stacklevel=2,
         )
@@ -501,7 +517,8 @@ class LRUCache(object):
         the most recent usage.
         """
         warnings.warn(
-            "'iterkeys()' will be removed in version 3.0. Use" " 'iter(cache.keys())' instead.",
+            "'iterkeys()' will be removed in version 3.0. Use"
+            " 'iter(cache.keys())' instead.",
             DeprecationWarning,
             stacklevel=2,
         )
@@ -598,7 +615,13 @@ def htmlsafe_json_dumps(obj, dumper=None, **kwargs):
     """
     if dumper is None:
         dumper = json.dumps
-    rv = dumper(obj, **kwargs).replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026").replace("'", "\\u0027")
+    rv = (
+        dumper(obj, **kwargs)
+        .replace(u"<", u"\\u003c")
+        .replace(u">", u"\\u003e")
+        .replace(u"&", u"\\u0026")
+        .replace(u"'", u"\\u0027")
+    )
     return Markup(rv)
 
 
@@ -659,14 +682,14 @@ class Cycler(object):
 class Joiner(object):
     """A joining helper for templates."""
 
-    def __init__(self, sep=", "):
+    def __init__(self, sep=u", "):
         self.sep = sep
         self.used = False
 
     def __call__(self):
         if not self.used:
             self.used = True
-            return ""
+            return u""
         return self.sep
 
 
@@ -706,7 +729,8 @@ def soft_unicode(s):
     from markupsafe import soft_unicode
 
     warnings.warn(
-        "'jinja2.utils.soft_unicode' will be removed in version 3.0." " Use 'markupsafe.soft_unicode' instead.",
+        "'jinja2.utils.soft_unicode' will be removed in version 3.0."
+        " Use 'markupsafe.soft_unicode' instead.",
         DeprecationWarning,
         stacklevel=2,
     )

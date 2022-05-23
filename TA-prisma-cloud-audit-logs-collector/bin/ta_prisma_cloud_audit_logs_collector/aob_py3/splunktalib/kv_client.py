@@ -136,10 +136,14 @@ class KVClient(object):
         k = self._do_request(uri, "GET")
         return json.loads(k)
 
-    def _do_request(self, uri, method, data=None, content_type="application/x-www-form-urlencoded"):
+    def _do_request(
+        self, uri, method, data=None, content_type="application/x-www-form-urlencoded"
+    ):
         headers = {"Content-Type": content_type}
 
-        resp, content = rest.splunkd_request(uri, self._session_key, method, headers, data)
+        resp, content = rest.splunkd_request(
+            uri, self._session_key, method, headers, data
+        )
         if resp is None and content is None:
             raise KVException("Failed uri={0}, data={1}".format(uri, data))
 
@@ -150,7 +154,9 @@ class KVClient(object):
         elif resp.status == 404:
             raise KVNotExists("{0}-{1} not exists".format(uri, data))
         else:
-            raise KVException("Failed to {0} {1}, reason={2}".format(method, uri, resp.reason))
+            raise KVException(
+                "Failed to {0} {1}, reason={2}".format(method, uri, resp.reason)
+            )
 
     def _get_config_endpoint(self, app, owner, collection=None):
         uri = "{0}/servicesNS/{1}/{2}/storage/collections/config"

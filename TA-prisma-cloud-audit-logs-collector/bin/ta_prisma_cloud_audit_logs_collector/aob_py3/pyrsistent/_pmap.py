@@ -42,8 +42,7 @@ class PMap(object):
     >>> m3.c
     3
     """
-
-    __slots__ = ("_size", "_buckets", "__weakref__", "_cached_hash")
+    __slots__ = ('_size', '_buckets', '__weakref__', '_cached_hash')
 
     def __new__(cls, size, buckets):
         self = super(PMap, cls).__new__(cls)
@@ -94,7 +93,9 @@ class PMap(object):
         try:
             return self[key]
         except KeyError as e:
-            raise AttributeError("{0} has no attribute '{1}'".format(type(self).__name__, key)) from e
+            raise AttributeError(
+                "{0} has no attribute '{1}'".format(type(self).__name__, key)
+            ) from e
 
     def iterkeys(self):
         for k, _ in self.iteritems():
@@ -126,7 +127,7 @@ class PMap(object):
         return self._size
 
     def __repr__(self):
-        return "pmap({0})".format(str(dict(self)))
+        return 'pmap({0})'.format(str(dict(self)))
 
     def __eq__(self, other):
         if self is other:
@@ -136,7 +137,8 @@ class PMap(object):
         if len(self) != len(other):
             return False
         if isinstance(other, PMap):
-            if hasattr(self, "_cached_hash") and hasattr(other, "_cached_hash") and self._cached_hash != other._cached_hash:
+            if (hasattr(self, '_cached_hash') and hasattr(other, '_cached_hash')
+                    and self._cached_hash != other._cached_hash):
                 return False
             if self._buckets == other._buckets:
                 return True
@@ -148,7 +150,7 @@ class PMap(object):
     __ne__ = Mapping.__ne__
 
     def __lt__(self, other):
-        raise TypeError("PMaps are not orderable")
+        raise TypeError('PMaps are not orderable')
 
     __le__ = __lt__
     __gt__ = __lt__
@@ -158,7 +160,7 @@ class PMap(object):
         return self.__repr__()
 
     def __hash__(self):
-        if not hasattr(self, "_cached_hash"):
+        if not hasattr(self, '_cached_hash'):
             self._cached_hash = hash(frozenset(self.iteritems()))
         return self._cached_hash
 
@@ -280,7 +282,7 @@ class PMap(object):
         return self
 
     class _Evolver(object):
-        __slots__ = ("_buckets_evolver", "_size", "_original_pmap")
+        __slots__ = ('_buckets_evolver', '_size', '_original_pmap')
 
         def __init__(self, original_pmap):
             self._original_pmap = original_pmap
@@ -361,7 +363,7 @@ class PMap(object):
                     self._size -= 1
                     return self
 
-            raise KeyError("{0}".format(key))
+            raise KeyError('{0}'.format(key))
 
     def evolver(self):
         """
@@ -393,7 +395,6 @@ class PMap(object):
         been done if only using operations on the pmap.
         """
         return self._Evolver(self)
-
 
 Mapping.register(PMap)
 Hashable.register(PMap)

@@ -21,14 +21,9 @@ from . import monkey
 
 
 __all__ = [
-    "setup",
-    "Distribution",
-    "Command",
-    "Extension",
-    "Require",
-    "SetuptoolsDeprecationWarning",
-    "find_packages",
-    "find_namespace_packages",
+    'setup', 'Distribution', 'Command', 'Extension', 'Require',
+    'SetuptoolsDeprecationWarning',
+    'find_packages', 'find_namespace_packages',
 ]
 
 __version__ = setuptools.version.__version__
@@ -39,7 +34,7 @@ bootstrap_install_from = None
 # Default: yes; assume that we can detect doctests reliably
 run_2to3_on_doctests = True
 # Standard package names for fixer packages
-lib2to3_fixer_packages = ["lib2to3.fixes"]
+lib2to3_fixer_packages = ['lib2to3.fixes']
 
 
 class PackageFinder:
@@ -48,7 +43,7 @@ class PackageFinder:
     """
 
     @classmethod
-    def find(cls, where=".", exclude=(), include=("*",)):
+    def find(cls, where='.', exclude=(), include=('*',)):
         """Return a list all Python packages found within directory 'where'
 
         'where' is the root directory which will be searched for packages.  It
@@ -65,11 +60,10 @@ class PackageFinder:
         shell style wildcard patterns just like 'exclude'.
         """
 
-        return list(
-            cls._find_packages_iter(
-                convert_path(where), cls._build_filter("ez_setup", "*__pycache__", *exclude), cls._build_filter(*include)
-            )
-        )
+        return list(cls._find_packages_iter(
+            convert_path(where),
+            cls._build_filter('ez_setup', '*__pycache__', *exclude),
+            cls._build_filter(*include)))
 
     @classmethod
     def _find_packages_iter(cls, where, exclude, include):
@@ -85,10 +79,10 @@ class PackageFinder:
             for dir in all_dirs:
                 full_path = os.path.join(root, dir)
                 rel_path = os.path.relpath(full_path, where)
-                package = rel_path.replace(os.path.sep, ".")
+                package = rel_path.replace(os.path.sep, '.')
 
                 # Skip directory trees that are not valid packages
-                if "." in dir or not cls._looks_like_package(full_path):
+                if ('.' in dir or not cls._looks_like_package(full_path)):
                     continue
 
                 # Should this package be included?
@@ -102,7 +96,7 @@ class PackageFinder:
     @staticmethod
     def _looks_like_package(path):
         """Does a directory look like a package?"""
-        return os.path.isfile(os.path.join(path, "__init__.py"))
+        return os.path.isfile(os.path.join(path, '__init__.py'))
 
     @staticmethod
     def _build_filter(*patterns):
@@ -131,10 +125,12 @@ def _install_setup_requires(attrs):
         A minimal version of a distribution for supporting the
         fetch_build_eggs interface.
         """
-
         def __init__(self, attrs):
-            _incl = "dependency_links", "setup_requires"
-            filtered = {k: attrs[k] for k in set(_incl) & set(attrs)}
+            _incl = 'dependency_links', 'setup_requires'
+            filtered = {
+                k: attrs[k]
+                for k in set(_incl) & set(attrs)
+            }
             distutils.core.Distribution.__init__(self, filtered)
 
         def finalize_options(self):
@@ -182,7 +178,8 @@ class Command(_Command):
             setattr(self, option, default)
             return default
         elif not isinstance(val, str):
-            raise DistutilsOptionError("'%s' must be a %s (got `%s`)" % (option, what, val))
+            raise DistutilsOptionError("'%s' must be a %s (got `%s`)"
+                                       % (option, what, val))
         return val
 
     def ensure_string_list(self, option):
@@ -195,14 +192,16 @@ class Command(_Command):
         if val is None:
             return
         elif isinstance(val, str):
-            setattr(self, option, re.split(r",\s*|\s+", val))
+            setattr(self, option, re.split(r',\s*|\s+', val))
         else:
             if isinstance(val, list):
                 ok = all(isinstance(v, str) for v in val)
             else:
                 ok = False
             if not ok:
-                raise DistutilsOptionError("'%s' must be a list of strings (got %r)" % (option, val))
+                raise DistutilsOptionError(
+                    "'%s' must be a list of strings (got %r)"
+                    % (option, val))
 
     def reinitialize_command(self, command, reinit_subcommands=0, **kw):
         cmd = _Command.reinitialize_command(self, command, reinit_subcommands)
@@ -214,7 +213,11 @@ def _find_all_simple(path):
     """
     Find all files under 'path'
     """
-    results = (os.path.join(base, file) for base, dirs, files in os.walk(path, followlinks=True) for file in files)
+    results = (
+        os.path.join(base, file)
+        for base, dirs, files in os.walk(path, followlinks=True)
+        for file in files
+    )
     return filter(os.path.isfile, results)
 
 

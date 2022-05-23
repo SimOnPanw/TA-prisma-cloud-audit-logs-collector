@@ -22,7 +22,9 @@ def build_event(
 ):
     if is_unbroken is False and is_done is True:
         raise Exception("is_unbroken=False is_done=True is invalid")
-    return tdc.event_tuple._make([host, source, sourcetype, time, index, raw_data, is_unbroken, is_done])
+    return tdc.event_tuple._make(
+        [host, source, sourcetype, time, index, raw_data, is_unbroken, is_done]
+    )
 
 
 class TaDataClient(object):
@@ -51,7 +53,9 @@ class TaDataClient(object):
         raise StopIteration
 
 
-def create_data_collector(dataloader, tconfig, meta_configs, task_config, data_client_cls, checkpoint_cls=None):
+def create_data_collector(
+    dataloader, tconfig, meta_configs, task_config, data_client_cls, checkpoint_cls=None
+):
     checkpoint_manager_cls = checkpoint_cls or cp.TACheckPointMgr
     return tdc.TADataCollector(
         tconfig,
@@ -66,7 +70,9 @@ def create_data_collector(dataloader, tconfig, meta_configs, task_config, data_c
 def client_adapter(job_func):
     class TaDataClientAdapter(TaDataClient):
         def __init__(self, all_conf_contents, meta_config, task_config, ckpt, chp_mgr):
-            super(TaDataClientAdapter, self).__init__(all_conf_contents, meta_config, task_config, ckpt, chp_mgr)
+            super(TaDataClientAdapter, self).__init__(
+                all_conf_contents, meta_config, task_config, ckpt, chp_mgr
+            )
             self._execute_times = 0
             self._gen = job_func(self._all_conf_contents, self._task_config, self._ckpt)
 

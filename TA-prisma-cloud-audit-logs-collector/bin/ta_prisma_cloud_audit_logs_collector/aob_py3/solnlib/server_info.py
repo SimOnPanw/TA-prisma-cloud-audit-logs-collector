@@ -40,7 +40,9 @@ class ServerInfo(object):
     SHC_CAPTAIN_INFO_ENDPOINT = "/services/shcluster/captain/info"
 
     def __init__(self, session_key, scheme=None, host=None, port=None, **context):
-        self._rest_client = rest_client.SplunkRestClient(session_key, "-", scheme=scheme, host=host, port=port, **context)
+        self._rest_client = rest_client.SplunkRestClient(
+            session_key, "-", scheme=scheme, host=host, port=port, **context
+        )
 
     @retry(exceptions=[binding.HTTPError])
     def _server_info(self):
@@ -140,12 +142,16 @@ class ServerInfo(object):
         """
 
         try:
-            content = self._rest_client.get(self.SHC_MEMBER_ENDPOINT, output_mode="json").body.read()
+            content = self._rest_client.get(
+                self.SHC_MEMBER_ENDPOINT, output_mode="json"
+            ).body.read()
         except binding.HTTPError as e:
             if e.status != 404 and e.status != 503:
                 raise
 
-            raise ServerInfoException("This server is not a SHC member and has no SHC members.")
+            raise ServerInfoException(
+                "This server is not a SHC member and has no SHC members."
+            )
 
         members = []
         for member in json.loads(content)["entry"]:
@@ -178,7 +184,9 @@ class ServerInfo(object):
         """
 
         cap_info = self.captain_info()
-        return utils.is_true(cap_info["service_ready_flag"]) and utils.is_false(cap_info["maintenance_mode"])
+        return utils.is_true(cap_info["service_ready_flag"]) and utils.is_false(
+            cap_info["maintenance_mode"]
+        )
 
     @retry(exceptions=[binding.HTTPError])
     def captain_info(self):
@@ -201,7 +209,9 @@ class ServerInfo(object):
         """
 
         try:
-            content = self._rest_client.get(self.SHC_CAPTAIN_INFO_ENDPOINT, output_mode="json").body.read()
+            content = self._rest_client.get(
+                self.SHC_CAPTAIN_INFO_ENDPOINT, output_mode="json"
+            ).body.read()
         except binding.HTTPError as e:
             if e.status == 503 and "not available" in str(e):
                 raise ServerInfoException(str(e))

@@ -28,6 +28,7 @@ from . import grammar, parse, token, tokenize, pgen
 
 
 class Driver(object):
+
     def __init__(self, grammar, convert=None, logger=None):
         self.grammar = grammar
         if logger is None:
@@ -66,7 +67,8 @@ class Driver(object):
             if type == token.OP:
                 type = grammar.opmap[value]
             if debug:
-                self.logger.debug("%s %r (prefix=%r)", token.tok_name[type], value, prefix)
+                self.logger.debug("%s %r (prefix=%r)",
+                                  token.tok_name[type], value, prefix)
             if p.addtoken(type, value, (prefix, start)):
                 if debug:
                     self.logger.debug("Stop.")
@@ -78,7 +80,8 @@ class Driver(object):
                 column = 0
         else:
             # We never broke out -- EOF is too soon (how can this happen???)
-            raise parse.ParseError("incomplete input", type, value, (prefix, start))
+            raise parse.ParseError("incomplete input",
+                                   type, value, (prefix, start))
         return p.rootnode
 
     def parse_stream_raw(self, stream, debug=False):
@@ -108,7 +111,8 @@ def _generate_pickle_name(gt):
     return head + tail + ".".join(map(str, sys.version_info)) + ".pickle"
 
 
-def load_grammar(gt="Grammar.txt", gp=None, save=True, force=False, logger=None):
+def load_grammar(gt="Grammar.txt", gp=None,
+                 save=True, force=False, logger=None):
     """Load the grammar (maybe from a pickle)."""
     if logger is None:
         logger = logging.getLogger()
@@ -164,11 +168,11 @@ def main(*args):
     """
     if not args:
         args = sys.argv[1:]
-    logging.basicConfig(level=logging.INFO, stream=sys.stdout, format="%(message)s")
+    logging.basicConfig(level=logging.INFO, stream=sys.stdout,
+                        format='%(message)s')
     for gt in args:
         load_grammar(gt, save=True, force=True)
     return True
-
 
 if __name__ == "__main__":
     sys.exit(int(not main()))

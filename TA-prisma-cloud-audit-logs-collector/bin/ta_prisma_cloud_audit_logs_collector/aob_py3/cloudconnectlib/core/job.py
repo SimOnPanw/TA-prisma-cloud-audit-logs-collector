@@ -62,17 +62,15 @@ class CCEJob(object):
         :type proxy_setting: ``dict``
         """
         self._proxy_info = proxy_setting
-        logger.debug(
-            "CCEJob proxy info: proxy_enabled='%s', proxy_url='%s', "
-            "proxy_port='%s', proxy_rdns='%s', proxy_type='%s', "
-            "proxy_username='%s'",
-            proxy_setting.get("proxy_enabled"),
-            proxy_setting.get("proxy_url"),
-            proxy_setting.get("proxy_port"),
-            proxy_setting.get("proxy_rdns"),
-            proxy_setting.get("proxy_type"),
-            proxy_setting.get("proxy_username"),
-        )
+        logger.debug("CCEJob proxy info: proxy_enabled='%s', proxy_url='%s', "
+                     "proxy_port='%s', proxy_rdns='%s', proxy_type='%s', "
+                     "proxy_username='%s'",
+                     proxy_setting.get("proxy_enabled"),
+                     proxy_setting.get("proxy_url"), 
+                     proxy_setting.get("proxy_port"),
+                     proxy_setting.get("proxy_rdns"),
+                     proxy_setting.get("proxy_type"),
+                     proxy_setting.get("proxy_username"))
 
     def add_task(self, task):
         """
@@ -82,14 +80,14 @@ class CCEJob(object):
         :type task: TBD
         """
         if not isinstance(task, BaseTask):
-            raise ValueError("Unsupported task type: {}".format(type(task)))
+            raise ValueError('Unsupported task type: {}'.format(type(task)))
         if callable(getattr(task, "set_proxy", None)) and self._proxy_info:
             task.set_proxy(self._proxy_info)
         self._rest_tasks.append(task)
 
     def _check_if_stop_needed(self):
         if self._stop_signal_received:
-            logger.info("Stop job signal received, stopping job.")
+            logger.info('Stop job signal received, stopping job.')
             self._stopped.set()
             return True
         return False
@@ -98,10 +96,10 @@ class CCEJob(object):
         """
         Run current job, which executes tasks in it sequentially.
         """
-        logger.debug("Start to run job")
+        logger.debug('Start to run job')
 
         if not self._rest_tasks:
-            logger.info("No task found in job")
+            logger.info('No task found in job')
             return
 
         if self._check_if_stop_needed():
@@ -113,20 +111,20 @@ class CCEJob(object):
         try:
             contexts = list(self._running_task.perform(self._context) or ())
         except QuitJobError:
-            logger.info("Quit job signal received, exiting job")
+            logger.info('Quit job signal received, exiting job')
             return
 
         if self._check_if_stop_needed():
             return
 
         if not self._rest_tasks:
-            logger.info("No more task need to perform, exiting job")
+            logger.info('No more task need to perform, exiting job')
             return
 
         jobs = [CCEJob(context=ctx, tasks=self._rest_tasks) for ctx in contexts]
 
-        logger.debug("Generated %s job in total", len(jobs))
-        logger.debug("Job execution finished successfully.")
+        logger.debug('Generated %s job in total', len(jobs))
+        logger.debug('Job execution finished successfully.')
         self._stopped.set()
         return jobs
 
@@ -135,7 +133,7 @@ class CCEJob(object):
         Stop current job.
         """
         if self._stopped.is_set():
-            logger.info("Job is not running, cannot stop it.")
+            logger.info('Job is not running, cannot stop it.')
             return
         self._stop_signal_received = True
 
@@ -145,12 +143,12 @@ class CCEJob(object):
             return
 
         if not self._stopped.wait(timeout):
-            logger.info("Waiting for stop job timeout")
+            logger.info('Waiting for stop job timeout')
 
     def __str__(self):
         if self._running_task:
-            return "Job(running task={})".format(self._running_task)
-        return "Job(no running task)"
+            return 'Job(running task={})'.format(self._running_task)
+        return 'Job(no running task)'
 
     def __repr__(self):
         return self.__str__()

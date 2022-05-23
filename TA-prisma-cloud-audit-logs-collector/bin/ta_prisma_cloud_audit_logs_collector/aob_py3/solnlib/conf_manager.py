@@ -60,7 +60,19 @@ class ConfFile(object):
 
     reserved_keys = ("userName", "appName")
 
-    def __init__(self, name, conf, session_key, app, owner="nobody", scheme=None, host=None, port=None, realm=None, **context):
+    def __init__(
+        self,
+        name,
+        conf,
+        session_key,
+        app,
+        owner="nobody",
+        scheme=None,
+        host=None,
+        port=None,
+        realm=None,
+        **context
+    ):
         self._name = name
         self._conf = conf
         self._session_key = session_key
@@ -117,7 +129,11 @@ class ConfFile(object):
         return stanza
 
     def _decrypt_stanza(self, stanza_name, encrypted_stanza):
-        encrypted_keys = [key for key in encrypted_stanza if encrypted_stanza[key] == self.ENCRYPTED_TOKEN]
+        encrypted_keys = [
+            key
+            for key in encrypted_stanza
+            if encrypted_stanza[key] == self.ENCRYPTED_TOKEN
+        ]
         if encrypted_keys:
             encrypted_fields = json.loads(self._cred_mgr.get_password(stanza_name))
             for key in encrypted_keys:
@@ -184,7 +200,9 @@ class ConfFile(object):
         try:
             if only_current_app:
                 stanza_mgrs = self._conf.list(
-                    search="eai:acl.app={} name={}".format(self._app, stanza_name.replace("=", r"\="))
+                    search="eai:acl.app={} name={}".format(
+                        self._app, stanza_name.replace("=", r"\=")
+                    )
                 )
             else:
                 stanza_mgrs = self._conf.list(name=stanza_name)
@@ -192,10 +210,14 @@ class ConfFile(object):
             if e.status != 404:
                 raise
 
-            raise ConfStanzaNotExistException("Stanza: %s does not exist in %s.conf" % (stanza_name, self._name))
+            raise ConfStanzaNotExistException(
+                "Stanza: %s does not exist in %s.conf" % (stanza_name, self._name)
+            )
 
         if len(stanza_mgrs) == 0:
-            raise ConfStanzaNotExistException("Stanza: %s does not exist in %s.conf" % (stanza_name, self._name))
+            raise ConfStanzaNotExistException(
+                "Stanza: %s does not exist in %s.conf" % (stanza_name, self._name)
+            )
 
         stanza = self._decrypt_stanza(stanza_mgrs[0].name, stanza_mgrs[0].content)
         stanza["eai:access"] = stanza_mgrs[0].access
@@ -300,8 +322,12 @@ class ConfFile(object):
         try:
             self._conf.delete(stanza_name)
         except KeyError as e:
-            logging.error("Delete stanza: %s error: %s.", stanza_name, traceback.format_exc())
-            raise ConfStanzaNotExistException("Stanza: %s does not exist in %s.conf" % (stanza_name, self._name))
+            logging.error(
+                "Delete stanza: %s error: %s.", stanza_name, traceback.format_exc()
+            )
+            raise ConfStanzaNotExistException(
+                "Stanza: %s does not exist in %s.conf" % (stanza_name, self._name)
+            )
 
     @retry(exceptions=[binding.HTTPError])
     def reload(self):
@@ -359,7 +385,17 @@ class ConfManager(object):
                                               'Splunk_TA_test', realm='__REST_CREDENTIAL__#Splunk_TA_test#configs/conf-CONF_FILENAME')
     """
 
-    def __init__(self, session_key, app, owner="nobody", scheme=None, host=None, port=None, realm=None, **context):
+    def __init__(
+        self,
+        session_key,
+        app,
+        owner="nobody",
+        scheme=None,
+        host=None,
+        port=None,
+        realm=None,
+        **context
+    ):
         self._session_key = session_key
         self._app = app
         self._owner = owner

@@ -71,9 +71,13 @@ class Logs(object):
         logfile = make_splunkhome_path(["var", "log", "splunk", name])
         logger = logging.getLogger(name)
 
-        handler_exists = any([True for h in logger.handlers if h.baseFilename == logfile])
+        handler_exists = any(
+            [True for h in logger.handlers if h.baseFilename == logfile]
+        )
         if not handler_exists:
-            file_handler = handlers.RotatingFileHandler(logfile, mode="a", maxBytes=maxBytes, backupCount=backupCount)
+            file_handler = handlers.RotatingFileHandler(
+                logfile, mode="a", maxBytes=maxBytes, backupCount=backupCount
+            )
 
             formatter = logging.Formatter(
                 "%(asctime)s +0000 log_level=%(levelname)s, pid=%(process)d, tid=%(threadName)s, "

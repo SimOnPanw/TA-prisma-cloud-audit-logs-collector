@@ -15,7 +15,9 @@ jython = sys.platform.startswith("java")
 win32 = sys.platform.startswith("win")
 pypy = hasattr(sys, "pypy_version_info")
 
-ArgSpec = collections.namedtuple("ArgSpec", ["args", "varargs", "keywords", "defaults"])
+ArgSpec = collections.namedtuple(
+    "ArgSpec", ["args", "varargs", "keywords", "defaults"]
+)
 
 
 def inspect_getargspec(func):
@@ -68,6 +70,7 @@ if py3k:
     def octal(lit):
         return eval("0o" + lit)
 
+
 else:
     import __builtin__ as compat_builtins  # noqa
 
@@ -101,6 +104,7 @@ if py3k:
     def load_module(module_id, path):
         return machinery.SourceFileLoader(module_id, path).load_module()
 
+
 else:
     import imp
 
@@ -121,8 +125,12 @@ if py3k:
             raise value.with_traceback(tb)
         raise value
 
+
 else:
-    exec("def reraise(tp, value, tb=None, cause=None):\n" "    raise tp, value, tb\n")
+    exec(
+        "def reraise(tp, value, tb=None, cause=None):\n"
+        "    raise tp, value, tb\n"
+    )
 
 
 def exception_as():

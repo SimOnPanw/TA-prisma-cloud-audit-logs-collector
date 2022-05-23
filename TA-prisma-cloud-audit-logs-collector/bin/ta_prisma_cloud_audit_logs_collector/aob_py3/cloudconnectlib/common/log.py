@@ -38,17 +38,17 @@ class CloudClientLogAdapter(with_metaclass(Singleton, logging.LoggerAdapter)):
 _adapter = CloudClientLogAdapter(stulog.logger)
 
 
-def set_cc_logger(logger, logger_prefix=""):
+def set_cc_logger(logger, logger_prefix=''):
     global _adapter
     _adapter.logger = logger
-    _adapter.cc_prefix = logger_prefix or ""
+    _adapter.cc_prefix = logger_prefix or ''
 
 
 def get_cc_logger():
     return _adapter
 
 
-def reset_cc_logger(stanza_name, logging_level, logger_prefix=""):
+def reset_cc_logger(stanza_name, logging_level, logger_prefix=''):
     script_name = get_mod_input_script_name()
     logger_name = script_name + "_" + th.format_name_for_file(stanza_name)
     stulog.reset_logger(logger_name)

@@ -45,8 +45,7 @@ class PDeque(object):
     >>> y.appendleft(4)
     pdeque([4, 1, 2], maxlen=3)
     """
-
-    __slots__ = ("_left_list", "_right_list", "_length", "_maxlen", "__weakref__")
+    __slots__ = ('_left_list', '_right_list', '_length', '_maxlen', '__weakref__')
 
     def __new__(cls, left_list, right_list, length, maxlen=None):
         instance = super(PDeque, cls).__new__(cls)
@@ -56,7 +55,7 @@ class PDeque(object):
 
         if maxlen is not None:
             if not isinstance(maxlen, Integral):
-                raise TypeError("An integer is required as maxlen")
+                raise TypeError('An integer is required as maxlen')
 
             if maxlen < 0:
                 raise ValueError("maxlen must be non-negative")
@@ -86,14 +85,14 @@ class PDeque(object):
         if secondary_list:
             return secondary_list[-1]
 
-        raise IndexError("No elements in empty deque")
+        raise IndexError('No elements in empty deque')
 
     def __iter__(self):
         return chain(self._left_list, self._right_list.reverse())
 
     def __repr__(self):
-        return "pdeque({0}{1})".format(list(self), ", maxlen={0}".format(self._maxlen) if self._maxlen is not None else "")
-
+        return "pdeque({0}{1})".format(list(self),
+                                       ', maxlen={0}'.format(self._maxlen) if self._maxlen is not None else '')
     __str__ = __repr__
 
     @property
@@ -176,7 +175,7 @@ class PDeque(object):
         return False
 
     def __hash__(self):
-        return hash(tuple(self))
+        return  hash(tuple(self))
 
     def __len__(self):
         return self._length
@@ -275,9 +274,10 @@ class PDeque(object):
             # Value not found in left list, try the right list
             try:
                 # This is severely inefficient with a double reverse, should perhaps implement a remove_last()?
-                return PDeque(self._left_list, self._right_list.reverse().remove(elem).reverse(), self._length - 1)
+                return PDeque(self._left_list,
+                               self._right_list.reverse().remove(elem).reverse(), self._length - 1)
             except ValueError as e:
-                raise ValueError("{0} not found in PDeque".format(elem)) from e
+                raise ValueError('{0} not found in PDeque'.format(elem)) from e
 
     def reverse(self):
         """
@@ -292,7 +292,6 @@ class PDeque(object):
         pdeque([3, 2, 1])
         """
         return PDeque(self._right_list, self._left_list, self._length)
-
     __reversed__ = reverse
 
     def rotate(self, steps):
@@ -344,7 +343,6 @@ class PDeque(object):
 
     index = Sequence.index
 
-
 Sequence.register(PDeque)
 Hashable.register(PDeque)
 
@@ -367,7 +365,6 @@ def pdeque(iterable=(), maxlen=None):
     left = plist(t[:pivot])
     right = plist(t[pivot:], reverse=True)
     return PDeque(left, right, length, maxlen)
-
 
 def dq(*elements):
     """

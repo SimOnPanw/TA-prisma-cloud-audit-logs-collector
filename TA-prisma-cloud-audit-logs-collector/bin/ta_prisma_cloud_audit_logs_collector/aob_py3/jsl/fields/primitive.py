@@ -7,24 +7,18 @@ from .util import validate, validate_regex
 
 
 __all__ = [
-    "StringField",
-    "BooleanField",
-    "EmailField",
-    "IPv4Field",
-    "DateTimeField",
-    "UriField",
-    "NumberField",
-    "IntField",
-    "NullField",
+    'StringField', 'BooleanField', 'EmailField', 'IPv4Field', 'DateTimeField',
+    'UriField', 'NumberField', 'IntField', 'NullField'
 ]
 
 
 class BooleanField(BaseSchemaField):
     """A boolean field."""
 
-    def _get_definitions_and_schema(self, role=DEFAULT_ROLE, res_scope=EMPTY_SCOPE, ordered=False, ref_documents=None):
+    def _get_definitions_and_schema(self, role=DEFAULT_ROLE, res_scope=EMPTY_SCOPE,
+                                    ordered=False, ref_documents=None):
         id, res_scope = res_scope.alter(self.id)
-        schema = (OrderedDict if ordered else dict)(type="boolean")
+        schema = (OrderedDict if ordered else dict)(type='boolean')
         schema = self._update_schema_with_common_fields(schema, id=id, role=role)
         return {}, schema
 
@@ -46,7 +40,6 @@ class StringField(BaseSchemaField):
         A maximum length.
     :type max_length: int or :class:`.Resolvable`
     """
-
     _FORMAT = None
 
     def __init__(self, pattern=None, format=None, min_length=None, max_length=None, **kwargs):
@@ -58,48 +51,45 @@ class StringField(BaseSchemaField):
         self.max_length = max_length  #:
         super(StringField, self).__init__(**kwargs)
 
-    def _get_definitions_and_schema(self, role=DEFAULT_ROLE, res_scope=EMPTY_SCOPE, ordered=False, ref_documents=None):
+    def _get_definitions_and_schema(self, role=DEFAULT_ROLE, res_scope=EMPTY_SCOPE,
+                                    ordered=False, ref_documents=None):
         id, res_scope = res_scope.alter(self.id)
-        schema = (OrderedDict if ordered else dict)(type="string")
+        schema = (OrderedDict if ordered else dict)(type='string')
         schema = self._update_schema_with_common_fields(schema, id=id, role=role)
 
-        pattern = self.resolve_attr("pattern", role).value
+        pattern = self.resolve_attr('pattern', role).value
         if pattern:
-            schema["pattern"] = pattern
-        min_length = self.resolve_attr("min_length", role).value
+            schema['pattern'] = pattern
+        min_length = self.resolve_attr('min_length', role).value
         if min_length is not None:
-            schema["minLength"] = min_length
-        max_length = self.resolve_attr("max_length", role).value
+            schema['minLength'] = min_length
+        max_length = self.resolve_attr('max_length', role).value
         if max_length is not None:
-            schema["maxLength"] = max_length
-        format = self.resolve_attr("format", role).value
+            schema['maxLength'] = max_length
+        format = self.resolve_attr('format', role).value
         if format is not None:
-            schema["format"] = format
+            schema['format'] = format
         return {}, schema
 
 
 class EmailField(StringField):
     """An email field."""
-
-    _FORMAT = "email"
+    _FORMAT = 'email'
 
 
 class IPv4Field(StringField):
     """An IPv4 field."""
-
-    _FORMAT = "ipv4"
+    _FORMAT = 'ipv4'
 
 
 class DateTimeField(StringField):
     """An ISO 8601 formatted date-time field."""
-
-    _FORMAT = "date-time"
+    _FORMAT = 'date-time'
 
 
 class UriField(StringField):
     """A URI field."""
-
-    _FORMAT = "uri"
+    _FORMAT = 'uri'
 
 
 class NumberField(BaseSchemaField):
@@ -121,10 +111,10 @@ class NumberField(BaseSchemaField):
         Whether a value is allowed to exactly equal the maximum.
     :type exclusive_maximum: bool or :class:`.Resolvable`
     """
+    _NUMBER_TYPE = 'number'
 
-    _NUMBER_TYPE = "number"
-
-    def __init__(self, multiple_of=None, minimum=None, maximum=None, exclusive_minimum=None, exclusive_maximum=None, **kwargs):
+    def __init__(self, multiple_of=None, minimum=None, maximum=None,
+                 exclusive_minimum=None, exclusive_maximum=None, **kwargs):
         self.multiple_of = multiple_of  #:
         self.minimum = minimum  #:
         self.exclusive_minimum = exclusive_minimum  #:
@@ -132,39 +122,40 @@ class NumberField(BaseSchemaField):
         self.exclusive_maximum = exclusive_maximum  #:
         super(NumberField, self).__init__(**kwargs)
 
-    def _get_definitions_and_schema(self, role=DEFAULT_ROLE, res_scope=EMPTY_SCOPE, ordered=False, ref_documents=None):
+    def _get_definitions_and_schema(self, role=DEFAULT_ROLE, res_scope=EMPTY_SCOPE,
+                                    ordered=False, ref_documents=None):
         id, res_scope = res_scope.alter(self.id)
         schema = (OrderedDict if ordered else dict)(type=self._NUMBER_TYPE)
         schema = self._update_schema_with_common_fields(schema, id=id, role=role)
-        multiple_of = self.resolve_attr("multiple_of", role).value
+        multiple_of = self.resolve_attr('multiple_of', role).value
         if multiple_of is not None:
-            schema["multipleOf"] = multiple_of
-        minimum = self.resolve_attr("minimum", role).value
+            schema['multipleOf'] = multiple_of
+        minimum = self.resolve_attr('minimum', role).value
         if minimum is not None:
-            schema["minimum"] = minimum
-        exclusive_minimum = self.resolve_attr("exclusive_minimum", role).value
+            schema['minimum'] = minimum
+        exclusive_minimum = self.resolve_attr('exclusive_minimum', role).value
         if exclusive_minimum is not None:
-            schema["exclusiveMinimum"] = exclusive_minimum
-        maximum = self.resolve_attr("maximum", role).value
+            schema['exclusiveMinimum'] = exclusive_minimum
+        maximum = self.resolve_attr('maximum', role).value
         if maximum is not None:
-            schema["maximum"] = maximum
-        exclusive_maximum = self.resolve_attr("exclusive_maximum", role).value
+            schema['maximum'] = maximum
+        exclusive_maximum = self.resolve_attr('exclusive_maximum', role).value
         if exclusive_maximum is not None:
-            schema["exclusiveMaximum"] = exclusive_maximum
+            schema['exclusiveMaximum'] = exclusive_maximum
         return {}, schema
 
 
 class IntField(NumberField):
     """An integer field."""
-
-    _NUMBER_TYPE = "integer"
+    _NUMBER_TYPE = 'integer'
 
 
 class NullField(BaseSchemaField):
     """A null field."""
 
-    def _get_definitions_and_schema(self, role=DEFAULT_ROLE, res_scope=EMPTY_SCOPE, ordered=False, ref_documents=None):
+    def _get_definitions_and_schema(self, role=DEFAULT_ROLE, res_scope=EMPTY_SCOPE,
+                                    ordered=False, ref_documents=None):
         id, res_scope = res_scope.alter(self.id)
-        schema = (OrderedDict if ordered else dict)(type="null")
+        schema = (OrderedDict if ordered else dict)(type='null')
         schema = self._update_schema_with_common_fields(schema, id=id, role=role)
         return {}, schema

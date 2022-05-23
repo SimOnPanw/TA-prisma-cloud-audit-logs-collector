@@ -95,8 +95,12 @@ def make_multi_attrgetter(environment, attribute, postprocess=None):
 
     Examples of attribute: "attr1,attr2", "attr1.inner1.0,attr2.inner2.0", etc.
     """
-    attribute_parts = attribute.split(",") if isinstance(attribute, string_types) else [attribute]
-    attribute = [_prepare_attribute_parts(attribute_part) for attribute_part in attribute_parts]
+    attribute_parts = (
+        attribute.split(",") if isinstance(attribute, string_types) else [attribute]
+    )
+    attribute = [
+        _prepare_attribute_parts(attribute_part) for attribute_part in attribute_parts
+    ]
 
     def attrgetter(item):
         items = [None] * len(attribute)
@@ -154,7 +158,10 @@ def do_urlencode(value):
     else:
         items = iter(value)
 
-    return "&".join("%s=%s" % (unicode_urlencode(k, for_qs=True), unicode_urlencode(v, for_qs=True)) for k, v in items)
+    return u"&".join(
+        "%s=%s" % (unicode_urlencode(k, for_qs=True), unicode_urlencode(v, for_qs=True))
+        for k, v in items
+    )
 
 
 @evalcontextfilter
@@ -177,7 +184,11 @@ def do_replace(eval_ctx, s, old, new, count=None):
         count = -1
     if not eval_ctx.autoescape:
         return text_type(s).replace(text_type(old), text_type(new), count)
-    if hasattr(old, "__html__") or hasattr(new, "__html__") and not hasattr(s, "__html__"):
+    if (
+        hasattr(old, "__html__")
+        or hasattr(new, "__html__")
+        and not hasattr(s, "__html__")
+    ):
         s = escape(s)
     else:
         s = soft_unicode(s)
@@ -218,13 +229,13 @@ def do_xmlattr(_eval_ctx, d, autospace=True):
     As you can see it automatically prepends a space in front of the item
     if the filter returned something unless the second parameter is false.
     """
-    rv = " ".join(
-        '%s="%s"' % (escape(key), escape(value))
+    rv = u" ".join(
+        u'%s="%s"' % (escape(key), escape(value))
         for key, value in iteritems(d)
         if value is not None and not isinstance(value, Undefined)
     )
     if autospace and rv:
-        rv = " " + rv
+        rv = u" " + rv
     if _eval_ctx.autoescape:
         rv = Markup(rv)
     return rv
@@ -241,7 +252,13 @@ def do_title(s):
     """Return a titlecased version of the value. I.e. words will start with
     uppercase letters, all remaining characters are lowercase.
     """
-    return "".join([item[0].upper() + item[1:].lower() for item in _word_beginning_split_re.split(soft_unicode(s)) if item])
+    return "".join(
+        [
+            item[0].upper() + item[1:].lower()
+            for item in _word_beginning_split_re.split(soft_unicode(s))
+            if item
+        ]
+    )
 
 
 def do_dictsort(value, case_sensitive=False, by="key", reverse=False):
@@ -325,7 +342,9 @@ def do_sort(environment, value, reverse=False, case_sensitive=False, attribute=N
     .. versionchanged:: 2.6
        The ``attribute`` parameter was added.
     """
-    key_func = make_multi_attrgetter(environment, attribute, postprocess=ignore_case if not case_sensitive else None)
+    key_func = make_multi_attrgetter(
+        environment, attribute, postprocess=ignore_case if not case_sensitive else None
+    )
     return sorted(value, key=key_func, reverse=reverse)
 
 
@@ -344,7 +363,9 @@ def do_unique(environment, value, case_sensitive=False, attribute=None):
     :param case_sensitive: Treat upper and lower case strings as distinct.
     :param attribute: Filter objects with unique values for this attribute.
     """
-    getter = make_attrgetter(environment, attribute, postprocess=ignore_case if not case_sensitive else None)
+    getter = make_attrgetter(
+        environment, attribute, postprocess=ignore_case if not case_sensitive else None
+    )
     seen = set()
 
     for item in value:
@@ -363,7 +384,9 @@ def _min_or_max(environment, value, func, case_sensitive, attribute):
     except StopIteration:
         return environment.undefined("No aggregated item, sequence was empty.")
 
-    key_func = make_attrgetter(environment, attribute, postprocess=ignore_case if not case_sensitive else None)
+    key_func = make_attrgetter(
+        environment, attribute, postprocess=ignore_case if not case_sensitive else None
+    )
     return func(chain([first], it), key=key_func)
 
 
@@ -397,7 +420,7 @@ def do_max(environment, value, case_sensitive=False, attribute=None):
     return _min_or_max(environment, value, max, case_sensitive, attribute)
 
 
-def do_default(value, default_value="", boolean=False):
+def do_default(value, default_value=u"", boolean=False):
     """If the value is undefined it will return the passed default value,
     otherwise the value of the variable:
 
@@ -426,7 +449,7 @@ def do_default(value, default_value="", boolean=False):
 
 
 @evalcontextfilter
-def do_join(eval_ctx, value, d="", attribute=None):
+def do_join(eval_ctx, value, d=u"", attribute=None):
     """Return a string which is the concatenation of the strings in the
     sequence. The separator between elements is an empty string per
     default, you can define it with the optional parameter:
@@ -556,7 +579,9 @@ def do_pprint(value, verbose=False):
 
 
 @evalcontextfilter
-def do_urlize(eval_ctx, value, trim_url_limit=None, nofollow=False, target=None, rel=None):
+def do_urlize(
+    eval_ctx, value, trim_url_limit=None, nofollow=False, target=None, rel=None
+):
     """Converts URLs in plain text into clickable links.
 
     If you pass the filter an additional integer it will shorten the urls
@@ -607,14 +632,15 @@ def do_indent(s, width=4, first=False, blank=False, indentfirst=None):
     """
     if indentfirst is not None:
         warnings.warn(
-            "The 'indentfirst' argument is renamed to 'first' and will" " be removed in version 3.0.",
+            "The 'indentfirst' argument is renamed to 'first' and will"
+            " be removed in version 3.0.",
             DeprecationWarning,
             stacklevel=2,
         )
         first = indentfirst
 
-    indention = " " * width
-    newline = "\n"
+    indention = u" " * width
+    newline = u"\n"
 
     if isinstance(s, Markup):
         indention = Markup(indention)
@@ -629,7 +655,9 @@ def do_indent(s, width=4, first=False, blank=False, indentfirst=None):
         rv = lines.pop(0)
 
         if lines:
-            rv += newline + newline.join(indention + line if line else line for line in lines)
+            rv += newline + newline.join(
+                indention + line if line else line for line in lines
+            )
 
     if first:
         rv = indention + rv
@@ -789,7 +817,9 @@ def do_format(value, *args, **kwargs):
         #printf-style-string-formatting
     """
     if args and kwargs:
-        raise FilterArgumentError("can't handle positional and keyword arguments at the same time")
+        raise FilterArgumentError(
+            "can't handle positional and keyword arguments at the same time"
+        )
     return soft_unicode(value) % (kwargs or args)
 
 
@@ -903,7 +933,7 @@ def do_round(value, precision=0, method="common"):
     if method == "common":
         return round(value, precision)
     func = getattr(math, method)
-    return func(value * (10**precision)) / (10**precision)
+    return func(value * (10 ** precision)) / (10 ** precision)
 
 
 # Use a regular tuple repr here.  This is what we did in the past and we
@@ -952,7 +982,10 @@ def do_groupby(environment, value, attribute):
         The attribute supports dot notation for nested access.
     """
     expr = make_attrgetter(environment, attribute)
-    return [_GroupTuple(key, list(values)) for key, values in groupby(sorted(value, key=expr), expr)]
+    return [
+        _GroupTuple(key, list(values))
+        for key, values in groupby(sorted(value, key=expr), expr)
+    ]
 
 
 @environmentfilter
@@ -1030,7 +1063,9 @@ def do_attr(environment, obj, name):
         except AttributeError:
             pass
         else:
-            if environment.sandboxed and not environment.is_safe_attribute(obj, name, value):
+            if environment.sandboxed and not environment.is_safe_attribute(
+                obj, name, value
+            ):
                 return environment.unsafe_undefined(obj, name)
             return value
     return environment.undefined(obj=obj, name=name)
@@ -1234,7 +1269,9 @@ def prepare_map(args, kwargs):
         attribute = kwargs.pop("attribute")
         default = kwargs.pop("default", None)
         if kwargs:
-            raise FilterArgumentError("Unexpected keyword argument %r" % next(iter(kwargs)))
+            raise FilterArgumentError(
+                "Unexpected keyword argument %r" % next(iter(kwargs))
+            )
         func = make_attrgetter(context.environment, attribute, default=default)
     else:
         try:
@@ -1244,7 +1281,9 @@ def prepare_map(args, kwargs):
             raise FilterArgumentError("map requires a filter argument")
 
         def func(item):
-            return context.environment.call_filter(name, item, args, kwargs, context=context)
+            return context.environment.call_filter(
+                name, item, args, kwargs, context=context
+            )
 
     return seq, func
 

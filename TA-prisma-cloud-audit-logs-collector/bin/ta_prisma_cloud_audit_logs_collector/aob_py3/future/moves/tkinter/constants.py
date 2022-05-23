@@ -8,4 +8,5 @@ else:
     try:
         from Tkconstants import *
     except ImportError:
-        raise ImportError("The Tkconstants module is missing. Does your Py2 " "installation include tkinter?")
+        raise ImportError('The Tkconstants module is missing. Does your Py2 '
+                          'installation include tkinter?')

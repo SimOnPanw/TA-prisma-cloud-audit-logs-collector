@@ -6,6 +6,5 @@ if PY3:
 else:
     __future_module__ = True
     from __builtin__ import *
-
     # Overwrite any old definitions with the equivalent future.builtins ones:
     from future.builtins import *

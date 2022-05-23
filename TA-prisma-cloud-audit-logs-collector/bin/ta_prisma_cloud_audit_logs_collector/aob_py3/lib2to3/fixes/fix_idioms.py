@@ -34,9 +34,8 @@ from ..fixer_util import Call, Comma, Name, Node, BlankLine, syms
 CMP = "(n='!=' | '==' | 'is' | n=comp_op< 'is' 'not' >)"
 TYPE = "power< 'type' trailer< '(' x=any ')' > >"
 
-
 class FixIdioms(fixer_base.BaseFix):
-    explicit = True  # The user must ask for this fixer
+    explicit = True # The user must ask for this fixer
 
     PATTERN = r"""
         isinstance=comparison< %s %s T=any >
@@ -75,12 +74,7 @@ class FixIdioms(fixer_base.BaseFix):
             >
             next=any*
         >
-    """ % (
-        TYPE,
-        CMP,
-        CMP,
-        TYPE,
-    )
+    """ % (TYPE, CMP, CMP, TYPE)
 
     def match(self, node):
         r = super(FixIdioms, self).match(node)
@@ -104,8 +98,8 @@ class FixIdioms(fixer_base.BaseFix):
             raise RuntimeError("Invalid match")
 
     def transform_isinstance(self, node, results):
-        x = results["x"].clone()  # The thing inside of type()
-        T = results["T"].clone()  # The type being compared against
+        x = results["x"].clone() # The thing inside of type()
+        T = results["T"].clone() # The type being compared against
         x.prefix = ""
         T.prefix = " "
         test = Call(Name("isinstance"), [x, Comma(), T])
@@ -130,7 +124,8 @@ class FixIdioms(fixer_base.BaseFix):
         elif simple_expr:
             new = simple_expr.clone()
             new.prefix = ""
-            simple_expr.replace(Call(Name("sorted"), [new], prefix=simple_expr.prefix))
+            simple_expr.replace(Call(Name("sorted"), [new],
+                                     prefix=simple_expr.prefix))
         else:
             raise RuntimeError("should not have reached here")
         sort_stmt.remove()

@@ -8,4 +8,5 @@ else:
     try:
         from SimpleDialog import *
     except ImportError:
-        raise ImportError("The SimpleDialog module is missing. Does your Py2 " "installation include tkinter?")
+        raise ImportError('The SimpleDialog module is missing. Does your Py2 '
+                          'installation include tkinter?')

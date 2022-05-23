@@ -66,7 +66,9 @@ class Markup(str):
 
     __slots__ = ()
 
-    def __new__(cls, base: t.Any = "", encoding: t.Optional[str] = None, errors: str = "strict") -> "Markup":
+    def __new__(
+        cls, base: t.Any = "", encoding: t.Optional[str] = None, errors: str = "strict"
+    ) -> "Markup":
         if hasattr(base, "__html__"):
             base = base.__html__()
 
@@ -114,12 +116,16 @@ class Markup(str):
 
     join.__doc__ = str.join.__doc__
 
-    def split(self, sep: t.Optional[str] = None, maxsplit: int = -1) -> t.List["Markup"]:  # type: ignore
+    def split(  # type: ignore
+        self, sep: t.Optional[str] = None, maxsplit: int = -1
+    ) -> t.List["Markup"]:
         return [self.__class__(v) for v in super().split(sep, maxsplit)]
 
     split.__doc__ = str.split.__doc__
 
-    def rsplit(self, sep: t.Optional[str] = None, maxsplit: int = -1) -> t.List["Markup"]:  # type: ignore
+    def rsplit(  # type: ignore
+        self, sep: t.Optional[str] = None, maxsplit: int = -1
+    ) -> t.List["Markup"]:
         return [self.__class__(v) for v in super().rsplit(sep, maxsplit)]
 
     rsplit.__doc__ = str.rsplit.__doc__
@@ -233,7 +239,9 @@ class EscapeFormatter(string.Formatter):
 _ListOrDict = t.TypeVar("_ListOrDict", list, dict)
 
 
-def _escape_argspec(obj: _ListOrDict, iterable: t.Iterable[t.Any], escape: t.Callable[[t.Any], Markup]) -> _ListOrDict:
+def _escape_argspec(
+    obj: _ListOrDict, iterable: t.Iterable[t.Any], escape: t.Callable[[t.Any], Markup]
+) -> _ListOrDict:
     """Helper for various string-wrapped functions."""
     for key, value in iterable:
         if isinstance(value, str) or hasattr(value, "__html__"):

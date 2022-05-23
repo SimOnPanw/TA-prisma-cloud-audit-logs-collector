@@ -27,7 +27,11 @@ bc_version = 4
 # Magic bytes to identify Jinja bytecode cache files. Contains the
 # Python major and minor version to avoid loading incompatible bytecode
 # if a project upgrades its Python version.
-bc_magic = b"j2" + pickle.dumps(bc_version, 2) + pickle.dumps((sys.version_info[0] << 24) | sys.version_info[1], 2)
+bc_magic = (
+    b"j2"
+    + pickle.dumps(bc_version, 2)
+    + pickle.dumps((sys.version_info[0] << 24) | sys.version_info[1], 2)
+)
 
 
 class Bucket(object):
@@ -191,7 +195,10 @@ class FileSystemBytecodeCache(BytecodeCache):
 
     def _get_default_cache_dir(self):
         def _unsafe_dir():
-            raise RuntimeError("Cannot determine safe temp directory.  You " "need to explicitly provide one.")
+            raise RuntimeError(
+                "Cannot determine safe temp directory.  You "
+                "need to explicitly provide one."
+            )
 
         tmpdir = tempfile.gettempdir()
 

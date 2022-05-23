@@ -66,7 +66,7 @@ def markup_join(seq):
     for arg in iterator:
         buf.append(arg)
         if hasattr(arg, "__html__"):
-            return Markup("").join(chain(buf, iterator))
+            return Markup(u"").join(chain(buf, iterator))
     return concat(buf)
 
 
@@ -133,9 +133,15 @@ class ContextMeta(type):
 
         # If we have a changed resolve but no changed default or missing
         # resolve we invert the call logic.
-        if resolve is not default_resolve and resolve_or_missing is default_resolve_or_missing:
+        if (
+            resolve is not default_resolve
+            and resolve_or_missing is default_resolve_or_missing
+        ):
             rv._legacy_resolve_mode = True
-        elif resolve is default_resolve and resolve_or_missing is default_resolve_or_missing:
+        elif (
+            resolve is default_resolve
+            and resolve_or_missing is default_resolve_or_missing
+        ):
             rv._fast_resolve_mode = True
 
         return rv
@@ -199,7 +205,9 @@ class Context(with_metaclass(ContextMeta)):
             index = blocks.index(current) + 1
             blocks[index]
         except LookupError:
-            return self.environment.undefined("there is no parent block called %r." % name, name="super")
+            return self.environment.undefined(
+                "there is no parent block called %r." % name, name="super"
+            )
         return BlockReference(name, self, blocks, index)
 
     def get(self, key, default=None):
@@ -282,7 +290,9 @@ class Context(with_metaclass(ContextMeta)):
             return __obj(*args, **kwargs)
         except StopIteration:
             return __self.environment.undefined(
-                "value was undefined because " "a callable raised a " "StopIteration exception"
+                "value was undefined because "
+                "a callable raised a "
+                "StopIteration exception"
             )
 
     def derived(self, locals=None):
@@ -290,7 +300,9 @@ class Context(with_metaclass(ContextMeta)):
         used in situations where the system needs a new context in the same
         template that is independent.
         """
-        context = new_context(self.environment, self.name, {}, self.get_all(), True, None, locals)
+        context = new_context(
+            self.environment, self.name, {}, self.get_all(), True, None, locals
+        )
         context.eval_ctx = self.eval_ctx
         context.blocks.update((k, list(v)) for k, v in iteritems(self.blocks))
         return context
@@ -350,7 +362,9 @@ class BlockReference(object):
     def super(self):
         """Super the block."""
         if self._depth + 1 >= len(self._stack):
-            return self._context.environment.undefined("there is no parent block called %r." % self.name, name="super")
+            return self._context.environment.undefined(
+                "there is no parent block called %r." % self.name, name="super"
+            )
         return BlockReference(self.name, self._context, self._stack, self._depth + 1)
 
     @internalcode
@@ -543,7 +557,9 @@ class LoopContext:
         The loop must have the ``recursive`` marker for this to work.
         """
         if self._recurse is None:
-            raise TypeError("The loop must have the 'recursive' marker to be called recursively.")
+            raise TypeError(
+                "The loop must have the 'recursive' marker to be called recursively."
+            )
 
         return self._recurse(iterable, self._recurse, depth=self.depth)
 
@@ -644,11 +660,17 @@ class Macro(object):
                     "the special caller argument.  This is "
                     "most likely a bug." % self.name
                 )
-            raise TypeError("macro %r takes no keyword argument %r" % (self.name, next(iter(kwargs))))
+            raise TypeError(
+                "macro %r takes no keyword argument %r"
+                % (self.name, next(iter(kwargs)))
+            )
         if self.catch_varargs:
             arguments.append(args[self._argument_count :])
         elif len(args) > self._argument_count:
-            raise TypeError("macro %r takes not more than %d argument(s)" % (self.name, len(self.arguments)))
+            raise TypeError(
+                "macro %r takes not more than %d argument(s)"
+                % (self.name, len(self.arguments))
+            )
 
         return self._invoke(arguments, autoescape)
 
@@ -766,7 +788,15 @@ class Undefined(object):
         __le__
     ) = (
         __gt__
-    ) = __ge__ = __int__ = __float__ = __complex__ = __pow__ = __rpow__ = __sub__ = __rsub__ = _fail_with_undefined_error
+    ) = (
+        __ge__
+    ) = (
+        __int__
+    ) = (
+        __float__
+    ) = (
+        __complex__
+    ) = __pow__ = __rpow__ = __sub__ = __rsub__ = _fail_with_undefined_error
 
     def __eq__(self, other):
         return type(self) is type(other)
@@ -778,7 +808,7 @@ class Undefined(object):
         return id(type(self))
 
     def __str__(self):
-        return ""
+        return u""
 
     def __len__(self):
         return 0
@@ -932,12 +962,12 @@ class DebugUndefined(Undefined):
     def __str__(self):
         if self._undefined_hint is None:
             if self._undefined_obj is missing:
-                return "{{ %s }}" % self._undefined_name
+                return u"{{ %s }}" % self._undefined_name
             return "{{ no such element: %s[%r] }}" % (
                 object_type_repr(self._undefined_obj),
                 self._undefined_name,
             )
-        return "{{ undefined value printed: %s }}" % self._undefined_hint
+        return u"{{ undefined value printed: %s }}" % self._undefined_hint
 
 
 @implements_to_string
@@ -962,7 +992,13 @@ class StrictUndefined(Undefined):
     """
 
     __slots__ = ()
-    __iter__ = __str__ = __len__ = __nonzero__ = __eq__ = __ne__ = __bool__ = __hash__ = Undefined._fail_with_undefined_error
+    __iter__ = (
+        __str__
+    ) = (
+        __len__
+    ) = (
+        __nonzero__
+    ) = __eq__ = __ne__ = __bool__ = __hash__ = Undefined._fail_with_undefined_error
 
 
 # remove remaining slots attributes, after the metaclass did the magic they

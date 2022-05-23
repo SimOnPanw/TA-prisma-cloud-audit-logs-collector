@@ -77,12 +77,14 @@ async def do_groupby(environment, value, attribute):
     expr = filters.make_attrgetter(environment, attribute)
     return [
         filters._GroupTuple(key, await auto_to_seq(values))
-        for key, values in filters.groupby(sorted(await auto_to_seq(value), key=expr), expr)
+        for key, values in filters.groupby(
+            sorted(await auto_to_seq(value), key=expr), expr
+        )
     ]
 
 
 @asyncfiltervariant(filters.do_join)
-async def do_join(eval_ctx, value, d="", attribute=None):
+async def do_join(eval_ctx, value, d=u"", attribute=None):
     return filters.do_join(eval_ctx, await auto_to_seq(value), d, attribute)
 
 

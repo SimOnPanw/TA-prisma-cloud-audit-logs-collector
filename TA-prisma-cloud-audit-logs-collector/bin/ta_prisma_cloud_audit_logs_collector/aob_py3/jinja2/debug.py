@@ -35,7 +35,9 @@ def rewrite_traceback_stack(source=None):
 
         # Outside of runtime, so the frame isn't executing template
         # code, but it still needs to point at the template.
-        tb = fake_traceback(exc_value, None, exc_value.filename or "<unknown>", exc_value.lineno)
+        tb = fake_traceback(
+            exc_value, None, exc_value.filename or "<unknown>", exc_value.lineno
+        )
     else:
         # Skip the frame for the render function.
         tb = tb.tb_next
@@ -212,6 +214,7 @@ if sys.version_info >= (3, 7):
         tb.tb_next = tb_next
         return tb
 
+
 elif PYPY:
     # PyPy might have special support, and won't work with ctypes.
     try:
@@ -232,6 +235,7 @@ elif PYPY:
                 return op.delegate()
 
             return tputil.make_proxy(controller, obj=tb)
+
 
 else:
     # Use ctypes to assign tb_next at the C level since it's read-only

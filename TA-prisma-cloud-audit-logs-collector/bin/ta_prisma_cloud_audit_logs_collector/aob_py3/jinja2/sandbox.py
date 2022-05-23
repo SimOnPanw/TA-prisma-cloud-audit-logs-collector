@@ -48,7 +48,9 @@ UNSAFE_COROUTINE_ATTRIBUTES = {"cr_frame", "cr_code"}
 UNSAFE_ASYNC_GENERATOR_ATTRIBUTES = {"ag_code", "ag_frame"}
 
 # make sure we don't warn in python 2.6 about stuff we don't care about
-warnings.filterwarnings("ignore", "the sets module", DeprecationWarning, module=__name__)
+warnings.filterwarnings(
+    "ignore", "the sets module", DeprecationWarning, module=__name__
+)
 
 _mutable_set_types = (set,)
 _mutable_mapping_types = (dict,)
@@ -152,10 +154,9 @@ class _MagicFormatMapping(abc.Mapping):
 
 
 def inspect_format_method(callable):
-    if not isinstance(callable, (types.MethodType, types.BuiltinMethodType)) or callable.__name__ not in (
-        "format",
-        "format_map",
-    ):
+    if not isinstance(
+        callable, (types.MethodType, types.BuiltinMethodType)
+    ) or callable.__name__ not in ("format", "format_map"):
         return None
     obj = callable.__self__
     if isinstance(obj, string_types):
@@ -169,7 +170,10 @@ def safe_range(*args):
     rng = range_type(*args)
 
     if len(rng) > MAX_RANGE:
-        raise OverflowError("Range too big. The sandbox blocks ranges larger than" " MAX_RANGE (%d)." % MAX_RANGE)
+        raise OverflowError(
+            "Range too big. The sandbox blocks ranges larger than"
+            " MAX_RANGE (%d)." % MAX_RANGE
+        )
 
     return rng
 
@@ -216,7 +220,9 @@ def is_internal_attribute(obj, attr):
     elif hasattr(types, "CoroutineType") and isinstance(obj, types.CoroutineType):
         if attr in UNSAFE_COROUTINE_ATTRIBUTES:
             return True
-    elif hasattr(types, "AsyncGeneratorType") and isinstance(obj, types.AsyncGeneratorType):
+    elif hasattr(types, "AsyncGeneratorType") and isinstance(
+        obj, types.AsyncGeneratorType
+    ):
         if attr in UNSAFE_ASYNC_GENERATOR_ATTRIBUTES:
             return True
     return attr.startswith("__")
@@ -350,7 +356,9 @@ class SandboxedEnvironment(Environment):
         True.  Override this method to alter the behavior, but this won't
         affect the `unsafe` decorator from this module.
         """
-        return not (getattr(obj, "unsafe_callable", False) or getattr(obj, "alters_data", False))
+        return not (
+            getattr(obj, "unsafe_callable", False) or getattr(obj, "alters_data", False)
+        )
 
     def call_binop(self, context, operator, left, right):
         """For intercepted binary operator calls (:meth:`intercepted_binops`)
@@ -411,7 +419,8 @@ class SandboxedEnvironment(Environment):
     def unsafe_undefined(self, obj, attribute):
         """Return an undefined object for unsafe attributes."""
         return self.undefined(
-            "access to attribute %r of %r " "object is unsafe." % (attribute, obj.__class__.__name__),
+            "access to attribute %r of %r "
+            "object is unsafe." % (attribute, obj.__class__.__name__),
             name=attribute,
             obj=obj,
             exc=SecurityError,
@@ -428,7 +437,10 @@ class SandboxedEnvironment(Environment):
 
         if format_func is not None and format_func.__name__ == "format_map":
             if len(args) != 1 or kwargs:
-                raise TypeError("format_map() takes exactly one argument %d given" % (len(args) + (kwargs is not None)))
+                raise TypeError(
+                    "format_map() takes exactly one argument %d given"
+                    % (len(args) + (kwargs is not None))
+                )
 
             kwargs = args[0]
             args = None

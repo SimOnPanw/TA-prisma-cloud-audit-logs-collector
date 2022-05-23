@@ -24,7 +24,7 @@ class Context(object):
     See :ref:`runtime_toplevel` for detail on the usage of
     :class:`.Context`.
 
-    """
+     """
 
     def __init__(self, buffer, **data):
         self._buffer_stack = [buffer]
@@ -47,7 +47,10 @@ class Context(object):
         self._with_template = t
         illegal_names = t.reserved_names.intersection(self._data)
         if illegal_names:
-            raise exceptions.NameConflictError("Reserved words passed to render(): %s" % ", ".join(illegal_names))
+            raise exceptions.NameConflictError(
+                "Reserved words passed to render(): %s"
+                % ", ".join(illegal_names)
+            )
 
     @property
     def lookup(self):
@@ -336,7 +339,8 @@ class LoopContext(object):
         return bool(self.index % 2)
 
     def cycle(self, *values):
-        """Cycle through values as the loop progresses."""
+        """Cycle through values as the loop progresses.
+        """
         if not values:
             raise ValueError("You must provide values to cycle through")
         return values[self.index % len(values)]
@@ -359,19 +363,19 @@ class _NSAttr(object):
 class Namespace(object):
 
     """Provides access to collections of rendering methods, which
-    can be local, from other templates, or from imported modules.
+      can be local, from other templates, or from imported modules.
 
-    To access a particular rendering method referenced by a
-    :class:`.Namespace`, use plain attribute access:
+      To access a particular rendering method referenced by a
+      :class:`.Namespace`, use plain attribute access:
 
-    .. sourcecode:: mako
+      .. sourcecode:: mako
 
-      ${some_namespace.foo(x, y, z)}
+        ${some_namespace.foo(x, y, z)}
 
-    :class:`.Namespace` also contains several built-in attributes
-    described here.
+      :class:`.Namespace` also contains several built-in attributes
+      described here.
 
-    """
+      """
 
     def __init__(
         self,
@@ -544,7 +548,9 @@ class Namespace(object):
         elif self.inherits:
             val = getattr(self.inherits, key)
         else:
-            raise AttributeError("Namespace '%s' has no member '%s'" % (self.name, key))
+            raise AttributeError(
+                "Namespace '%s' has no member '%s'" % (self.name, key)
+            )
         setattr(self, key, val)
         return val
 
@@ -580,7 +586,9 @@ class TemplateNamespace(Namespace):
             raise TypeError("'template' argument is required.")
 
         if populate_self:
-            lclcallable, lclcontext = _populate_self_namespace(context, self.template, self_ns=self)
+            lclcallable, lclcontext = _populate_self_namespace(
+                context, self.template, self_ns=self
+            )
 
     @property
     def module(self):
@@ -633,7 +641,9 @@ class TemplateNamespace(Namespace):
             val = getattr(self.inherits, key)
 
         else:
-            raise AttributeError("Namespace '%s' has no member '%s'" % (self.name, key))
+            raise AttributeError(
+                "Namespace '%s' has no member '%s'" % (self.name, key)
+            )
         setattr(self, key, val)
         return val
 
@@ -689,7 +699,9 @@ class ModuleNamespace(Namespace):
         elif self.inherits:
             val = getattr(self.inherits, key)
         else:
-            raise AttributeError("Namespace '%s' has no member '%s'" % (self.name, key))
+            raise AttributeError(
+                "Namespace '%s' has no member '%s'" % (self.name, key)
+            )
         setattr(self, key, val)
         return val
 
@@ -722,7 +734,8 @@ def capture(context, callable_, *args, **kwargs):
 
     if not callable(callable_):
         raise exceptions.RuntimeException(
-            "capture() function expects a callable as " "its argument (i.e. capture(func, *args, **kwargs))"
+            "capture() function expects a callable as "
+            "its argument (i.e. capture(func, *args, **kwargs))"
         )
     context._push_buffer()
     try:
@@ -767,7 +780,9 @@ def _include_file(context, uri, calling_uri, **kwargs):
     the current output."""
 
     template = _lookup_template(context, uri, calling_uri)
-    (callable_, ctx) = _populate_self_namespace(context._clean_inheritance_tokens(), template)
+    (callable_, ctx) = _populate_self_namespace(
+        context._clean_inheritance_tokens(), template
+    )
     kwargs = _kwargs_for_include(callable_, context._data, **kwargs)
     if template.include_error_handler:
         try:
@@ -815,7 +830,10 @@ def _inherit_from(context, uri, calling_uri):
 def _lookup_template(context, uri, relativeto):
     lookup = context._with_template.lookup
     if lookup is None:
-        raise exceptions.TemplateLookupException("Template '%s' has no TemplateLookup associated" % context._with_template.uri)
+        raise exceptions.TemplateLookupException(
+            "Template '%s' has no TemplateLookup associated"
+            % context._with_template.uri
+        )
     uri = lookup.adjust_uri(uri, relativeto)
     try:
         return lookup.get_template(uri)
@@ -857,7 +875,13 @@ def _render(template, callable_, args, data, as_unicode=False):
     context._outputting_as_unicode = as_unicode
     context._set_with_template(template)
 
-    _render_context(template, callable_, context, *args, **_kwargs_for_callable(callable_, data))
+    _render_context(
+        template,
+        callable_,
+        context,
+        *args,
+        **_kwargs_for_callable(callable_, data)
+    )
     return context._pop_buffer().getvalue()
 
 
@@ -909,7 +933,9 @@ def _exec_template(callable_, context, args=None, kwargs=None):
     be interpreted here.
     """
     template = context._with_template
-    if template is not None and (template.format_exceptions or template.error_handler):
+    if template is not None and (
+        template.format_exceptions or template.error_handler
+    ):
         try:
             callable_(context, *args, **kwargs)
         except Exception:
@@ -929,7 +955,9 @@ def _render_error(template, context, error):
     else:
         error_template = exceptions.html_error_template()
         if context._outputting_as_unicode:
-            context._buffer_stack[:] = [util.FastEncodingBuffer(as_unicode=True)]
+            context._buffer_stack[:] = [
+                util.FastEncodingBuffer(as_unicode=True)
+            ]
         else:
             context._buffer_stack[:] = [
                 util.FastEncodingBuffer(

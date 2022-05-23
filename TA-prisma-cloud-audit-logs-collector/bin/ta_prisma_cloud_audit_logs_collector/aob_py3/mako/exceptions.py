@@ -30,7 +30,9 @@ def _format_filepos(lineno, pos, filename):
 
 class CompileException(MakoException):
     def __init__(self, message, source, lineno, pos, filename):
-        MakoException.__init__(self, message + _format_filepos(lineno, pos, filename))
+        MakoException.__init__(
+            self, message + _format_filepos(lineno, pos, filename)
+        )
         self.lineno = lineno
         self.pos = pos
         self.filename = filename
@@ -39,7 +41,9 @@ class CompileException(MakoException):
 
 class SyntaxException(MakoException):
     def __init__(self, message, source, lineno, pos, filename):
-        MakoException.__init__(self, message + _format_filepos(lineno, pos, filename))
+        MakoException.__init__(
+            self, message + _format_filepos(lineno, pos, filename)
+        )
         self.lineno = lineno
         self.pos = pos
         self.filename = filename
@@ -135,7 +139,8 @@ class RichTraceback(object):
 
     @property
     def reverse_traceback(self):
-        """Return the same data as traceback, except in reverse order."""
+        """Return the same data as traceback, except in reverse order.
+        """
 
         return list(self._get_reformatted_records(self.reverse_records))
 
@@ -160,7 +165,11 @@ class RichTraceback(object):
                     info = mako.template._get_module_info(filename)
                     module_source = info.code
                     template_source = info.source
-                    template_filename = info.template_filename or info.template_uri or filename
+                    template_filename = (
+                        info.template_filename
+                        or info.template_uri
+                        or filename
+                    )
                 except KeyError:
                     # A normal .py file (not a Template)
                     if not compat.py3k:
@@ -191,10 +200,14 @@ class RichTraceback(object):
                 template_ln = 1
 
                 mtm = mako.template.ModuleInfo
-                source_map = mtm.get_module_source_metadata(module_source, full_line_map=True)
+                source_map = mtm.get_module_source_metadata(
+                    module_source, full_line_map=True
+                )
                 line_map = source_map["full_line_map"]
 
-                template_lines = [line_ for line_ in template_source.split("\n")]
+                template_lines = [
+                    line_ for line_ in template_source.split("\n")
+                ]
                 mods[filename] = (line_map, template_lines, template_filename)
 
             template_ln = line_map[lineno - 1]

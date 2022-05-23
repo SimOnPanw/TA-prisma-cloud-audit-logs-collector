@@ -11,7 +11,7 @@ from ..translator import _
 from ..transforms import get_import_context, get_export_context
 from .base import BaseType
 
-__all__ = ["UnionType"]
+__all__ = ['UnionType']
 
 
 def _valid_init_args(type_):
@@ -22,7 +22,6 @@ def _valid_init_args(type_):
             break
     return args
 
-
 def _filter_kwargs(valid_args, kwargs):
     return dict((k, v) for k, v in kwargs.items() if k in valid_args)
 
@@ -32,7 +31,7 @@ class UnionType(BaseType):
     types = None
 
     MESSAGES = {
-        "convert": _("Couldn't interpret value '{0}' as any of {1}."),
+        'convert': _("Couldn't interpret value '{0}' as any of {1}."),
     }
 
     _baseclass_args = _valid_init_args(BaseType)
@@ -74,7 +73,7 @@ class UnionType(BaseType):
                 pass
         if isinstance(response, tuple):
             return response
-        raise ConversionError(self.messages["convert"].format(value, self.typenames))
+        raise ConversionError(self.messages['convert'].format(value, self.typenames))
 
     def convert(self, value, context=None):
         context = context or get_import_context()
@@ -100,4 +99,4 @@ class UnionType(BaseType):
 
 if PY2:
     # Python 2 names cannot be unicode
-    __all__ = [n.encode("ascii") for n in __all__]
+    __all__ = [n.encode('ascii') for n in __all__]

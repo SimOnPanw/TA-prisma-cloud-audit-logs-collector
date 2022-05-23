@@ -29,14 +29,20 @@ if TYPE_CHECKING:  # pragma: no cover
             ...,
         ],
     ]
-    CmpKey = Tuple[int, Tuple[int, ...], PrePostDevType, PrePostDevType, PrePostDevType, LocalType]
+    CmpKey = Tuple[
+        int, Tuple[int, ...], PrePostDevType, PrePostDevType, PrePostDevType, LocalType
+    ]
     LegacyCmpKey = Tuple[int, Tuple[str, ...]]
-    VersionComparisonMethod = Callable[[Union[CmpKey, LegacyCmpKey], Union[CmpKey, LegacyCmpKey]], bool]
+    VersionComparisonMethod = Callable[
+        [Union[CmpKey, LegacyCmpKey], Union[CmpKey, LegacyCmpKey]], bool
+    ]
 
 __all__ = ["parse", "Version", "LegacyVersion", "InvalidVersion", "VERSION_PATTERN"]
 
 
-_Version = collections.namedtuple("_Version", ["epoch", "release", "dev", "pre", "post", "local"])
+_Version = collections.namedtuple(
+    "_Version", ["epoch", "release", "dev", "pre", "post", "local"]
+)
 
 
 def parse(version):
@@ -275,7 +281,9 @@ class Version(_BaseVersion):
             epoch=int(match.group("epoch")) if match.group("epoch") else 0,
             release=tuple(int(i) for i in match.group("release").split(".")),
             pre=_parse_letter_version(match.group("pre_l"), match.group("pre_n")),
-            post=_parse_letter_version(match.group("post_l"), match.group("post_n1") or match.group("post_n2")),
+            post=_parse_letter_version(
+                match.group("post_l"), match.group("post_n1") or match.group("post_n2")
+            ),
             dev=_parse_letter_version(match.group("dev_l"), match.group("dev_n")),
             local=_parse_local_version(match.group("local")),
         )
@@ -456,7 +464,10 @@ def _parse_local_version(local):
     Takes a string like abc.1.twelve and turns it into ("abc", 1, "twelve").
     """
     if local is not None:
-        return tuple(part.lower() if not part.isdigit() else int(part) for part in _local_version_separators.split(local))
+        return tuple(
+            part.lower() if not part.isdigit() else int(part)
+            for part in _local_version_separators.split(local)
+        )
     return None
 
 
@@ -475,7 +486,9 @@ def _cmpkey(
     # leading zeros until we come to something non zero, then take the rest
     # re-reverse it back into the correct order and make it a tuple and use
     # that for our sorting key.
-    _release = tuple(reversed(list(itertools.dropwhile(lambda x: x == 0, reversed(release)))))
+    _release = tuple(
+        reversed(list(itertools.dropwhile(lambda x: x == 0, reversed(release))))
+    )
 
     # We need to "trick" the sorting algorithm to put 1.0.dev0 before 1.0a0.
     # We'll do this by abusing the pre segment, but we _only_ want to do this
@@ -515,6 +528,8 @@ def _cmpkey(
         # - Numeric segments sort numerically
         # - Shorter versions sort before longer versions when the prefixes
         #   match exactly
-        _local = tuple((i, "") if isinstance(i, int) else (NegativeInfinity, i) for i in local)
+        _local = tuple(
+            (i, "") if isinstance(i, int) else (NegativeInfinity, i) for i in local
+        )
 
     return epoch, _release, _pre, _post, _dev, _local

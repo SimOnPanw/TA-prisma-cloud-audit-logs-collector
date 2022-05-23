@@ -15,9 +15,8 @@ from .iteration import atoms
 __all__ = []
 
 
-def validate(
-    schema, mutable, raw_data=None, trusted_data=None, partial=False, strict=False, convert=True, context=None, **kwargs
-):
+def validate(schema, mutable, raw_data=None, trusted_data=None,
+             partial=False, strict=False, convert=True, context=None, **kwargs):
     """
     Validate some untrusted data using a model. Trusted data can be passed in
     the `trusted_data` parameter.
@@ -51,11 +50,13 @@ def validate(
     if raw_data is None:
         raw_data = mutable
 
-    context = context or get_validation_context(partial=partial, strict=strict, convert=convert)
+    context = context or get_validation_context(partial=partial, strict=strict,
+        convert=convert)
 
     errors = {}
     try:
-        data = import_loop(schema, mutable, raw_data, trusted_data=trusted_data, context=context, **kwargs)
+        data = import_loop(schema, mutable, raw_data, trusted_data=trusted_data,
+            context=context, **kwargs)
     except DataError as exc:
         errors = dict(exc.errors)
         data = exc.partial_data
@@ -85,7 +86,10 @@ def _validate_model(schema, mutable, data, context):
     errors = {}
     invalid_fields = []
 
-    has_validator = lambda atom: (atom.value is not Undefined and atom.name in schema._validator_functions)
+    has_validator = lambda atom: (
+        atom.value is not Undefined and
+        atom.name in schema._validator_functions
+    )
     for field_name, field, value in atoms(schema, data, filter=has_validator):
         try:
             schema._validator_functions[field_name](mutable, data, value, context)
@@ -102,12 +106,12 @@ def _validate_model(schema, mutable, data, context):
 
 def get_validation_context(**options):
     validation_options = {
-        "field_converter": validation_converter,
-        "partial": False,
-        "strict": False,
-        "convert": True,
-        "validate": True,
-        "new": False,
+        'field_converter': validation_converter,
+        'partial': False,
+        'strict': False,
+        'convert': True,
+        'validate': True,
+        'new': False,
     }
     validation_options.update(options)
     return Context(**validation_options)
@@ -117,12 +121,10 @@ def prepare_validator(func, argcount):
     if isinstance(func, classmethod):
         func = func.__get__(object).__func__
     if len(inspect.getargspec(func).args) < argcount:
-
         @functools.wraps(func)
         def newfunc(*args, **kwargs):
-            if not kwargs or kwargs.pop("context", 0) is 0:
+            if not kwargs or kwargs.pop('context', 0) is 0:
                 args = args[:-1]
             return func(*args, **kwargs)
-
         return newfunc
     return func

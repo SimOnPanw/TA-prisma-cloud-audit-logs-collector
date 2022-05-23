@@ -77,7 +77,7 @@ class Validator(object):
             warnings.warn(
                 "`high_priority` arg is deprecated and at a time a single message string is kept in memory."
                 " The last message passed to `put_msg` is returned by `msg` property.",
-                DeprecationWarning,
+                DeprecationWarning
             )
         self._msg = msg
 
@@ -112,7 +112,10 @@ class AnyOf(Validator):
             else:
                 return True
         else:
-            self.put_msg("At least one of the following errors need to be fixed: %s" % json.dumps(msgs))
+            self.put_msg(
+                "At least one of the following errors need to be fixed: %s"
+                % json.dumps(msgs)
+            )
             return False
 
 
@@ -136,7 +139,9 @@ class AllOf(Validator):
             if not validator.validate(value, data):
                 msgs.append(validator.msg)
         if msgs:
-            self.put_msg("All of the following errors need to be fixed: %s" % json.dumps(msgs))
+            self.put_msg(
+                "All of the following errors need to be fixed: %s" % json.dumps(msgs)
+            )
             return False
         return True
 
@@ -157,7 +162,9 @@ class RequiresIf(Validator):
             2. A function takes value & data as parameters and
                returns a boolean value
         """
-        assert isinstance(fields, (list, set, tuple)), 'Argument "fields" should be list, set or tuple'
+        assert isinstance(
+            fields, (list, set, tuple)
+        ), 'Argument "fields" should be list, set or tuple'
         super(RequiresIf, self).__init__()
         self.fields = fields
         self.condition = condition
@@ -170,7 +177,9 @@ class RequiresIf(Validator):
         if self.condition is None and not self._is_empty(value):
             need_validate = True
         else:
-            assert isfunction(self.condition), "Condition should be a function for RequiresIf validator"
+            assert isfunction(
+                self.condition
+            ), "Condition should be a function for RequiresIf validator"
             need_validate = self.condition(value, data)
         if not need_validate:
             return True
@@ -262,7 +271,9 @@ class Number(Validator):
         :param is_int: the value should be integer or not
         """
 
-        assert self._check(min_val) and self._check(max_val), "%(min_val)s & %(max_val)s should be numbers" % {
+        assert self._check(min_val) and self._check(
+            max_val
+        ), "%(min_val)s & %(max_val)s should be numbers" % {
             "min_val": min_val,
             "max_val": max_val,
         }
@@ -285,14 +296,21 @@ class Number(Validator):
             except NameError:
                 value = int(value) if self._is_int else float(value)
         except ValueError:
-            self.put_msg("Invalid format for %s value" % ("integer" if self._is_int else "numeric"))
+            self.put_msg(
+                "Invalid format for %s value"
+                % ("integer" if self._is_int else "numeric")
+            )
             return False
 
         msg = None
         if not self._min_val and self._max_val and value > self._max_val:
-            msg = "Value should be smaller than %(max_val)s" % {"max_val": self._max_val}
+            msg = "Value should be smaller than %(max_val)s" % {
+                "max_val": self._max_val
+            }
         elif not self._max_val and self._min_val and value < self._min_val:
-            msg = "Value should be no smaller than %(min_val)s" % {"min_val": self._min_val}
+            msg = "Value should be no smaller than %(min_val)s" % {
+                "min_val": self._min_val
+            }
         elif self._min_val and self._max_val:
             if value < self._min_val or value > self._max_val:
                 msg = "Value should be between %(min_val)s and %(max_val)s" % {
@@ -321,7 +339,9 @@ class String(Validator):
             it should be longer than ``max_len``
         """
 
-        assert self._check(min_len) and self._check(max_len), "%(min_len)s & %(max_len)s should be numbers" % {
+        assert self._check(min_len) and self._check(
+            max_len
+        ), "%(min_len)s & %(max_len)s should be numbers" % {
             "min_len": min_len,
             "max_len": max_len,
         }
@@ -346,9 +366,13 @@ class String(Validator):
         msg = None
 
         if not self._min_len and self._max_len and str_len > self._max_len:
-            msg = "String should be shorter than %(max_len)s" % {"max_len": self._max_len}
+            msg = "String should be shorter than %(max_len)s" % {
+                "max_len": self._max_len
+            }
         elif self._min_len and not self._max_len and str_len < self._min_len:
-            msg = "String should be no shorter than %(min_len)s" % {"min_len": self._min_len}
+            msg = "String should be no shorter than %(min_len)s" % {
+                "min_len": self._min_len
+            }
         elif self._min_len and self._max_len:
             if str_len < self._min_len or str_len > self._max_len:
                 msg = "String length should be between %(min_len)s and %(max_len)s" % {
@@ -415,7 +439,8 @@ class Host(Pattern):
 
     def __init__(self):
         regexp = (
-            r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*" r"([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
+            r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*"
+            r"([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
         )
         super(Host, self).__init__(regexp, flags=re.I)
         self.put_msg("Invalid hostname", high_priority=True)
@@ -444,7 +469,10 @@ class Email(Pattern):
     """
 
     def __init__(self):
-        regexp = r"^[A-Z0-9][A-Z0-9._%+-]{0,63}@" r"(?:[A-Z0-9](?:[A-Z0-9-]{0,62}[A-Z0-9])?\.){1,8}[A-Z]{2,63}$"
+        regexp = (
+            r"^[A-Z0-9][A-Z0-9._%+-]{0,63}@"
+            r"(?:[A-Z0-9](?:[A-Z0-9-]{0,62}[A-Z0-9])?\.){1,8}[A-Z]{2,63}$"
+        )
         super(Email, self).__init__(regexp, flags=re.I)
         self.put_msg("Invalid email address", high_priority=True)
 

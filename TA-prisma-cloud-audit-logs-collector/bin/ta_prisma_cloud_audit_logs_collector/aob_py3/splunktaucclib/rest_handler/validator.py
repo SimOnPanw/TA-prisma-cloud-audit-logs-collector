@@ -162,12 +162,16 @@ class Range(Validator):
         except:
             minVal_bool = isinstance(minVal, (int, float))
             maxVal_bool = isinstance(maxVal, (int, float))
-        assert (minVal is None or minVal_bool) and (maxVal is None or maxVal_bool), "``minVal`` & ``maxVal`` should be numeric"
+        assert (minVal is None or minVal_bool) and (
+            maxVal is None or maxVal_bool
+        ), "``minVal`` & ``maxVal`` should be numeric"
         super(Range, self).__init__()
         self._minVal, self._maxVal = minVal, maxVal
 
         if None not in (self._minVal, self._maxVal):
-            self._msg = "Value should be between {} and {}" "".format(self._minVal, self._maxVal)
+            self._msg = "Value should be between {} and {}" "".format(
+                self._minVal, self._maxVal
+            )
         elif self._minVal is not None:
             self._msg = "Value should be no smaller than {}" "".format(self._minVal)
         elif self._maxVal is not None:
@@ -179,7 +183,9 @@ class Range(Validator):
         except ValueError:
             self._msg = "Invalid format for numeric value"
             return False
-        failed = (self._minVal is not None and value < self._minVal) or (self._maxVal is not None and value > self._maxVal)
+        failed = (self._minVal is not None and value < self._minVal) or (
+            self._maxVal is not None and value > self._maxVal
+        )
         return False if failed else True
 
 
@@ -203,13 +209,17 @@ class String(Validator):
         except:
             minLen_bool = isinstance(minLen, (int, float))
             maxLen_bool = isinstance(maxLen, (int, float))
-        assert (minLen is None or minLen_bool) and (maxLen is None or maxLen_bool), "``minLen`` & ``maxLen`` should be numeric"
+        assert (minLen is None or minLen_bool) and (
+            maxLen is None or maxLen_bool
+        ), "``minLen`` & ``maxLen`` should be numeric"
         super(String, self).__init__()
         self._minLen = 0 if minLen is not None and minLen < 0 else minLen
         self._maxLen = 0 if maxLen is not None and maxLen < 0 else maxLen
 
         if None not in (self._minLen, self._maxLen):
-            self._msg = "Value should be between {} and {}" "".format(self._minLen, self._maxLen)
+            self._msg = "Value should be between {} and {}" "".format(
+                self._minLen, self._maxLen
+            )
         elif self._minLen is not None:
             self._msg = "Value should be no smaller than {}" "".format(self._minLen)
         elif self._maxLen is not None:
@@ -244,7 +254,8 @@ class Host(Pattern):
 
     def __init__(self):
         regexp = (
-            r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*" r"([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
+            r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*"
+            r"([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
         )
         super(Host, self).__init__(regexp, flags=re.I)
         self._msg = "Invalid hostname"

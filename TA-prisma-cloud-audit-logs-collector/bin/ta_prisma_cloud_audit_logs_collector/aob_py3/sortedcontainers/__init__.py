@@ -56,19 +56,19 @@ from .sorteddict import (
 )
 
 __all__ = [
-    "SortedList",
-    "SortedKeyList",
-    "SortedListWithKey",
-    "SortedDict",
-    "SortedKeysView",
-    "SortedItemsView",
-    "SortedValuesView",
-    "SortedSet",
+    'SortedList',
+    'SortedKeyList',
+    'SortedListWithKey',
+    'SortedDict',
+    'SortedKeysView',
+    'SortedItemsView',
+    'SortedValuesView',
+    'SortedSet',
 ]
 
-__title__ = "sortedcontainers"
-__version__ = "2.4.0"
+__title__ = 'sortedcontainers'
+__version__ = '2.4.0'
 __build__ = 0x020400
-__author__ = "Grant Jenks"
-__license__ = "Apache 2.0"
-__copyright__ = "2014-2019, Grant Jenks"
+__author__ = 'Grant Jenks'
+__license__ = 'Apache 2.0'
+__copyright__ = '2014-2019, Grant Jenks'

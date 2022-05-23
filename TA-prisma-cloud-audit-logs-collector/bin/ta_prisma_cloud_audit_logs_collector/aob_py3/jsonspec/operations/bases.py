@@ -5,7 +5,7 @@
 
 from __future__ import absolute_import
 
-__all__ = ["Target"]
+__all__ = ['Target']
 
 from copy import deepcopy
 import logging
@@ -13,7 +13,6 @@ from jsonspec.pointer import Pointer
 from collections import Mapping, MutableSequence
 from jsonspec.pointer import ExtractError, OutOfBounds, OutOfRange, LastElement
 from .exceptions import Error, NonexistentTarget
-
 logger = logging.getLogger(__name__)
 
 
@@ -108,7 +107,7 @@ class Target(object):
                     raise OutOfRange(parent)
                 if isinstance(parent, Mapping):
                     raise OutOfBounds(parent)
-                raise Error("already setted")
+                raise Error('already setted')
         except (OutOfBounds, OutOfRange, LastElement) as error:
             if not token.last:
                 raise NonexistentTarget(obj)
@@ -175,7 +174,8 @@ class Target(object):
         # delete
         parent, fragment = None, doc
         for token in Pointer(src):
-            parent, fragment = fragment, token.extract(fragment, bypass_ref=True)
+            parent, fragment = fragment, token.extract(fragment,
+                                                       bypass_ref=True)
 
         if isinstance(parent, Mapping):
             del parent[token]

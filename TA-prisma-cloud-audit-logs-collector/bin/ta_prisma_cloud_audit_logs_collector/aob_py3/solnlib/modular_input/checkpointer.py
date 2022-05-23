@@ -145,7 +145,17 @@ class KVStoreCheckpointer(Checkpointer):
         >>> ck.get(...)
     """
 
-    def __init__(self, collection_name, session_key, app, owner="nobody", scheme=None, host=None, port=None, **context):
+    def __init__(
+        self,
+        collection_name,
+        session_key,
+        app,
+        owner="nobody",
+        scheme=None,
+        host=None,
+        port=None,
+        **context
+    ):
         try:
             self._collection_data = self._get_collection_data(
                 collection_name, session_key, app, owner, scheme, host, port, **context
@@ -154,7 +164,9 @@ class KVStoreCheckpointer(Checkpointer):
             raise CheckpointerException("Get kvstore checkpointer failed.")
 
     @retry(exceptions=[binding.HTTPError])
-    def _get_collection_data(self, collection_name, session_key, app, owner, scheme, host, port, **context):
+    def _get_collection_data(
+        self, collection_name, session_key, app, owner, scheme, host, port, **context
+    ):
 
         if not context.get("pool_connections"):
             context["pool_connections"] = 5
@@ -163,7 +175,13 @@ class KVStoreCheckpointer(Checkpointer):
             context["pool_maxsize"] = 5
 
         kvstore = rest_client.SplunkRestClient(
-            session_key, app, owner=owner, scheme=scheme, host=host, port=port, **context
+            session_key,
+            app,
+            owner=owner,
+            scheme=scheme,
+            host=host,
+            port=port,
+            **context
         ).kvstore
 
         collection_name = re.sub(r"[^\w]+", "_", collection_name)

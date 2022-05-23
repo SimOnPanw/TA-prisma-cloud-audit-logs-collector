@@ -126,7 +126,9 @@ def _environment_sanity_check(environment):
         environment.undefined, Undefined
     ), "undefined must be a subclass of undefined because filters depend on it."
     assert (
-        environment.block_start_string != environment.variable_start_string != environment.comment_start_string
+        environment.block_start_string
+        != environment.variable_start_string
+        != environment.comment_start_string
     ), "block, variable and comment start strings must be different"
     assert environment.newline_sequence in (
         "\r",
@@ -474,7 +476,9 @@ class Environment(object):
         except (TypeError, LookupError, AttributeError):
             return self.undefined(obj=obj, name=attribute)
 
-    def call_filter(self, name, value, args=None, kwargs=None, context=None, eval_ctx=None):
+    def call_filter(
+        self, name, value, args=None, kwargs=None, context=None, eval_ctx=None
+    ):
         """Invokes a filter on a value the same way the compiler does it.
 
         Note that on Python 3 this might return a coroutine in case the
@@ -490,7 +494,9 @@ class Environment(object):
         args = [value] + list(args or ())
         if getattr(func, "contextfilter", False) is True:
             if context is None:
-                raise TemplateRuntimeError("Attempted to invoke context filter without context")
+                raise TemplateRuntimeError(
+                    "Attempted to invoke context filter without context"
+                )
             args.insert(0, context)
         elif getattr(func, "evalcontextfilter", False) is True:
             if eval_ctx is None:
@@ -663,7 +669,9 @@ class Environment(object):
         try:
             expr = parser.parse_expression()
             if not parser.stream.eos:
-                raise TemplateSyntaxError("chunk after expression", parser.stream.current.lineno, None, None)
+                raise TemplateSyntaxError(
+                    "chunk after expression", parser.stream.current.lineno, None, None
+                )
             expr.set_environment(self)
         except TemplateSyntaxError:
             if sys.exc_info() is not None:
@@ -717,7 +725,8 @@ class Environment(object):
                 import warnings
 
                 warnings.warn(
-                    "'py_compile=True' has no effect on PyPy or Python" " 3 and will be removed in version 3.0",
+                    "'py_compile=True' has no effect on PyPy or Python"
+                    " 3 and will be removed in version 3.0",
                     DeprecationWarning,
                     stacklevel=2,
                 )
@@ -726,11 +735,11 @@ class Environment(object):
                 import imp
                 import marshal
 
-                py_header = imp.get_magic() + "\xff\xff\xff\xff".encode("iso-8859-15")
+                py_header = imp.get_magic() + u"\xff\xff\xff\xff".encode("iso-8859-15")
 
                 # Python 3.3 added a source filesize to the header
                 if sys.version_info >= (3, 3):
-                    py_header += "\x00\x00\x00\x00".encode("iso-8859-15")
+                    py_header += u"\x00\x00\x00\x00".encode("iso-8859-15")
 
         def write_file(filename, data):
             if zip:
@@ -747,7 +756,9 @@ class Environment(object):
         if zip is not None:
             from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED, ZIP_STORED
 
-            zip_file = ZipFile(target, "w", dict(deflated=ZIP_DEFLATED, stored=ZIP_STORED)[zip])
+            zip_file = ZipFile(
+                target, "w", dict(deflated=ZIP_DEFLATED, stored=ZIP_STORED)[zip]
+            )
             log_function('Compiling into Zip archive "%s"' % target)
         else:
             if not os.path.isdir(target):
@@ -800,7 +811,9 @@ class Environment(object):
 
         if extensions is not None:
             if filter_func is not None:
-                raise TypeError("either extensions or filter_func can be passed, but not both")
+                raise TypeError(
+                    "either extensions or filter_func can be passed, but not both"
+                )
 
             def filter_func(x):
                 return "." in x and x.rsplit(".", 1)[1] in extensions
@@ -837,7 +850,9 @@ class Environment(object):
         cache_key = (weakref.ref(self.loader), name)
         if self.cache is not None:
             template = self.cache.get(cache_key)
-            if template is not None and (not self.auto_reload or template.is_up_to_date):
+            if template is not None and (
+                not self.auto_reload or template.is_up_to_date
+            ):
                 return template
         template = self.loader.load(self, name, globals)
         if self.cache is not None:
@@ -888,7 +903,9 @@ class Environment(object):
             names._fail_with_undefined_error()
 
         if not names:
-            raise TemplatesNotFound(message="Tried to select from an empty list " "of templates.")
+            raise TemplatesNotFound(
+                message=u"Tried to select from an empty list " u"of templates."
+            )
         globals = self.make_globals(globals)
         for name in names:
             if isinstance(name, Template):
@@ -1082,7 +1099,9 @@ class Template(object):
             await template.render_async(knights='that say nih; asynchronously')
         """
         # see asyncsupport for the actual implementation
-        raise NotImplementedError("This feature is not available for this version of Python")
+        raise NotImplementedError(
+            "This feature is not available for this version of Python"
+        )
 
     def stream(self, *args, **kwargs):
         """Works exactly like :meth:`generate` but returns a
@@ -1110,7 +1129,9 @@ class Template(object):
         returns an async iterator instead.
         """
         # see asyncsupport for the actual implementation
-        raise NotImplementedError("This feature is not available for this version of Python")
+        raise NotImplementedError(
+            "This feature is not available for this version of Python"
+        )
 
     def new_context(self, vars=None, shared=False, locals=None):
         """Create a new :class:`Context` for this template.  The vars
@@ -1120,7 +1141,9 @@ class Template(object):
 
         `locals` can be a dict of local variables for internal usage.
         """
-        return new_context(self.environment, self.name, self.blocks, vars, shared, self.globals, locals)
+        return new_context(
+            self.environment, self.name, self.blocks, vars, shared, self.globals, locals
+        )
 
     def make_module(self, vars=None, shared=False, locals=None):
         """This method works like the :attr:`module` attribute when called
@@ -1138,7 +1161,9 @@ class Template(object):
         becomes unavailable in async mode.
         """
         # see asyncsupport for the actual implementation
-        raise NotImplementedError("This feature is not available for this version of Python")
+        raise NotImplementedError(
+            "This feature is not available for this version of Python"
+        )
 
     @internalcode
     def _get_default_module(self):

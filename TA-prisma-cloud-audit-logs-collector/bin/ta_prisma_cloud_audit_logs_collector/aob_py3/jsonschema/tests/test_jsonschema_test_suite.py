@@ -35,7 +35,6 @@ def skip(message, **kwargs):
     def skipper(test):
         if all(value == getattr(test, attr) for attr, value in kwargs.items()):
             return message
-
     return skipper
 
 
@@ -47,22 +46,22 @@ def missing_format(checker):
 
         if schema["format"] not in checker.checkers:
             return "Format checker {0!r} not found.".format(schema["format"])
-
     return missing_format
 
 
-is_narrow_build = sys.maxunicode == 2**16 - 1
+is_narrow_build = sys.maxunicode == 2 ** 16 - 1
 if is_narrow_build:  # pragma: no cover
     message = "Not running surrogate Unicode case, this Python is narrow."
 
     def narrow_unicode_build(test):  # pragma: no cover
-        return skip(message=message, description="one supplementary Unicode code point is not long enough",)(test) or skip(
+        return skip(
+            message=message,
+            description="one supplementary Unicode code point is not long enough",
+        )(test) or skip(
             message=message,
             description="two supplementary Unicode code points is long enough",
         )(test)
-
 else:
-
     def narrow_unicode_build(test):  # pragma: no cover
         return
 
@@ -109,12 +108,16 @@ TestDraft4 = DRAFT4.to_unittest_testcase(
         or skip(
             message=bug(371),
             subject="ref",
-            case_description=("Location-independent identifier with absolute URI"),
+            case_description=(
+                "Location-independent identifier with absolute URI"
+            ),
         )(test)
         or skip(
             message=bug(371),
             subject="ref",
-            case_description=("Location-independent identifier with base URI change in subschema"),
+            case_description=(
+                "Location-independent identifier with base URI change in subschema"
+            ),
         )(test)
         or skip(
             message=bug(),
@@ -153,12 +156,16 @@ TestDraft6 = DRAFT6.to_unittest_testcase(
         or skip(
             message=bug(371),
             subject="ref",
-            case_description=("Location-independent identifier with absolute URI"),
+            case_description=(
+                "Location-independent identifier with absolute URI"
+            ),
         )(test)
         or skip(
             message=bug(371),
             subject="ref",
-            case_description=("Location-independent identifier with base URI change in subschema"),
+            case_description=(
+                "Location-independent identifier with base URI change in subschema"
+            ),
         )(test)
         or skip(
             message=bug(),
@@ -198,12 +205,16 @@ TestDraft7 = DRAFT7.to_unittest_testcase(
         or skip(
             message=bug(371),
             subject="ref",
-            case_description=("Location-independent identifier with absolute URI"),
+            case_description=(
+                "Location-independent identifier with absolute URI"
+            ),
         )(test)
         or skip(
             message=bug(371),
             subject="ref",
-            case_description=("Location-independent identifier with base URI change in subschema"),
+            case_description=(
+                "Location-independent identifier with base URI change in subschema"
+            ),
         )(test)
         or skip(
             message=bug(),
@@ -218,7 +229,9 @@ TestDraft7 = DRAFT7.to_unittest_testcase(
         or skip(
             message=bug(593),
             subject="content",
-            case_description=("validation of string-encoded content based on media type"),
+            case_description=(
+                "validation of string-encoded content based on media type"
+            ),
         )(test)
         or skip(
             message=bug(593),
@@ -228,7 +241,9 @@ TestDraft7 = DRAFT7.to_unittest_testcase(
         or skip(
             message=bug(593),
             subject="content",
-            case_description=("validation of binary-encoded media type documents"),
+            case_description=(
+                "validation of binary-encoded media type documents"
+            ),
         )(test)
     ),
 )
@@ -239,7 +254,10 @@ with warnings.catch_warnings():
 
     TestDraft3LegacyTypeCheck = DRAFT3.to_unittest_testcase(
         # Interestingly the any part couldn't really be done w/the old API.
-        ((test for test in each if test.schema != {"type": "any"}) for each in DRAFT3.tests_of(name="type")),
+        (
+            (test for test in each if test.schema != {"type": "any"})
+            for each in DRAFT3.tests_of(name="type")
+        ),
         name="TestDraft3LegacyTypeCheck",
         Validator=create(
             meta_schema=Draft3Validator.META_SCHEMA,

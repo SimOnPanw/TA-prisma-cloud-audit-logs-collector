@@ -68,7 +68,9 @@ class Parser(object):
         for exprs in end_token_stack:
             expected.extend(imap(describe_token_expr, exprs))
         if end_token_stack:
-            currently_looking = " or ".join("'%s'" % describe_token_expr(expr) for expr in end_token_stack[-1])
+            currently_looking = " or ".join(
+                "'%s'" % describe_token_expr(expr) for expr in end_token_stack[-1]
+            )
         else:
             currently_looking = None
 
@@ -85,10 +87,16 @@ class Parser(object):
                     "for %s." % currently_looking
                 )
             else:
-                message.append("Jinja was looking for the following tags: " "%s." % currently_looking)
+                message.append(
+                    "Jinja was looking for the following tags: "
+                    "%s." % currently_looking
+                )
 
         if self._tag_stack:
-            message.append("The innermost block that needs to be " "closed is '%s'." % self._tag_stack[-1])
+            message.append(
+                "The innermost block that needs to be "
+                "closed is '%s'." % self._tag_stack[-1]
+            )
 
         self.fail(" ".join(message), lineno)
 
@@ -192,7 +200,9 @@ class Parser(object):
         lineno = self.stream.expect("name:for").lineno
         target = self.parse_assign_target(extra_end_rules=("name:in",))
         self.stream.expect("name:in")
-        iter = self.parse_tuple(with_condexpr=False, extra_end_rules=("name:recursive",))
+        iter = self.parse_tuple(
+            with_condexpr=False, extra_end_rules=("name:recursive",)
+        )
         test = None
         if self.stream.skip_if("name:if"):
             test = self.parse_expression()
@@ -270,7 +280,9 @@ class Parser(object):
         return node
 
     def parse_import_context(self, node, default):
-        if self.stream.current.test_any("name:with", "name:without") and self.stream.look().test("name:context"):
+        if self.stream.current.test_any(
+            "name:with", "name:without"
+        ) and self.stream.look().test("name:context"):
             node.with_context = next(self.stream).value == "with"
             self.stream.skip()
         else:
@@ -280,7 +292,9 @@ class Parser(object):
     def parse_include(self):
         node = nodes.Include(lineno=next(self.stream).lineno)
         node.template = self.parse_expression()
-        if self.stream.current.test("name:ignore") and self.stream.look().test("name:missing"):
+        if self.stream.current.test("name:ignore") and self.stream.look().test(
+            "name:missing"
+        ):
             node.ignore_missing = True
             self.stream.skip(2)
         else:
@@ -413,12 +427,16 @@ class Parser(object):
             target = nodes.Name(token.value, "store", lineno=token.lineno)
         else:
             if with_tuple:
-                target = self.parse_tuple(simplified=True, extra_end_rules=extra_end_rules)
+                target = self.parse_tuple(
+                    simplified=True, extra_end_rules=extra_end_rules
+                )
             else:
                 target = self.parse_primary()
             target.set_ctx("store")
         if not target.can_assign():
-            self.fail("can't assign to %r" % target.__class__.__name__.lower(), target.lineno)
+            self.fail(
+                "can't assign to %r" % target.__class__.__name__.lower(), target.lineno
+            )
         return target
 
     def parse_expression(self, with_condexpr=True):
@@ -478,7 +496,9 @@ class Parser(object):
                 ops.append(nodes.Operand(token_type, self.parse_math1()))
             elif self.stream.skip_if("name:in"):
                 ops.append(nodes.Operand("in", self.parse_math1()))
-            elif self.stream.current.test("name:not") and self.stream.look().test("name:in"):
+            elif self.stream.current.test("name:not") and self.stream.look().test(
+                "name:in"
+            ):
                 self.stream.skip(2)
                 ops.append(nodes.Operand("notin", self.parse_math1()))
             else:
@@ -637,7 +657,10 @@ class Parser(object):
             # nothing) in the spot of an expression would be an empty
             # tuple.
             if not explicit_parentheses:
-                self.fail("Expected an expression, got '%s'" % describe_token(self.stream.current))
+                self.fail(
+                    "Expected an expression, got '%s'"
+                    % describe_token(self.stream.current)
+                )
 
         return nodes.Tuple(args, "load", lineno=lineno)
 
@@ -702,7 +725,9 @@ class Parser(object):
             attr_token = self.stream.current
             next(self.stream)
             if attr_token.type == "name":
-                return nodes.Getattr(node, attr_token.value, "load", lineno=token.lineno)
+                return nodes.Getattr(
+                    node, attr_token.value, "load", lineno=token.lineno
+                )
             elif attr_token.type != "integer":
                 self.fail("expected name or number", attr_token.lineno)
             arg = nodes.Const(attr_token.value, lineno=attr_token.lineno)
@@ -778,7 +803,10 @@ class Parser(object):
                 next(self.stream)
                 dyn_kwargs = self.parse_expression()
             else:
-                if self.stream.current.type == "name" and self.stream.look().type == "assign":
+                if (
+                    self.stream.current.type == "name"
+                    and self.stream.look().type == "assign"
+                ):
                     # Parsing a kwarg
                     ensure(dyn_kwargs is None)
                     key = self.stream.current.value
@@ -812,7 +840,9 @@ class Parser(object):
                 args = []
                 kwargs = []
                 dyn_args = dyn_kwargs = None
-            node = nodes.Filter(node, name, args, kwargs, dyn_args, dyn_kwargs, lineno=token.lineno)
+            node = nodes.Filter(
+                node, name, args, kwargs, dyn_args, dyn_kwargs, lineno=token.lineno
+            )
             start_inline = False
         return node
 
@@ -847,7 +877,9 @@ class Parser(object):
             args = [arg_node]
         else:
             args = []
-        node = nodes.Test(node, name, args, kwargs, dyn_args, dyn_kwargs, lineno=token.lineno)
+        node = nodes.Test(
+            node, name, args, kwargs, dyn_args, dyn_kwargs, lineno=token.lineno
+        )
         if negated:
             node = nodes.Not(node, lineno=token.lineno)
         return node
@@ -880,7 +912,9 @@ class Parser(object):
                 elif token.type == "block_begin":
                     flush_data()
                     next(self.stream)
-                    if end_tokens is not None and self.stream.current.test_any(*end_tokens):
+                    if end_tokens is not None and self.stream.current.test_any(
+                        *end_tokens
+                    ):
                         return body
                     rv = self.parse_statement()
                     if isinstance(rv, list):

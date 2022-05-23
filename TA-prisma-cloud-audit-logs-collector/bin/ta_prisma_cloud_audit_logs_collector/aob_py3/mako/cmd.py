@@ -43,7 +43,9 @@ def cmdline(argv=None):
         "the current directory, otherwise it defaults to be the "
         "parent directory of the file provided.",
     )
-    parser.add_argument("--output-encoding", default=None, help="force output encoding")
+    parser.add_argument(
+        "--output-encoding", default=None, help="force output encoding"
+    )
     parser.add_argument("input", nargs="?", default="-")
 
     options = parser.parse_args(argv)

@@ -23,7 +23,7 @@ class TemplateError(Exception):
                     return message.decode("utf-8", "replace")
 
         def __unicode__(self):
-            return self.message or ""
+            return self.message or u""
 
     else:
 
@@ -94,7 +94,9 @@ class TemplatesNotFound(TemplateNotFound):
                 else:
                     parts.append(name)
 
-            message = "none of the templates given were found: " + ", ".join(imap(text_type, parts))
+            message = u"none of the templates given were found: " + u", ".join(
+                imap(text_type, parts)
+            )
         TemplateNotFound.__init__(self, names and names[-1] or None, message)
         self.templates = list(names)
 
@@ -135,7 +137,7 @@ class TemplateSyntaxError(TemplateError):
             if line:
                 lines.append("    " + line.strip())
 
-        return "\n".join(lines)
+        return u"\n".join(lines)
 
     def __reduce__(self):
         # https://bugs.python.org/issue1692335 Exceptions that take

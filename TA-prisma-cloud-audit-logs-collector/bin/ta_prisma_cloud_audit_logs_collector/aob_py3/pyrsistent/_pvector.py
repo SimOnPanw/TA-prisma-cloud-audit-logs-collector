@@ -8,7 +8,6 @@ from pyrsistent._transformations import transform
 def _bitcount(val):
     return bin(val).count("1")
 
-
 BRANCH_FACTOR = 32
 BIT_MASK = BRANCH_FACTOR - 1
 SHIFT = _bitcount(BIT_MASK)
@@ -29,8 +28,7 @@ class PythonPVector(object):
     """
     Support structure for PVector that implements structural sharing for vectors using a trie.
     """
-
-    __slots__ = ("_count", "_shift", "_root", "_tail", "_tail_offset", "__weakref__")
+    __slots__ = ('_count', '_shift', '_root', '_tail', '_tail_offset', '__weakref__')
 
     def __new__(cls, count, shift, root, tail):
         self = super(PythonPVector, cls).__new__(cls)
@@ -66,7 +64,7 @@ class PythonPVector(object):
         return self.extend(other)
 
     def __repr__(self):
-        return "pvector({0})".format(str(self.tolist()))
+        return 'pvector({0})'.format(str(self.tolist()))
 
     def __str__(self):
         return self.__repr__()
@@ -80,11 +78,7 @@ class PythonPVector(object):
         return not self.__eq__(other)
 
     def __eq__(self, other):
-        return (
-            self is other
-            or (hasattr(other, "__len__") and self._count == len(other))
-            and compare_pvector(self, other, operator.eq)
-        )
+        return self is other or (hasattr(other, '__len__') and self._count == len(other)) and compare_pvector(self, other, operator.eq)
 
     def __gt__(self, other):
         return compare_pvector(self, other, operator.gt)
@@ -149,22 +143,13 @@ class PythonPVector(object):
 
         evolver = self.evolver()
         for i in range(0, len(args), 2):
-            evolver[args[i]] = args[i + 1]
+            evolver[args[i]] = args[i+1]
 
         return evolver.persistent()
 
     class Evolver(object):
-        __slots__ = (
-            "_count",
-            "_shift",
-            "_root",
-            "_tail",
-            "_tail_offset",
-            "_dirty_nodes",
-            "_extra_tail",
-            "_cached_leafs",
-            "_orig_pvector",
-        )
+        __slots__ = ('_count', '_shift', '_root', '_tail', '_tail_offset', '_dirty_nodes',
+                     '_extra_tail', '_cached_leafs', '_orig_pvector')
 
         def __init__(self, v):
             self._reset(v)
@@ -329,7 +314,7 @@ class PythonPVector(object):
         new_shift = self._shift
 
         # Overflow root?
-        if (self._count >> SHIFT) > (1 << self._shift):  # >>>
+        if (self._count >> SHIFT) > (1 << self._shift): # >>>
             new_root = [self._root, self._new_path(self._shift, self._tail)]
             new_shift += SHIFT
         else:
@@ -359,7 +344,7 @@ class PythonPVector(object):
 
     def _mutating_fill_tail(self, offset, sequence):
         max_delta_len = BRANCH_FACTOR - len(self._tail)
-        delta = sequence[offset : offset + max_delta_len]
+        delta = sequence[offset:offset + max_delta_len]
         self._tail.extend(delta)
         delta_len = len(delta)
         self._count += delta_len
@@ -424,7 +409,6 @@ class PythonPVector(object):
         l = self.tolist()
         l.remove(value)
         return _EMPTY_PVECTOR.extend(l)
-
 
 class PVector(metaclass=ABCMeta):
     """
@@ -694,7 +678,6 @@ PVector.register(PythonPVector)
 Sequence.register(PVector)
 Hashable.register(PVector)
 
-
 def python_pvector(iterable=()):
     """
     Create a new persistent vector containing the elements in iterable.
@@ -705,16 +688,13 @@ def python_pvector(iterable=()):
     """
     return _EMPTY_PVECTOR.extend(iterable)
 
-
 try:
     # Use the C extension as underlying trie implementation if it is available
     import os
-
-    if os.environ.get("PYRSISTENT_NO_C_EXTENSION"):
+    if os.environ.get('PYRSISTENT_NO_C_EXTENSION'):
         pvector = python_pvector
     else:
         from pvectorc import pvector
-
         PVector.register(type(pvector()))
 except ImportError:
     pvector = python_pvector

@@ -34,7 +34,9 @@ class MetadataReader(object):
     """
 
     def __init__(self, app):
-        local_meta = make_splunkhome_path(["etc", "apps", app, "metadata", "local.meta"])
+        local_meta = make_splunkhome_path(
+            ["etc", "apps", app, "metadata", "local.meta"]
+        )
 
         self._cfg = ConfigParser()
         # Loosen restriction on stanzas without header names.

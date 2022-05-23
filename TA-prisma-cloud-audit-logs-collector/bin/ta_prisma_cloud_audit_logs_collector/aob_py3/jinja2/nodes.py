@@ -82,7 +82,11 @@ class EvalContext(object):
 def get_eval_context(node, ctx):
     if ctx is None:
         if node.environment is None:
-            raise RuntimeError("if no eval context is passed, the " "node must have an attached " "environment.")
+            raise RuntimeError(
+                "if no eval context is passed, the "
+                "node must have an attached "
+                "environment."
+            )
         return EvalContext(node.environment)
     return ctx
 
@@ -213,7 +217,9 @@ class Node(with_metaclass(NodeType, object)):
         return self
 
     def __eq__(self, other):
-        return type(self) is type(other) and tuple(self.iter_fields()) == tuple(other.iter_fields())
+        return type(self) is type(other) and tuple(self.iter_fields()) == tuple(
+            other.iter_fields()
+        )
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -426,7 +432,10 @@ class BinExpr(Expr):
     def as_const(self, eval_ctx=None):
         eval_ctx = get_eval_context(self, eval_ctx)
         # intercepted operators cannot be folded at compile time
-        if self.environment.sandboxed and self.operator in self.environment.intercepted_binops:
+        if (
+            self.environment.sandboxed
+            and self.operator in self.environment.intercepted_binops
+        ):
             raise Impossible()
         f = _binop_to_func[self.operator]
         try:
@@ -445,7 +454,10 @@ class UnaryExpr(Expr):
     def as_const(self, eval_ctx=None):
         eval_ctx = get_eval_context(self, eval_ctx)
         # intercepted operators cannot be folded at compile time
-        if self.environment.sandboxed and self.operator in self.environment.intercepted_unops:
+        if (
+            self.environment.sandboxed
+            and self.operator in self.environment.intercepted_unops
+        ):
             raise Impossible()
         f = _uaop_to_func[self.operator]
         try:
@@ -499,7 +511,11 @@ class Const(Literal):
 
     def as_const(self, eval_ctx=None):
         rv = self.value
-        if PY2 and type(rv) is text_type and self.environment.policies["compiler.ascii_str"]:
+        if (
+            PY2
+            and type(rv) is text_type
+            and self.environment.policies["compiler.ascii_str"]
+        ):
             try:
                 rv = rv.encode("ascii")
             except UnicodeError:
@@ -660,7 +676,9 @@ class Filter(Expr):
 
         # We cannot constant handle async filters, so we need to make sure
         # to not go down this path.
-        if eval_ctx.environment.is_async and getattr(filter_, "asyncfiltervariant", False):
+        if eval_ctx.environment.is_async and getattr(
+            filter_, "asyncfiltervariant", False
+        ):
             raise Impossible()
 
         args, kwargs = args_as_const(self, eval_ctx)
@@ -721,7 +739,9 @@ class Getitem(Expr):
         if self.ctx != "load":
             raise Impossible()
         try:
-            return self.environment.getitem(self.node.as_const(eval_ctx), self.arg.as_const(eval_ctx))
+            return self.environment.getitem(
+                self.node.as_const(eval_ctx), self.arg.as_const(eval_ctx)
+            )
         except Exception:
             raise Impossible()
 
@@ -813,7 +833,10 @@ class Operand(Helper):
 
 if __debug__:
     Operand.__doc__ += "\nThe following operators are available: " + ", ".join(
-        sorted("``%s``" % x for x in set(_binop_to_func) | set(_uaop_to_func) | set(_cmpop_to_func))
+        sorted(
+            "``%s``" % x
+            for x in set(_binop_to_func) | set(_uaop_to_func) | set(_cmpop_to_func)
+        )
     )
 
 
@@ -942,7 +965,10 @@ class InternalName(Expr):
     fields = ("name",)
 
     def __init__(self):
-        raise TypeError("Can't create internal names.  Use the " "`free_identifier` method on a parser.")
+        raise TypeError(
+            "Can't create internal names.  Use the "
+            "`free_identifier` method on a parser."
+        )
 
 
 class MarkSafe(Expr):

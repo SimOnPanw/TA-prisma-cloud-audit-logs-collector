@@ -1,3 +1,4 @@
+
 import ta_prisma_cloud_audit_logs_collector_declare
 
 from splunktaucclib.rest_handler.endpoint import (
@@ -14,66 +15,73 @@ util.remove_http_proxy_env_vars()
 
 fields = [
     field.RestField(
-        "interval",
+        'interval',
         required=True,
         encrypted=False,
         default=None,
         validator=validator.Pattern(
-            regex=r"""^\-[1-9]\d*$|^\d*$""",
-        ),
-    ),
+            regex=r"""^\-[1-9]\d*$|^\d*$""", 
+        )
+    ), 
     field.RestField(
-        "index",
+        'index',
         required=True,
         encrypted=False,
-        default="default",
+        default='default',
         validator=validator.String(
-            min_len=1,
-            max_len=80,
-        ),
-    ),
+            min_len=1, 
+            max_len=80, 
+        )
+    ), 
     field.RestField(
-        "base_url",
+        'base_url',
         required=True,
         encrypted=False,
-        default="api.prismacloud.io",
+        default='api.proismacloud.io',
         validator=validator.String(
-            min_len=0,
-            max_len=8192,
-        ),
-    ),
+            min_len=0, 
+            max_len=8192, 
+        )
+    ), 
     field.RestField(
-        "access_key",
+        'access_key',
         required=True,
         encrypted=False,
-        default=None,
+        default='00000000-0000-0000-0000-000000000000',
         validator=validator.String(
-            min_len=0,
-            max_len=8192,
-        ),
-    ),
+            min_len=0, 
+            max_len=8192, 
+        )
+    ), 
     field.RestField(
-        "secret_key",
+        'secret_key',
         required=True,
         encrypted=True,
         default=None,
         validator=validator.String(
-            min_len=0,
-            max_len=8192,
-        ),
-    ),
-    field.RestField("disabled", required=False, validator=None),
+            min_len=0, 
+            max_len=8192, 
+        )
+    ), 
+
+    field.RestField(
+        'disabled',
+        required=False,
+        validator=None
+    )
+
 ]
 model = RestModel(fields, name=None)
 
 
+
 endpoint = DataInputModel(
-    "python_audit_logs_collector",
+    'python_audit_logs_collector',
     model,
 )
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     admin_external.handle(
         endpoint,
         handler=ConfigMigrationHandler,

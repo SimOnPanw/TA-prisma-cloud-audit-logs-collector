@@ -216,7 +216,10 @@
                                     "maxLength": 8192,
                                     "errorMsg": "Max length of text input is 8192"
                                 }
-                            ]
+                            ],
+                            "options": {
+                                "placeholder": "00000000-0000-0000-0000-000000000000"
+                            }
                         },
                         {
                             "field": "secret_key",

@@ -43,7 +43,8 @@ class Step(object):
         return NotImplemented
 
     def __repr__(self):
-        return "{0}({1!r}, role={2})".format(self.__class__.__name__, self.entity, self.role)
+        return '{0}({1!r}, role={2})'.format(
+            self.__class__.__name__, self.entity, self.role)
 
 
 @implements_to_string
@@ -129,22 +130,22 @@ class SchemaGenerationException(Exception):
 
     def _format_steps(self):
         if not self.steps:
-            return ""
+            return ''
         parts = []
         steps = iter(self.steps)
         parts.append(str(next(steps)))
         for step in steps:
             if isinstance(step, (DocumentStep, FieldStep)):
-                parts.append(" -> {0}".format(step))
+                parts.append(' -> {0}'.format(step))
             elif isinstance(step, AttributeStep):
-                parts.append(".{0}".format(step))
+                parts.append('.{0}'.format(step))
             elif isinstance(step, ItemStep):
-                parts.append("[{0}]".format(step))
-        return "".join(parts)
+                parts.append('[{0}]'.format(step))
+        return ''.join(parts)
 
     def __str__(self):
         rv = text_type(self.message)
         steps = self._format_steps()
         if steps:
-            rv += "\nSteps: {0}".format(steps)
+            rv += u'\nSteps: {0}'.format(steps)
         return rv

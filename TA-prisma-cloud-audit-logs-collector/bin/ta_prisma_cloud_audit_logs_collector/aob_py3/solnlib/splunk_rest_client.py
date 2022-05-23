@@ -71,7 +71,9 @@ def _request_handler(context):
         import requests
     except ImportError:
         # FIXME proxy ?
-        return binding.handler(key_file=context.get("key_file"), cert_file=context.get("cert_file"))
+        return binding.handler(
+            key_file=context.get("key_file"), cert_file=context.get("cert_file")
+        )
 
     try:
         requests.urllib3.disable_warnings()
@@ -130,7 +132,15 @@ def _request_handler(context):
 
         try:
             resp = req_func(
-                method, url, data=body, headers=headers, stream=False, verify=verify, proxies=proxies, cert=cert, **kwargs
+                method,
+                url,
+                data=body,
+                headers=headers,
+                stream=False,
+                verify=verify,
+                proxies=proxies,
+                cert=cert,
+                **kwargs
             )
         except Exception as e:
             logging.error(
@@ -179,8 +189,19 @@ class SplunkRestClient(client.Service):
     :type context: ``dict``
     """
 
-    @check_css_params(scheme=is_valid_scheme, host=is_valid_hostname, port=is_valid_port)
-    def __init__(self, session_key, app, owner="nobody", scheme=None, host=None, port=None, **context):
+    @check_css_params(
+        scheme=is_valid_scheme, host=is_valid_hostname, port=is_valid_port
+    )
+    def __init__(
+        self,
+        session_key,
+        app,
+        owner="nobody",
+        scheme=None,
+        host=None,
+        port=None,
+        **context
+    ):
         # Only do splunkd URI discovery in SPLUNK env (SPLUNK_HOME is set)
         if not all([scheme, host, port]) and os.environ.get("SPLUNK_HOME"):
             scheme, host, port = get_splunkd_access_info()

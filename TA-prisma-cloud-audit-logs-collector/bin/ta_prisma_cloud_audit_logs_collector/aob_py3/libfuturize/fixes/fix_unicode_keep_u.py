@@ -11,8 +11,7 @@ of the porting task.
 from lib2to3.pgen2 import token
 from lib2to3 import fixer_base
 
-_mapping = {"unichr": "chr", "unicode": "str"}
-
+_mapping = {u"unichr" : u"chr", u"unicode" : u"str"}
 
 class FixUnicodeKeepU(fixer_base.BaseFix):
     BM_compatible = True

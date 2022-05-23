@@ -104,7 +104,9 @@ class AppEngineManager(RequestMethods):
         urlfetch_retries=True,
     ):
         if not urlfetch:
-            raise AppEnginePlatformError("URLFetch is not available in this environment.")
+            raise AppEnginePlatformError(
+                "URLFetch is not available in this environment."
+            )
 
         warnings.warn(
             "urllib3 is using URLFetch on Google App Engine sandbox instead "
@@ -127,7 +129,15 @@ class AppEngineManager(RequestMethods):
         return False
 
     def urlopen(
-        self, method, url, body=None, headers=None, retries=None, redirect=True, timeout=Timeout.DEFAULT_TIMEOUT, **response_kw
+        self,
+        method,
+        url,
+        body=None,
+        headers=None,
+        retries=None,
+        redirect=True,
+        timeout=Timeout.DEFAULT_TIMEOUT,
+        **response_kw
     ):
 
         retries = self._get_retries(retries, redirect)
@@ -150,7 +160,8 @@ class AppEngineManager(RequestMethods):
         except urlfetch.InvalidURLError as e:
             if "too large" in str(e):
                 raise AppEnginePlatformError(
-                    "URLFetch request too large, URLFetch only " "supports requests up to 10mb in size.",
+                    "URLFetch request too large, URLFetch only "
+                    "supports requests up to 10mb in size.",
                     e,
                 )
             raise ProtocolError(e)
@@ -162,7 +173,8 @@ class AppEngineManager(RequestMethods):
 
         except urlfetch.ResponseTooLargeError as e:
             raise AppEnginePlatformError(
-                "URLFetch response too large, URLFetch only supports" "responses up to 32mb in size.",
+                "URLFetch response too large, URLFetch only supports"
+                "responses up to 32mb in size.",
                 e,
             )
 
@@ -170,9 +182,13 @@ class AppEngineManager(RequestMethods):
             raise SSLError(e)
 
         except urlfetch.InvalidMethodError as e:
-            raise AppEnginePlatformError("URLFetch does not support method: %s" % method, e)
+            raise AppEnginePlatformError(
+                "URLFetch does not support method: %s" % method, e
+            )
 
-        http_response = self._urlfetch_response_to_http_response(response, retries=retries, **response_kw)
+        http_response = self._urlfetch_response_to_http_response(
+            response, retries=retries, **response_kw
+        )
 
         # Handle redirect?
         redirect_location = redirect and http_response.get_redirect_location()
@@ -185,7 +201,9 @@ class AppEngineManager(RequestMethods):
                     method = "GET"
 
                 try:
-                    retries = retries.increment(method, url, response=http_response, _pool=self)
+                    retries = retries.increment(
+                        method, url, response=http_response, _pool=self
+                    )
                 except MaxRetryError:
                     if retries.raise_on_redirect:
                         raise MaxRetryError(self, url, "too many redirects")
@@ -195,7 +213,14 @@ class AppEngineManager(RequestMethods):
                 log.debug("Redirecting %s -> %s", url, redirect_location)
                 redirect_url = urljoin(url, redirect_location)
                 return self.urlopen(
-                    method, redirect_url, body, headers, retries=retries, redirect=redirect, timeout=timeout, **response_kw
+                    method,
+                    redirect_url,
+                    body,
+                    headers,
+                    retries=retries,
+                    redirect=redirect,
+                    timeout=timeout,
+                    **response_kw
                 )
 
         # Check if we should retry the HTTP response.
@@ -205,7 +230,14 @@ class AppEngineManager(RequestMethods):
             log.debug("Retry: %s", url)
             retries.sleep(http_response)
             return self.urlopen(
-                method, url, body=body, headers=headers, retries=retries, redirect=redirect, timeout=timeout, **response_kw
+                method,
+                url,
+                body=body,
+                headers=headers,
+                retries=retries,
+                redirect=redirect,
+                timeout=timeout,
+                **response_kw
             )
 
         return http_response
@@ -252,7 +284,8 @@ class AppEngineManager(RequestMethods):
         if isinstance(timeout, Timeout):
             if timeout._read is not None or timeout._connect is not None:
                 warnings.warn(
-                    "URLFetch does not support granular timeout settings, " "reverting to total or default URLFetch timeout.",
+                    "URLFetch does not support granular timeout settings, "
+                    "reverting to total or default URLFetch timeout.",
                     AppEnginePlatformWarning,
                 )
             return timeout.total
@@ -264,7 +297,8 @@ class AppEngineManager(RequestMethods):
 
         if retries.connect or retries.read or retries.redirect:
             warnings.warn(
-                "URLFetch only supports total retries and does not " "recognize connect, read, or redirect retry parameters.",
+                "URLFetch only supports total retries and does not "
+                "recognize connect, read, or redirect retry parameters.",
                 AppEnginePlatformWarning,
             )
 
