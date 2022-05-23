@@ -1,0 +1,1 @@
+# Splunk TA to collect audit logs from Prisma Cloud

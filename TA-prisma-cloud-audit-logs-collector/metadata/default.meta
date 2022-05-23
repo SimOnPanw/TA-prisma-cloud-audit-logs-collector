@@ -1,0 +1,73 @@
+[views]
+access = read : [ * ], write : [ admin ]
+export = none
+
+[passwords/credential%3A__REST_CREDENTIAL__%23TA-prisma-cloud-audit-logs-collector%23configs%2Fconf-ta_prisma_cloud_audit_logs_collector_settings%3Aadditional_parameters%60%60splunk_cred_sep%60%601%3A]
+owner = tfadmin
+version = 8.2.3
+modtime = 1637336539.413283000
+
+[passwords/credential%3A__REST_CREDENTIAL__%23TA-prisma-cloud-audit-logs-collector%23configs%2Fconf-ta_prisma_cloud_audit_logs_collector_settings%3Aadditional_parameters%60%60splunk_cred_sep%60%602%3A]
+owner = tfadmin
+version = 8.2.3
+modtime = 1637336539.422308000
+
+[ta_prisma_cloud_audit_logs_collector_settings/additional_parameters]
+version = 8.2.3
+modtime = 1637336539.428872000
+
+[]
+access = write : [ admin ]
+export = none
+version = 8.2.3
+modtime = 1637336764.556195000
+
+[passwords/credential%3A__REST_CREDENTIAL__%23TA-prisma-cloud-audit-logs-collector%23data%2Finputs%2Fprisma_cloud_audit_logs%3APrismaCloudTelefonica%60%60splunk_cred_sep%60%601%3A]
+owner = tfadmin
+version = 8.2.3
+modtime = 1637340443.591062000
+
+[passwords/credential%3A__REST_CREDENTIAL__%23TA-prisma-cloud-audit-logs-collector%23data%2Finputs%2Fprisma_cloud_audit_logs%3APrismaCloudTelefonica%60%60splunk_cred_sep%60%602%3A]
+owner = tfadmin
+version = 8.2.3
+modtime = 1637340443.608748000
+
+[inputs/prisma_cloud_audit_logs%3A%2F%2FPrismaCloudTelefonica]
+owner = tfadmin
+version = 8.2.3
+modtime = 1637348596.375164000
+
+[props/source%3A%3A...ta-prisma-cloud-audit-logs-collector%2A.log%2A]
+owner = tfadmin
+version = 8.2.3
+modtime = 1637349756.242776000
+
+[props/source%3A%3A...ta_prisma_cloud_audit_logs_collector%2A.log%2A]
+owner = tfadmin
+version = 8.2.3
+modtime = 1637349756.401868000
+
+[props/prismacloud%3Aaudit]
+owner = tfadmin
+version = 8.2.3
+modtime = 1637349855.992909000
+
+[passwords/credential%3A__REST_CREDENTIAL__%23TA-prisma-cloud-audit-logs-collector%23data%2Finputs%2Faudit_logs_from_prisma_cloud%3APrismaCloudTelefonica%60%60splunk_cred_sep%60%601%3A]
+owner = tfadmin
+version = 8.2.3
+modtime = 1637490601.870606000
+
+[passwords/credential%3A__REST_CREDENTIAL__%23TA-prisma-cloud-audit-logs-collector%23data%2Finputs%2Faudit_logs_from_prisma_cloud%3APrismaCloudTelefonica%60%60splunk_cred_sep%60%602%3A]
+owner = tfadmin
+version = 8.2.3
+modtime = 1637490601.889379000
+
+[inputs/audit_logs_from_prisma_cloud%3A%2F%2FPrismaCloudTelefonica]
+owner = tfadmin
+version = 8.2.3
+modtime = 1637491203.814789000
+
+[collections/TA_prisma_cloud_audit_logs_collector_checkpointer]
+owner = splunk-system-user
+version = 8.2.3
+modtime = 1637493279.674925000
