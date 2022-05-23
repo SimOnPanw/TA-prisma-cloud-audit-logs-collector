@@ -20,63 +20,63 @@ fields = [
         encrypted=False,
         default=None,
         validator=validator.Pattern(
-            regex=r"""^\-[1-9]\d*$|^\d*$""", 
+            regex=r"""^\-[1-9]\d*$|^\d*$""",
         )
-    ), 
+    ),
     field.RestField(
         'index',
         required=True,
         encrypted=False,
         default='default',
         validator=validator.String(
-            min_len=1, 
-            max_len=80, 
+            min_len=1,
+            max_len=80,
         )
-    ), 
+    ),
     field.RestField(
         'base_url',
         required=True,
         encrypted=False,
         default='api.prismacloud.io',
         validator=None
-    ), 
+    ),
     field.RestField(
         'access_key',
         required=True,
-        encrypted=False,
+        encrypted=True,
         default=None,
         validator=validator.String(
-            min_len=0, 
-            max_len=8192, 
+            min_len=0,
+            max_len=8192,
         )
-    ), 
+    ),
     field.RestField(
         'secret_key',
         required=True,
-        encrypted=False,
+        encrypted=True,
         default=None,
         validator=validator.String(
-            min_len=0, 
-            max_len=8192, 
+            min_len=0,
+            max_len=8192,
         )
-    ), 
+    ),
     field.RestField(
         'time_amount',
         required=True,
         encrypted=False,
         default='1',
         validator=validator.String(
-            min_len=0, 
-            max_len=8192, 
+            min_len=0,
+            max_len=8192,
         )
-    ), 
+    ),
     field.RestField(
         'time_unit',
         required=True,
         encrypted=False,
         default='minute',
         validator=None
-    ), 
+    ),
 
     field.RestField(
         'disabled',
@@ -86,7 +86,6 @@ fields = [
 
 ]
 model = RestModel(fields, name=None)
-
 
 
 endpoint = DataInputModel(

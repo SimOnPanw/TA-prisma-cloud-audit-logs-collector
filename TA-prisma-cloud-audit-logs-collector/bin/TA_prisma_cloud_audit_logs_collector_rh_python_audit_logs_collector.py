@@ -20,49 +20,49 @@ fields = [
         encrypted=False,
         default=None,
         validator=validator.Pattern(
-            regex=r"""^\-[1-9]\d*$|^\d*$""", 
+            regex=r"""^\-[1-9]\d*$|^\d*$""",
         )
-    ), 
+    ),
     field.RestField(
         'index',
         required=True,
         encrypted=False,
         default='default',
         validator=validator.String(
-            min_len=1, 
-            max_len=80, 
+            min_len=1,
+            max_len=80,
         )
-    ), 
+    ),
     field.RestField(
         'base_url',
         required=True,
         encrypted=False,
         default='api.proismacloud.io',
         validator=validator.String(
-            min_len=0, 
-            max_len=8192, 
+            min_len=0,
+            max_len=8192,
         )
-    ), 
+    ),
     field.RestField(
         'access_key',
         required=True,
-        encrypted=False,
-        default='00000000-0000-0000-0000-000000000000',
+        encrypted=True,
+        default=None,
         validator=validator.String(
-            min_len=0, 
-            max_len=8192, 
+            min_len=0,
+            max_len=8192,
         )
-    ), 
+    ),
     field.RestField(
         'secret_key',
         required=True,
         encrypted=True,
         default=None,
         validator=validator.String(
-            min_len=0, 
-            max_len=8192, 
+            min_len=0,
+            max_len=8192,
         )
-    ), 
+    ),
 
     field.RestField(
         'disabled',
@@ -72,7 +72,6 @@ fields = [
 
 ]
 model = RestModel(fields, name=None)
-
 
 
 endpoint = DataInputModel(
