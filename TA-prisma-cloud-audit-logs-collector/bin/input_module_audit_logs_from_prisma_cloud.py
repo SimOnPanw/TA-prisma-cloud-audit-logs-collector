@@ -1,10 +1,4 @@
-
 # encoding = utf-8
-
-import os
-import sys
-import time
-import datetime
 import json
 
 
@@ -22,52 +16,39 @@ def use_single_instance_mode():
     return True
 '''
 
+
 def validate_input(helper, definition):
-    opt_base_url = definition.parameters.get('base_url', None)
-    opt_access_key = definition.parameters.get('access_key', None)
-    opt_secret_key = definition.parameters.get('secret_key', None)
     opt_time_unit = definition.parameters.get('time_unit', None)
     opt_interval = int(definition.parameters.get('interval', None))
     opt_time_amount = int(definition.parameters.get('time_amount', None))
 
-    url = "https://%s/login" % ( opt_base_url )
-
-    payload = json.dumps({
-        "username": opt_access_key,
-        "password": opt_secret_key
-    })
-    headers = {"content-type": "application/json; charset=UTF-8"}
-
-    response = helper.send_http_request(url, 'POST', parameters=None, payload=payload,
-                                        headers=headers, cookies=None, verify=True, cert=None,
-                                        timeout=None, use_proxy=False)
-                          
-    r_status = response.status_code
-
-    if r_status != 200:
-        raise ValueError("Authentication failed! Please verify base url, access key and the secret key. Return code is {}".format( str(r_status) ) )
-    elif (opt_interval < 60):
-        raise ValueError("Interval should greater than 60 and equal to time amount by the time unit")
+    if (opt_interval < 60):
+        raise ValueError(
+            "Interval should greater than 60 and equal to time amount by the time unit")
     elif (opt_time_unit == "minute"):
         divide = opt_interval/60
         if (opt_time_amount == divide):
             pass
         else:
-            raise ValueError("Interval should greater than 60 and equal to time amount by the time unit")
+            raise ValueError(
+                "Interval should greater than 60 and equal to time amount by the time unit")
     elif (opt_time_unit == "hour"):
         divide = opt_interval/3600
         if (opt_time_amount == divide):
             pass
         else:
-            raise ValueError("Interval should greater than 60 and equal to time amount by the time unit")
+            raise ValueError(
+                "Interval should greater than 60 and equal to time amount by the time unit")
     else:
         divide = opt_interval/86400
         if (opt_time_amount == divide):
             pass
         else:
-            raise ValueError("Interval should greater than 60 and equal to time amount by the time unit")
+            raise ValueError(
+                "Interval should greater than 60 and equal to time amount by the time unit")
 
     pass
+
 
 def collect_events(helper, ew):
     opt_base_url = helper.get_arg('base_url')
@@ -76,11 +57,11 @@ def collect_events(helper, ew):
     opt_time_amount = helper.get_arg('time_amount')
     opt_time_unit = helper.get_arg('time_unit')
 
-    ## GET EXISTING TOKEN FROM KV STORE
+    # GET EXISTING TOKEN FROM KV STORE
     token = helper.get_check_point(KV_TOKEN)
 
     if not token:
-        ## CREATE TOKEN IF ID DOES NOT EXISTS
+        # CREATE TOKEN IF ID DOES NOT EXISTS
         helper.log_info("Creating an token")
         login(helper, opt_base_url, opt_access_key, opt_secret_key)
         token = helper.get_check_point(KV_TOKEN)
@@ -93,17 +74,18 @@ def collect_events(helper, ew):
             login(helper, opt_base_url, opt_access_key, opt_secret_key)
             token = helper.get_check_point(KV_TOKEN)
 
-
-    ## GET AUDIT LOGS
-    auditLogs = getAuditLogs(helper, opt_base_url, opt_time_amount, opt_time_unit, token)
+    # GET AUDIT LOGS
+    auditLogs = getAuditLogs(helper, opt_base_url,
+                             opt_time_amount, opt_time_unit, token)
 
     for log in auditLogs:
-        event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(log))
+        event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(
+        ), sourcetype=helper.get_sourcetype(), data=json.dumps(log))
         ew.write_event(event)
 
 
 def login(helper, opt_base_url, opt_access_key, opt_secret_key):
-    url = "https://%s/login" % ( opt_base_url )
+    url = "https://%s/login" % (opt_base_url)
 
     payload = json.dumps({
         "username": opt_access_key,
@@ -120,9 +102,10 @@ def login(helper, opt_base_url, opt_access_key, opt_secret_key):
     token = response.json()['token']
     helper.save_check_point(KV_TOKEN, token)
 
+
 def extendToken(helper, opt_base_url, token):
-    ## EXTEND TOKEN IF IT EXISTS
-    url = "https://%s/auth_token/extend" % ( opt_base_url )
+    # EXTEND TOKEN IF IT EXISTS
+    url = "https://%s/auth_token/extend" % (opt_base_url)
     # helper.log_info("AUDITLOGS FROM EVENT ==URL: " + url)
     headers = {"x-redlock-auth": token}
 
@@ -134,10 +117,12 @@ def extendToken(helper, opt_base_url, token):
     helper.save_check_point(KV_TOKEN, token)
 
     return response.status_code
-    
+
+
 def getAuditLogs(helper, opt_base_url, opt_time_amount, opt_time_unit, token):
-    url = "https://%s/audit/redlock" % ( opt_base_url )
-    querystring = {"timeType":"relative","timeAmount":opt_time_amount,"timeUnit":opt_time_unit}
+    url = "https://%s/audit/redlock" % (opt_base_url)
+    querystring = {"timeType": "relative",
+                   "timeAmount": opt_time_amount, "timeUnit": opt_time_unit}
     headers = {"x-redlock-auth": token}
     response = helper.send_http_request(url, 'GET', parameters=querystring, payload=None,
                                         headers=headers, cookies=None, verify=True, cert=None,
@@ -145,5 +130,5 @@ def getAuditLogs(helper, opt_base_url, opt_time_amount, opt_time_unit, token):
     # check the response status, if the status is not sucessful, raise requests.HTTPError
     response.raise_for_status()
 
-    ## PARSE AUDIT LOGS
+    # PARSE AUDIT LOGS
     return response.json()
