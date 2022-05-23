@@ -45,7 +45,7 @@ fields = [
     field.RestField(
         "access_key",
         required=True,
-        encrypted=True,
+        encrypted=False,
         default=None,
         validator=validator.String(
             min_len=0,

@@ -32,11 +32,12 @@ fields = [
             max_len=80,
         ),
     ),
-    field.RestField("base_url", required=True, encrypted=False, default="api.prismacloud.io", validator=None),
+    field.RestField("base_url", required=True, encrypted=False,
+                    default="api.prismacloud.io", validator=None),
     field.RestField(
         "access_key",
         required=True,
-        encrypted=True,
+        encrypted=False,
         default=None,
         validator=validator.String(
             min_len=0,
@@ -63,7 +64,8 @@ fields = [
             max_len=8192,
         ),
     ),
-    field.RestField("time_unit", required=True, encrypted=False, default="minute", validator=None),
+    field.RestField("time_unit", required=True, encrypted=False,
+                    default="minute", validator=None),
     field.RestField("disabled", required=False, validator=None),
 ]
 model = RestModel(fields, name=None)
