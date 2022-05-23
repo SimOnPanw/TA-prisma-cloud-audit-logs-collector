@@ -23,9 +23,7 @@ _lexer_cache = LRUCache(50)
 # static regular expressions
 whitespace_re = re.compile(r"\s+", re.U)
 newline_re = re.compile(r"(\r\n|\r|\n)")
-string_re = re.compile(
-    r"('([^'\\]*(?:\\.[^'\\]*)*)'" r'|"([^"\\]*(?:\\.[^"\\]*)*)")', re.S
-)
+string_re = re.compile(r"('([^'\\]*(?:\\.[^'\\]*)*)'" r'|"([^"\\]*(?:\\.[^"\\]*)*)")', re.S)
 integer_re = re.compile(r"(\d+_)*\d+")
 float_re = re.compile(
     r"""
@@ -138,9 +136,7 @@ operators = {
 
 reverse_operators = dict([(v, k) for k, v in iteritems(operators)])
 assert len(operators) == len(reverse_operators), "operators dropped"
-operator_re = re.compile(
-    "(%s)" % "|".join(re.escape(x) for x in sorted(operators, key=lambda x: -len(x)))
-)
+operator_re = re.compile("(%s)" % "|".join(re.escape(x) for x in sorted(operators, key=lambda x: -len(x))))
 
 ignored_tokens = frozenset(
     [
@@ -153,9 +149,7 @@ ignored_tokens = frozenset(
         TOKEN_LINECOMMENT,
     ]
 )
-ignore_if_empty = frozenset(
-    [TOKEN_WHITESPACE, TOKEN_DATA, TOKEN_COMMENT, TOKEN_LINECOMMENT]
-)
+ignore_if_empty = frozenset([TOKEN_WHITESPACE, TOKEN_DATA, TOKEN_COMMENT, TOKEN_LINECOMMENT])
 
 
 def _describe_token_type(token_type):
@@ -515,10 +509,7 @@ class Lexer(object):
                                     e(environment.block_end_string),
                                 )
                             ]
-                            + [
-                                r"(?P<%s>%s(\-|\+|))" % (n, r)
-                                for n, r in root_tag_rules
-                            ]
+                            + [r"(?P<%s>%s(\-|\+|))" % (n, r) for n, r in root_tag_rules]
                         )
                     ),
                     OptionalLStrip(TOKEN_DATA, "#bygroup"),
@@ -592,10 +583,7 @@ class Lexer(object):
                 (c("(.)"), (Failure("Missing end of raw directive"),), None),
             ],
             # line statements
-            TOKEN_LINESTATEMENT_BEGIN: [
-                (c(r"\s*(\n|$)"), TOKEN_LINESTATEMENT_END, "#pop")
-            ]
-            + tag_rules,
+            TOKEN_LINESTATEMENT_BEGIN: [(c(r"\s*(\n|$)"), TOKEN_LINESTATEMENT_END, "#pop")] + tag_rules,
             # line comments
             TOKEN_LINECOMMENT_BEGIN: [
                 (
@@ -636,17 +624,11 @@ class Lexer(object):
             elif token == TOKEN_NAME:
                 value = str(value)
                 if check_ident and not value.isidentifier():
-                    raise TemplateSyntaxError(
-                        "Invalid character in identifier", lineno, name, filename
-                    )
+                    raise TemplateSyntaxError("Invalid character in identifier", lineno, name, filename)
             elif token == TOKEN_STRING:
                 # try to unescape string
                 try:
-                    value = (
-                        self._normalize_newlines(value[1:-1])
-                        .encode("ascii", "backslashreplace")
-                        .decode("unicode-escape")
-                    )
+                    value = self._normalize_newlines(value[1:-1]).encode("ascii", "backslashreplace").decode("unicode-escape")
                 except Exception as e:
                     msg = str(e).split(":")[-1].strip()
                     raise TemplateSyntaxError(msg, lineno, name, filename)
@@ -753,9 +735,7 @@ class Lexer(object):
                                     break
                             else:
                                 raise RuntimeError(
-                                    "%r wanted to resolve "
-                                    "the token dynamically"
-                                    " but no group matched" % regex
+                                    "%r wanted to resolve " "the token dynamically" " but no group matched" % regex
                                 )
                         # normal group
                         else:
@@ -778,14 +758,11 @@ class Lexer(object):
                             balancing_stack.append("]")
                         elif data in ("}", ")", "]"):
                             if not balancing_stack:
-                                raise TemplateSyntaxError(
-                                    "unexpected '%s'" % data, lineno, name, filename
-                                )
+                                raise TemplateSyntaxError("unexpected '%s'" % data, lineno, name, filename)
                             expected_op = balancing_stack.pop()
                             if expected_op != data:
                                 raise TemplateSyntaxError(
-                                    "unexpected '%s', "
-                                    "expected '%s'" % (data, expected_op),
+                                    "unexpected '%s', " "expected '%s'" % (data, expected_op),
                                     lineno,
                                     name,
                                     filename,
@@ -815,9 +792,7 @@ class Lexer(object):
                                 break
                         else:
                             raise RuntimeError(
-                                "%r wanted to resolve the "
-                                "new state dynamically but"
-                                " no group matched" % regex
+                                "%r wanted to resolve the " "new state dynamically but" " no group matched" % regex
                             )
                     # direct state name given
                     else:
@@ -827,9 +802,7 @@ class Lexer(object):
                 # this means a loop without break condition, avoid that and
                 # raise error
                 elif pos2 == pos:
-                    raise RuntimeError(
-                        "%r yielded empty string without stack change" % regex
-                    )
+                    raise RuntimeError("%r yielded empty string without stack change" % regex)
                 # publish new function and start again
                 pos = pos2
                 break

@@ -192,10 +192,7 @@ class Unifier(Normaliser):
         for val_new, val_old_list in value_map.items():
             for val_old in val_old_list:
                 val_old = val_old if case_sensitive else val_old.lower()
-                assert val_old not in self._value_map, (
-                    'Normaliser "Unifier" only supports Many-to-one mapping: %s'
-                    % val_old
-                )
+                assert val_old not in self._value_map, 'Normaliser "Unifier" only supports Many-to-one mapping: %s' % val_old
                 self._value_map[val_old] = val_new
 
     def normalize(self, value, data):
@@ -257,12 +254,8 @@ class Mapping(Converter):
         if not self._case_sensitive:
             interface = interface.lower()
             storage = storage.lower()
-        assert interface not in self._map_interface, (
-            'Converter "Mapping" only supports one-to-one mapping: "%s"' % interface
-        )
-        assert storage not in self._map_storage, (
-            'Converter "Mapping" only supports one-to-one mapping: "%s"' % storage
-        )
+        assert interface not in self._map_interface, 'Converter "Mapping" only supports one-to-one mapping: "%s"' % interface
+        assert storage not in self._map_storage, 'Converter "Mapping" only supports one-to-one mapping: "%s"' % storage
         self._map_interface[interface] = storage
         self._map_storage[storage] = interface
 

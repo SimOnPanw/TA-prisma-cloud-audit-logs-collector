@@ -28,9 +28,7 @@ class ModularAlertBase(ModularAction):
         # self._logger_name = "modalert_" + alert_name
         self._logger_name = alert_name + "_modalert"
         self._logger = get_logger(self._logger_name)
-        super(ModularAlertBase, self).__init__(
-            sys.stdin.read(), self._logger, alert_name
-        )
+        super(ModularAlertBase, self).__init__(sys.stdin.read(), self._logger, alert_name)
         self.setup_util_module = None
         self.setup_util = None
         self.result_handle = None
@@ -227,10 +225,7 @@ class ModularAlertBase(ModularAction):
     def get_events(self):
         try:
             self.result_handle = gzip.open(self.results_file, "rt")
-            return (
-                self.pre_handle(num, result)
-                for num, result in enumerate(csv.DictReader(self.result_handle))
-            )
+            return (self.pre_handle(num, result) for num, result in enumerate(csv.DictReader(self.result_handle)))
         except IOError:
             msg = "Error: {}."
             self.log_error(msg.format("No search result. Cannot send alert action."))

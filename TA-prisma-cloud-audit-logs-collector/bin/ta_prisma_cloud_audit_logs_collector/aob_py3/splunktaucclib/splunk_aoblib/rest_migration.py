@@ -43,10 +43,7 @@ class ConfigMigrationHandler(AdminExternalHandler):
     @_migrate_error_handle
     def _migrate(self):
         internal_endpoint = self.endpoint.internal_endpoint
-        if not (
-            internal_endpoint.endswith("settings")
-            or internal_endpoint.endswith("account")
-        ):
+        if not (internal_endpoint.endswith("settings") or internal_endpoint.endswith("account")):
             return
 
         splunkd_info = urlparse(get_splunkd_uri())

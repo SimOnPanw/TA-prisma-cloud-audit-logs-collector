@@ -26,17 +26,16 @@ parser = argparse.ArgumentParser(
     description="JSON Schema Validation CLI",
 )
 parser.add_argument(
-    "-i", "--instance",
+    "-i",
+    "--instance",
     action="append",
     dest="instances",
     type=_json_file,
-    help=(
-        "a path to a JSON instance (i.e. filename.json) "
-        "to validate (may be specified multiple times)"
-    ),
+    help=("a path to a JSON instance (i.e. filename.json) " "to validate (may be specified multiple times)"),
 )
 parser.add_argument(
-    "-F", "--error-format",
+    "-F",
+    "--error-format",
     default="{error.instance}: {error.message}\n",
     help=(
         "the format to use for each error output message, specified in "
@@ -45,7 +44,8 @@ parser.add_argument(
     ),
 )
 parser.add_argument(
-    "-V", "--validator",
+    "-V",
+    "--validator",
     type=_namedAnyWithDefault,
     help=(
         "the fully qualified object name of a validator to use, or, for "

@@ -8,5 +8,4 @@ else:
     try:
         from tkCommonDialog import *
     except ImportError:
-        raise ImportError('The tkCommonDialog module is missing. Does your Py2 '
-                          'installation include tkinter?')
+        raise ImportError("The tkCommonDialog module is missing. Does your Py2 " "installation include tkinter?")

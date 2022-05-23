@@ -30,10 +30,8 @@ from cloudconnectlib.core.models import DictToken, _Token, BasicAuthorization, R
 
 logger = get_cc_logger()
 
-_RESPONSE_KEY = '__response__'
-_AUTH_TYPES = {
-    'basic_auth': BasicAuthorization
-}
+_RESPONSE_KEY = "__response__"
+_AUTH_TYPES = {"basic_auth": BasicAuthorization}
 
 
 class ProcessHandler(object):
@@ -44,7 +42,7 @@ class ProcessHandler(object):
 
     def execute(self, context):
         args = [arg.render(context) for arg in self.arguments]
-        logger.debug('%s arguments found for method %s', len(args), self.method)
+        logger.debug("%s arguments found for method %s", len(args), self.method)
         callable_method = lookup_method(self.method)
         result = callable_method(*args)
 
@@ -63,7 +61,7 @@ class Condition(object):
     def is_meet(self, context):
         args = [arg.render(context) for arg in self.arguments]
         callable_method = lookup_method(self.method)
-        logger.debug('%s arguments found for method %s', len(args), self.method)
+        logger.debug("%s arguments found for method %s", len(args), self.method)
         return callable_method(*args)
 
 
@@ -75,9 +73,7 @@ class ConditionGroup(object):
         self._conditions.append(condition)
 
     def is_meet(self, context):
-        return any(
-            cdn.is_meet(context) for cdn in self._conditions
-        )
+        return any(cdn.is_meet(context) for cdn in self._conditions)
 
 
 class ProxyTemplate(object):
@@ -92,28 +88,28 @@ class ProxyTemplate(object):
 class RequestTemplate(object):
     def __init__(self, request):
         if not request:
-            raise ValueError('The request is none')
-        url = request.get('url')
+            raise ValueError("The request is none")
+        url = request.get("url")
         if not url:
             raise ValueError("The request doesn't contain a url or it's empty")
         self.url = _Token(url)
-        self.nextpage_url = _Token(request.get('nextpage_url', url))
-        self.headers = DictToken(request.get('headers', {}))
+        self.nextpage_url = _Token(request.get("nextpage_url", url))
+        self.headers = DictToken(request.get("headers", {}))
 
         # Request body could be string or dict
-        body = request.get('body')
+        body = request.get("body")
         if isinstance(body, dict):
             self.body = DictToken(body)
         elif isinstance(body, six.string_types):
             self.body = _Token(body)
         else:
             if body:
-                logger.warning('Invalid request body: %s', body)
+                logger.warning("Invalid request body: %s", body)
             self.body = None
 
-        method = request.get('method', 'GET')
-        if not method or method.upper() not in ('GET', 'POST'):
-            raise ValueError('Unsupported value for request method: {}'.format(method))
+        method = request.get("method", "GET")
+        if not method or method.upper() not in ("GET", "POST"):
+            raise ValueError("Unsupported value for request method: {}".format(method))
         self.method = _Token(method)
 
         self.count = 0
@@ -132,7 +128,7 @@ class RequestTemplate(object):
             url=url,
             method=self.method.render(context),
             headers=self.headers.render(context),
-            body=self.body.render(context) if self.body else None
+            body=self.body.render(context) if self.body else None,
         )
 
 
@@ -203,10 +199,10 @@ class BaseTask(object):
     @staticmethod
     def _execute_handlers(skip_conditions, handlers, context, phase):
         if skip_conditions.is_meet(context):
-            logger.debug('%s process skip conditions are met', phase.capitalize())
+            logger.debug("%s process skip conditions are met", phase.capitalize())
             return
         if not handlers:
-            logger.debug('No handler found in %s process', phase)
+            logger.debug("No handler found in %s process", phase)
             return
 
         for handler in handlers:
@@ -214,19 +210,13 @@ class BaseTask(object):
             if data:
                 # FIXME
                 context.update(data)
-        logger.debug('Execute handlers finished successfully.')
+        logger.debug("Execute handlers finished successfully.")
 
     def _pre_process(self, context):
-        self._execute_handlers(self._skip_pre_conditions,
-                               self._pre_process_handler,
-                               context,
-                               'pre')
+        self._execute_handlers(self._skip_pre_conditions, self._pre_process_handler, context, "pre")
 
     def _post_process(self, context):
-        self._execute_handlers(self._skip_post_conditions,
-                               self._post_process_handler,
-                               context,
-                               'post')
+        self._execute_handlers(self._skip_post_conditions, self._post_process_handler, context, "post")
 
     @abstractmethod
     def perform(self, context):
@@ -253,20 +243,19 @@ class CCESplitTask(BaseTask):
     def configure_split(self, method, source, output, separator=None):
         arguments = [source, output, separator]
         self._source = source
-        self._process_handler = ProcessHandler(method, arguments,
-                                               CCESplitTask.OUTPUT_KEY)
+        self._process_handler = ProcessHandler(method, arguments, CCESplitTask.OUTPUT_KEY)
 
     def perform(self, context):
-        logger.debug('Task=%s start to run', self)
+        logger.debug("Task=%s start to run", self)
         try:
             self._pre_process(context)
         except StopCCEIteration:
-            logger.info('Task=%s exits in pre_process stage', self)
+            logger.info("Task=%s exits in pre_process stage", self)
             yield context
             return
 
         if not self._process_handler:
-            logger.info('Task=%s has no split method', self)
+            logger.info("Task=%s has no split method", self)
             raise CCESplitError
 
         try:
@@ -274,15 +263,14 @@ class CCESplitTask(BaseTask):
         except:
             logger.exception("Task=%s encountered exception", self)
             raise CCESplitError
-        if not invoke_results or not \
-                invoke_results.get(CCESplitTask.OUTPUT_KEY):
+        if not invoke_results or not invoke_results.get(CCESplitTask.OUTPUT_KEY):
             raise CCESplitError
         for invoke_result in invoke_results[CCESplitTask.OUTPUT_KEY]:
             new_context = copy.deepcopy(context)
             new_context.update(invoke_result)
             yield new_context
 
-        logger.debug('Task=%s finished', self)
+        logger.debug("Task=%s finished", self)
 
 
 class CCEHTTPRequestTask(BaseTask):
@@ -314,7 +302,7 @@ class CCEHTTPRequestTask(BaseTask):
         Stop current task.
         """
         if self._stopped.is_set():
-            logger.info('Task=%s is not running, cannot stop it.', self)
+            logger.info("Task=%s is not running, cannot stop it.", self)
             return
         self._stop_signal_received = True
 
@@ -322,11 +310,11 @@ class CCEHTTPRequestTask(BaseTask):
             return
 
         if not self._stopped.wait(timeout):
-            logger.info('Waiting for stop task %s timeout', self)
+            logger.info("Waiting for stop task %s timeout", self)
 
     def _check_if_stop_needed(self):
         if self._stop_signal_received:
-            logger.info('Stop task signal received, stopping task %s.', self)
+            logger.info("Stop task signal received, stopping task %s.", self)
             self._stopped.set()
             return True
         return False
@@ -359,10 +347,10 @@ class CCEHTTPRequestTask(BaseTask):
         :type settings: ``dict``
         """
         if not auth_type:
-            raise ValueError('Invalid auth type={}'.format(auth_type))
+            raise ValueError("Invalid auth type={}".format(auth_type))
         authorizer_cls = _AUTH_TYPES.get(auth_type.lower())
         if not authorizer_cls:
-            raise ValueError('Unsupported auth type={}'.format(auth_type))
+            raise ValueError("Unsupported auth type={}".format(auth_type))
         self._authorizer = authorizer_cls(settings)
 
     def set_iteration_count(self, count):
@@ -379,8 +367,8 @@ class CCEHTTPRequestTask(BaseTask):
         except ValueError:
             self._max_iteration_count = defaults.max_iteration_count
             logger.warning(
-                'Invalid iteration count: %s, using default max iteration count: %s',
-                count, self._max_iteration_count)
+                "Invalid iteration count: %s, using default max iteration count: %s", count, self._max_iteration_count
+            )
 
     def add_stop_condition(self, method, input):
         """
@@ -406,21 +394,18 @@ class CCEHTTPRequestTask(BaseTask):
         if not name or not name.strip():
             raise ValueError('Invalid checkpoint name: "{}"'.format(name))
         if not content:
-            raise ValueError('Invalid checkpoint content: {}'.format(content))
+            raise ValueError("Invalid checkpoint content: {}".format(content))
         self._checkpointer = CheckpointManagerAdapter(
-            namespaces=name,
-            content=content,
-            meta_config=self._meta_config,
-            task_config=self._task_config
+            namespaces=name, content=content, meta_config=self._meta_config, task_config=self._task_config
         )
 
     def _should_exit(self, done_count, context):
         if 0 < self._max_iteration_count <= done_count:
-            logger.info('Iteration count reached %s', self._max_iteration_count)
+            logger.info("Iteration count reached %s", self._max_iteration_count)
             return True
 
         if self._stop_conditions.is_meet(context):
-            logger.info('Stop conditions are met')
+            logger.info("Stop conditions are met")
             return True
         return False
 
@@ -429,28 +414,27 @@ class CCEHTTPRequestTask(BaseTask):
         try:
             response = client.send(request)
         except HTTPError as error:
-            logger.exception(
-                'Error occurred in request url=%s method=%s reason=%s',
-                request.url, request.method, error.reason
-            )
+            logger.exception("Error occurred in request url=%s method=%s reason=%s", request.url, request.method, error.reason)
             return None, True
 
         status = response.status_code
 
         if status in defaults.success_statuses:
-            if not (response.body or '').strip():
+            if not (response.body or "").strip():
                 logger.info(
-                    'The response body of request which url=%s and'
-                    ' method=%s is empty, status=%s.',
-                    request.url, request.method, status
+                    "The response body of request which url=%s and" " method=%s is empty, status=%s.",
+                    request.url,
+                    request.method,
+                    status,
                 )
                 return None, True
             return response, False
 
-        error_log = ('The response status=%s for request which url=%s and'
-                     ' method=%s.') % (
-                        status, request.url, request.method
-                    )
+        error_log = ("The response status=%s for request which url=%s and" " method=%s.") % (
+            status,
+            request.url,
+            request.method,
+        )
 
         if status in defaults.warning_statuses:
             logger.warning(error_log)
@@ -461,18 +445,18 @@ class CCEHTTPRequestTask(BaseTask):
 
     def _persist_checkpoint(self, context):
         if not self._checkpointer:
-            logger.debug('Checkpoint is not configured. Skip persisting checkpoint.')
+            logger.debug("Checkpoint is not configured. Skip persisting checkpoint.")
             return
         try:
             self._checkpointer.save(context)
         except Exception:
-            logger.exception('Error while persisting checkpoint')
+            logger.exception("Error while persisting checkpoint")
         else:
-            logger.debug('Checkpoint has been updated successfully.')
+            logger.debug("Checkpoint has been updated successfully.")
 
     def _load_checkpoint(self, ctx):
         if not self._checkpointer:
-            logger.debug('Checkpoint is not configured. Skip loading checkpoint.')
+            logger.debug("Checkpoint is not configured. Skip loading checkpoint.")
             return {}
         return self._checkpointer.load(ctx=ctx)
 
@@ -481,13 +465,13 @@ class CCEHTTPRequestTask(BaseTask):
         return HttpClient(proxy)
 
     def perform(self, context):
-        logger.info('Starting to perform task=%s', self)
+        logger.info("Starting to perform task=%s", self)
 
         client = self._prepare_http_client(context)
         done_count = 0
 
         context.update(self._load_checkpoint(context))
-        update_source = False if context.get('source') else True
+        update_source = False if context.get("source") else True
         self._request.reset()
 
         while True:
@@ -508,13 +492,13 @@ class CCEHTTPRequestTask(BaseTask):
             context[_RESPONSE_KEY] = response
 
             if need_exit:
-                logger.info('Task=%s need been terminated due to request response', self)
+                logger.info("Task=%s need been terminated due to request response", self)
                 break
             if self._check_if_stop_needed():
                 break
 
             if update_source:
-                context['source'] = r.url.split('?')[0]
+                context["source"] = r.url.split("?")[0]
 
             try:
                 self._post_process(context)
@@ -530,12 +514,12 @@ class CCEHTTPRequestTask(BaseTask):
             done_count += 1
             if self._should_exit(done_count, context):
                 break
-        if update_source and context.get('source'):
-            del context['source']
+        if update_source and context.get("source"):
+            del context["source"]
         yield context
 
         self._stopped.set()
         if self._checkpointer:
             # Flush checkpoint cache to disk
             self._checkpointer.close()
-        logger.info('Perform task=%s finished', self)
+        logger.info("Perform task=%s finished", self)

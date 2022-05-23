@@ -64,4 +64,3 @@ class UCCException(Exception):
     """
 
     pass
-

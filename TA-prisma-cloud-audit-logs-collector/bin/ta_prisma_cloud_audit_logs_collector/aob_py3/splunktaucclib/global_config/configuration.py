@@ -33,10 +33,10 @@ class Configuration(object):
     Splunk Configuration Handler.
     """
 
-    FILTERS = [u"eai:appName", u"eai:acl", u"eai:userName"]
-    ENTITY_NAME = u"name"
-    SETTINGS = u"settings"
-    NOT_FOUND = u"[404]: Not Found"
+    FILTERS = ["eai:appName", "eai:acl", "eai:userName"]
+    ENTITY_NAME = "name"
+    SETTINGS = "settings"
+    NOT_FOUND = "[404]: Not Found"
 
     def __init__(self, splunkd_client, schema):
         """
@@ -96,9 +96,7 @@ class Configuration(object):
         # expand the payload to task_list
         task_list = []
         for type_name, configurations in payload.items():
-            task_list.extend(
-                [(type_name, configuration) for configuration in configurations]
-            )
+            task_list.extend([(type_name, configuration) for configuration in configurations])
         task_len = len(task_list)
         # return empty error list if task list is empty
         if not task_list:
@@ -176,9 +174,7 @@ class Configuration(object):
             "count": "0",
             "--cred--": "1",
         }
-        response = self._client.get(
-            RestHandler.path_segment(self._endpoint_path(name)), **query
-        )
+        response = self._client.get(RestHandler.path_segment(self._endpoint_path(name)), **query)
         body = response.body.read()
         cont = json.loads(body)
 
@@ -225,9 +221,7 @@ class Configuration(object):
     def _search_configuration_schema(self, type_name, configuration_name):
         for item in self.internal_schema:
             # add support for settings schema
-            if item["name"] == type_name or (
-                type_name == self.SETTINGS and item["name"] == configuration_name
-            ):
+            if item["name"] == type_name or (type_name == self.SETTINGS and item["name"] == configuration_name):
                 return item["entity"]
         else:
             raise GlobalConfigError(
@@ -264,9 +258,7 @@ class Inputs(Configuration):
         inputs = {}
         for input_item in self.internal_schema:
             if input_type is None or input_item["name"] == input_type:
-                input_entities = self._load_endpoint(
-                    input_item["name"], input_item["entity"]
-                )
+                input_entities = self._load_endpoint(input_item["name"], input_item["entity"])
                 # filter unused fields in response
                 for input_entity in input_entities:
                     self._filter_fields(input_entity)
@@ -286,9 +278,7 @@ class Inputs(Configuration):
     @classmethod
     def _reference(cls, input_entities, input_item, configs):
         for input_entity in input_entities:
-            cls._input_reference(
-                input_item["name"], input_entity, input_item["entity"], configs
-            )
+            cls._input_reference(input_item["name"], input_entity, input_item["entity"], configs)
 
     @classmethod
     def _input_reference(cls, input_type, input_entity, input_schema, configs):
@@ -346,7 +336,7 @@ class Configs(Configuration):
 
 class Settings(Configuration):
 
-    TYPE_NAME = u"settings"
+    TYPE_NAME = "settings"
 
     def load(self):
         """
@@ -360,9 +350,7 @@ class Settings(Configuration):
         """
         settings = []
         for setting in self.internal_schema:
-            setting_entity = self._load_endpoint(
-                "settings/%s" % setting["name"], setting["entity"]
-            )
+            setting_entity = self._load_endpoint("settings/%s" % setting["name"], setting["entity"])
             self._load_multiple_select(setting_entity[0], setting["entity"])
             entity = setting_entity[0]
             self._filter_fields(entity)

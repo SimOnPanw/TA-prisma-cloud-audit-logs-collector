@@ -37,15 +37,13 @@ class Role(collections.Set):
         return len(self.fields)
 
     def __eq__(self, other):
-        return (self.function.__name__ == other.function.__name__ and
-                self.fields == other.fields)
+        return self.function.__name__ == other.function.__name__ and self.fields == other.fields
 
     def __str__(self):
-        return '%s(%s)' % (self.function.__name__,
-                           ', '.join("'%s'" % f for f in self.fields))
+        return "%s(%s)" % (self.function.__name__, ", ".join("'%s'" % f for f in self.fields))
 
     def __repr__(self):
-        return '<Role %s>' % str(self)
+        return "<Role %s>" % str(self)
 
     # edit role fields
     def __add__(self, other):

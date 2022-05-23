@@ -166,21 +166,16 @@ class HTTPConnection(_HTTPConnection, object):
             extra_kw["socket_options"] = self.socket_options
 
         try:
-            conn = connection.create_connection(
-                (self._dns_host, self.port), self.timeout, **extra_kw
-            )
+            conn = connection.create_connection((self._dns_host, self.port), self.timeout, **extra_kw)
 
         except SocketTimeout:
             raise ConnectTimeoutError(
                 self,
-                "Connection to %s timed out. (connect timeout=%s)"
-                % (self.host, self.timeout),
+                "Connection to %s timed out. (connect timeout=%s)" % (self.host, self.timeout),
             )
 
         except SocketError as e:
-            raise NewConnectionError(
-                self, "Failed to establish a new connection: %s" % e
-            )
+            raise NewConnectionError(self, "Failed to establish a new connection: %s" % e)
 
         return conn
 
@@ -206,10 +201,7 @@ class HTTPConnection(_HTTPConnection, object):
         # is broken but we don't want this method in our documentation.
         match = _CONTAINS_CONTROL_CHAR_RE.search(method)
         if match:
-            raise ValueError(
-                "Method cannot contain non-token characters %r (found at least %r)"
-                % (method, match.group())
-            )
+            raise ValueError("Method cannot contain non-token characters %r (found at least %r)" % (method, match.group()))
 
         return _HTTPConnection.putrequest(self, method, url, *args, **kwargs)
 
@@ -219,8 +211,7 @@ class HTTPConnection(_HTTPConnection, object):
             _HTTPConnection.putheader(self, header, *values)
         elif six.ensure_str(header.lower()) not in SKIPPABLE_HEADERS:
             raise ValueError(
-                "urllib3.util.SKIP_HEADER only supports '%s'"
-                % ("', '".join(map(str.title, sorted(SKIPPABLE_HEADERS))),)
+                "urllib3.util.SKIP_HEADER only supports '%s'" % ("', '".join(map(str.title, sorted(SKIPPABLE_HEADERS))),)
             )
 
     def request(self, method, url, body=None, headers=None):
@@ -242,9 +233,7 @@ class HTTPConnection(_HTTPConnection, object):
         header_keys = set([six.ensure_str(k.lower()) for k in headers])
         skip_accept_encoding = "accept-encoding" in header_keys
         skip_host = "host" in header_keys
-        self.putrequest(
-            method, url, skip_accept_encoding=skip_accept_encoding, skip_host=skip_host
-        )
+        self.putrequest(method, url, skip_accept_encoding=skip_accept_encoding, skip_host=skip_host)
         if "user-agent" not in header_keys:
             self.putheader("User-Agent", _get_default_user_agent())
         for header, value in headers.items():
@@ -377,10 +366,9 @@ class HTTPSConnection(HTTPConnection):
         is_time_off = datetime.date.today() < RECENT_DATE
         if is_time_off:
             warnings.warn(
-                (
-                    "System time is way off (before {0}). This will probably "
-                    "lead to SSL verification errors"
-                ).format(RECENT_DATE),
+                ("System time is way off (before {0}). This will probably " "lead to SSL verification errors").format(
+                    RECENT_DATE
+                ),
                 SystemTimeWarning,
             )
 
@@ -439,9 +427,7 @@ class HTTPSConnection(HTTPConnection):
             )
 
         if self.assert_fingerprint:
-            assert_fingerprint(
-                self.sock.getpeercert(binary_form=True), self.assert_fingerprint
-            )
+            assert_fingerprint(self.sock.getpeercert(binary_form=True), self.assert_fingerprint)
         elif (
             context.verify_mode != ssl.CERT_NONE
             and not getattr(context, "check_hostname", False)
@@ -463,10 +449,7 @@ class HTTPSConnection(HTTPConnection):
                 )
             _match_hostname(cert, self.assert_hostname or server_hostname)
 
-        self.is_verified = (
-            context.verify_mode == ssl.CERT_REQUIRED
-            or self.assert_fingerprint is not None
-        )
+        self.is_verified = context.verify_mode == ssl.CERT_REQUIRED or self.assert_fingerprint is not None
 
     def _connect_tls_proxy(self, hostname, conn):
         """

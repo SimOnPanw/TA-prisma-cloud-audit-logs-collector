@@ -48,13 +48,9 @@ def optional(converter):
         if sig:
             params = list(sig.parameters.values())
             if params and params[0].annotation is not inspect.Parameter.empty:
-                optional_converter.__annotations__["val"] = typing.Optional[
-                    params[0].annotation
-                ]
+                optional_converter.__annotations__["val"] = typing.Optional[params[0].annotation]
             if sig.return_annotation is not inspect.Signature.empty:
-                optional_converter.__annotations__["return"] = typing.Optional[
-                    sig.return_annotation
-                ]
+                optional_converter.__annotations__["return"] = typing.Optional[sig.return_annotation]
 
     return optional_converter
 
@@ -81,18 +77,14 @@ def default_if_none(default=NOTHING, factory=None):
         raise TypeError("Must pass either `default` or `factory`.")
 
     if default is not NOTHING and factory is not None:
-        raise TypeError(
-            "Must pass either `default` or `factory` but not both."
-        )
+        raise TypeError("Must pass either `default` or `factory` but not both.")
 
     if factory is not None:
         default = Factory(factory)
 
     if isinstance(default, Factory):
         if default.takes_self:
-            raise ValueError(
-                "`takes_self` is not supported by default_if_none."
-            )
+            raise ValueError("`takes_self` is not supported by default_if_none.")
 
         def default_if_none_converter(val):
             if val is not None:

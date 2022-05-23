@@ -4,7 +4,7 @@ from ..resolutionscope import EMPTY_SCOPE
 from ..roles import Resolvable, Resolution, DEFAULT_ROLE
 
 
-__all__ = ['Null', 'BaseField', 'BaseSchemaField']
+__all__ = ["Null", "BaseField", "BaseSchemaField"]
 
 
 class NullSentinel(object):
@@ -27,7 +27,7 @@ of a field to null.
 
 # make sure nobody creates another Null value
 def _failing_new(*args, **kwargs):
-    raise TypeError('Can\'t create another NullSentinel instance')
+    raise TypeError("Can't create another NullSentinel instance")
 
 
 NullSentinel.__new__ = staticmethod(_failing_new)
@@ -74,8 +74,9 @@ class BaseField(Resolvable):
         """
         yield self
 
-    def get_definitions_and_schema(self, role=DEFAULT_ROLE, res_scope=EMPTY_SCOPE,
-                                   ordered=False, ref_documents=None):  # pragma: no cover
+    def get_definitions_and_schema(
+        self, role=DEFAULT_ROLE, res_scope=EMPTY_SCOPE, ordered=False, ref_documents=None
+    ):  # pragma: no cover
         """Returns a tuple of two elements.
 
         The second element is a JSON schema of the data described by this field,
@@ -100,15 +101,18 @@ class BaseField(Resolvable):
         """
         with processing(FieldStep(self, role=role)):
             definitions, schema = self._get_definitions_and_schema(
-                role=role, res_scope=res_scope, ordered=ordered, ref_documents=ref_documents)
-        return definitions, self._extend_schema(schema, role=role, res_scope=res_scope,
-                                                ordered=ordered, ref_documents=ref_documents)
+                role=role, res_scope=res_scope, ordered=ordered, ref_documents=ref_documents
+            )
+        return definitions, self._extend_schema(
+            schema, role=role, res_scope=res_scope, ordered=ordered, ref_documents=ref_documents
+        )
 
     def _extend_schema(self, schema, role, res_scope, ordered, ref_documents):
         return schema
 
-    def _get_definitions_and_schema(self, role=DEFAULT_ROLE, res_scope=EMPTY_SCOPE,
-                                    ordered=False, ref_documents=None):  # pragma: no cover
+    def _get_definitions_and_schema(
+        self, role=DEFAULT_ROLE, res_scope=EMPTY_SCOPE, ordered=False, ref_documents=None
+    ):  # pragma: no cover
         raise NotImplementedError
 
     def iter_fields(self):
@@ -132,8 +136,7 @@ class BaseField(Resolvable):
         """
         yield self
         for field in self.iter_fields():
-            for field_ in field.walk(through_document_fields=through_document_fields,
-                                     visited_documents=visited_documents):
+            for field_ in field.walk(through_document_fields=through_document_fields, visited_documents=visited_documents):
                 yield field_
 
     def resolve_and_iter_fields(self, role=DEFAULT_ROLE):
@@ -142,17 +145,16 @@ class BaseField(Resolvable):
         """
         return iter([])
 
-    def resolve_and_walk(self, role=DEFAULT_ROLE, through_document_fields=False,
-                         visited_documents=frozenset()):
+    def resolve_and_walk(self, role=DEFAULT_ROLE, through_document_fields=False, visited_documents=frozenset()):
         """The same as :meth:`.walk`, but :class:`resolvables <.Resolvable>` are
         resolved using ``role``.
         """
         yield self
         for field in self.resolve_and_iter_fields(role=role):
             field, field_role = field.resolve(role)
-            for field_ in field.resolve_and_walk(role=field_role,
-                                                 through_document_fields=through_document_fields,
-                                                 visited_documents=visited_documents):
+            for field_ in field.resolve_and_walk(
+                role=field_role, through_document_fields=through_document_fields, visited_documents=visited_documents
+            ):
                 yield field_
 
     def get_schema(self, ordered=False, role=DEFAULT_ROLE):
@@ -169,7 +171,7 @@ class BaseField(Resolvable):
         """
         definitions, schema = self.get_definitions_and_schema(ordered=ordered, role=role)
         if definitions:
-            schema['definitions'] = definitions
+            schema["definitions"] = definitions
         return schema
 
     def resolve_attr(self, attr, role=DEFAULT_ROLE):
@@ -214,7 +216,7 @@ class BaseSchemaField(BaseField):
     .. _"id" keyword: https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.2
     """
 
-    def __init__(self, id='', default=None, enum=None, title=None, description=None, **kwargs):
+    def __init__(self, id="", default=None, enum=None, title=None, description=None, **kwargs):
         #: A string to be used as a value of the `"id" keyword`_ of the resulting schema.
         self.id = id
         #: A short explanation about the purpose of the data.
@@ -227,37 +229,38 @@ class BaseSchemaField(BaseField):
 
     def get_enum(self, role=DEFAULT_ROLE):
         """Returns a list to be used as a value of the ``"enum"`` schema keyword."""
-        enum = self.resolve_attr('_enum', role).value
+        enum = self.resolve_attr("_enum", role).value
         if callable(enum):
             enum = enum()
         return enum
 
     def get_default(self, role=DEFAULT_ROLE):
         """Returns a value of the ``"default"`` schema keyword."""
-        default = self.resolve_attr('_default', role).value
+        default = self.resolve_attr("_default", role).value
         if callable(default):
             default = default()
         return default
 
-    def _get_definitions_and_schema(self, role=DEFAULT_ROLE, res_scope=EMPTY_SCOPE,
-                                    ordered=False, ref_documents=None):  # pragma: no cover
+    def _get_definitions_and_schema(
+        self, role=DEFAULT_ROLE, res_scope=EMPTY_SCOPE, ordered=False, ref_documents=None
+    ):  # pragma: no cover
         raise NotImplementedError
 
-    def _update_schema_with_common_fields(self, schema, id='', role=DEFAULT_ROLE):
+    def _update_schema_with_common_fields(self, schema, id="", role=DEFAULT_ROLE):
         if id:
-            schema['id'] = id
-        title = self.resolve_attr('title', role).value
+            schema["id"] = id
+        title = self.resolve_attr("title", role).value
         if title is not None:
-            schema['title'] = title
-        description = self.resolve_attr('description', role).value
+            schema["title"] = title
+        description = self.resolve_attr("description", role).value
         if description is not None:
-            schema['description'] = description
+            schema["description"] = description
         enum = self.get_enum(role=role)
         if enum:
-            schema['enum'] = list(enum)
+            schema["enum"] = list(enum)
         default = self.get_default(role=role)
         if default is not None:
             if default is Null:
                 default = None
-            schema['default'] = default
+            schema["default"] = default
         return schema

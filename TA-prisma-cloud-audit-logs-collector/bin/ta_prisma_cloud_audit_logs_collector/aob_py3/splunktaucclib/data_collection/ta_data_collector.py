@@ -149,38 +149,24 @@ class TADataCollector(object):
 
     def index_data(self):
         if self._lock.locked():
-            stulog.logger.debug(
-                "Last round of stanza={} is not done yet".format(
-                    self._task_config[c.stanza_name]
-                )
-            )
+            stulog.logger.debug("Last round of stanza={} is not done yet".format(self._task_config[c.stanza_name]))
             return
         with self._lock:
             self._stopped = False
             checkpoint_key = self._get_ckpt_key()
-            stulog.logger.info(
-                "{} Start indexing data for checkpoint_key={"
-                "}".format(self._p, checkpoint_key)
-            )
+            stulog.logger.info("{} Start indexing data for checkpoint_key={" "}".format(self._p, checkpoint_key))
             try:
 
                 self._do_safe_index()
             except Exception:
                 stulog.logger.exception("{} Failed to index data".format(self._p))
-            stulog.logger.info(
-                "{} End of indexing data for checkpoint_key={}".format(
-                    self._p, checkpoint_key
-                )
-            )
+            stulog.logger.info("{} End of indexing data for checkpoint_key={}".format(self._p, checkpoint_key))
 
     def _write_events(self, ckpt, events):
         evts = self._build_event(events)
         if evts:
             if not self._data_loader.write_events(evts):
-                stulog.logger.info(
-                    "{} the event queue is closed and the "
-                    "received data will be discarded".format(self._p)
-                )
+                stulog.logger.info("{} the event queue is closed and the " "received data will be discarded".format(self._p))
                 return False
         if ckpt is None:
             return True
@@ -188,11 +174,7 @@ class TADataCollector(object):
             try:
                 self._update_ckpt(ckpt)
             except Exception:
-                stulog.logger.exception(
-                    "{} Failed to update ckpt {} to {}".format(
-                        self._p, self._get_ckpt_key(), ckpt
-                    )
-                )
+                stulog.logger.exception("{} Failed to update ckpt {} to {}".format(self._p, self._get_ckpt_key(), ckpt))
                 time.sleep(2)
                 continue
             else:

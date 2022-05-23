@@ -121,11 +121,7 @@ class _IndividualSpecifier(BaseSpecifier):
 
     def __repr__(self):
         # type: () -> str
-        pre = (
-            ", prereleases={0!r}".format(self.prereleases)
-            if self._prereleases is not None
-            else ""
-        )
+        pre = ", prereleases={0!r}".format(self.prereleases) if self._prereleases is not None else ""
 
         return "<{0}({1!r}{2})>".format(self.__class__.__name__, str(self), pre)
 
@@ -168,9 +164,7 @@ class _IndividualSpecifier(BaseSpecifier):
 
     def _get_operator(self, op):
         # type: (str) -> CallableOperator
-        operator_callable = getattr(
-            self, "_compare_{0}".format(self._operators[op])
-        )  # type: CallableOperator
+        operator_callable = getattr(self, "_compare_{0}".format(self._operators[op]))  # type: CallableOperator
         return operator_callable
 
     def _coerce_version(self, version):
@@ -242,9 +236,7 @@ class _IndividualSpecifier(BaseSpecifier):
                 # If our version is a prerelease, and we were not set to allow
                 # prereleases, then we'll store it for later incase nothing
                 # else matches this specifier.
-                if parsed_version.is_prerelease and not (
-                    prereleases or self.prereleases
-                ):
+                if parsed_version.is_prerelease and not (prereleases or self.prereleases):
                     found_prereleases.append(version)
                 # Either this is not a prerelease, or we should have been
                 # accepting prereleases from the beginning.
@@ -317,7 +309,7 @@ class LegacySpecifier(_IndividualSpecifier):
 
 
 def _require_version_compare(
-    fn  # type: (Callable[[Specifier, ParsedVersion, str], bool])
+    fn,  # type: (Callable[[Specifier, ParsedVersion, str], bool])
 ):
     # type: (...) -> Callable[[Specifier, ParsedVersion, str], bool]
     @functools.wraps(fn)
@@ -463,9 +455,7 @@ class Specifier(_IndividualSpecifier):
         # Add the prefix notation to the end of our string
         prefix += ".*"
 
-        return self._get_operator(">=")(prospective, spec) and self._get_operator("==")(
-            prospective, prefix
-        )
+        return self._get_operator(">=")(prospective, spec) and self._get_operator("==")(prospective, prefix)
 
     @_require_version_compare
     def _compare_equal(self, prospective, spec):
@@ -491,9 +481,7 @@ class Specifier(_IndividualSpecifier):
 
             # Pad out our two sides with zeros so that they both equal the same
             # length.
-            padded_spec, padded_prospective = _pad_version(
-                split_spec, shortened_prospective
-            )
+            padded_spec, padded_prospective = _pad_version(split_spec, shortened_prospective)
 
             return padded_prospective == padded_spec
         else:
@@ -687,11 +675,7 @@ class SpecifierSet(BaseSpecifier):
 
     def __repr__(self):
         # type: () -> str
-        pre = (
-            ", prereleases={0!r}".format(self.prereleases)
-            if self._prereleases is not None
-            else ""
-        )
+        pre = ", prereleases={0!r}".format(self.prereleases) if self._prereleases is not None else ""
 
         return "<SpecifierSet({0!r}{1})>".format(str(self), pre)
 
@@ -720,10 +704,7 @@ class SpecifierSet(BaseSpecifier):
         elif self._prereleases == other._prereleases:
             specifier._prereleases = self._prereleases
         else:
-            raise ValueError(
-                "Cannot combine SpecifierSets with True and False prerelease "
-                "overrides."
-            )
+            raise ValueError("Cannot combine SpecifierSets with True and False prerelease " "overrides.")
 
         return specifier
 

@@ -135,11 +135,7 @@ class RestHandlerError(object):
             logLevel=logging.INFO)
         """
         err = RestHandlerError(code, msgx=msgx)
-        tb = (
-            "\r\n" + ("".join(traceback.format_stack()))
-            if logLevel >= logging.ERROR or isinstance(msgx, Exception)
-            else ""
-        )
+        tb = "\r\n" + ("".join(traceback.format_stack())) if logLevel >= logging.ERROR or isinstance(msgx, Exception) else ""
 
         stulog.logger.log(logLevel, "%s%s" % (err, tb), exc_info=1)
         if shouldPrint:

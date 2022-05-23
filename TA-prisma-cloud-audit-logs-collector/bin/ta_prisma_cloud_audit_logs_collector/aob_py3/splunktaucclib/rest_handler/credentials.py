@@ -88,8 +88,8 @@ class RestCredentials(object):
     """
 
     # Changed password constant to six '*' to make it consistent with solnlib password constant
-    PASSWORD = u"******"
-    EMPTY_VALUE = u""
+    PASSWORD = "******"
+    EMPTY_VALUE = ""
 
     def __init__(self, splunkd_uri, session_key, endpoint):
         self._splunkd_uri = splunkd_uri
@@ -147,9 +147,7 @@ class RestCredentials(object):
                 else:
                     # if the field value is '******', keep the original value
                     original_clear_password = self._get(name)
-                    if original_clear_password and original_clear_password.get(
-                        field_name
-                    ):
+                    if original_clear_password and original_clear_password.get(field_name):
                         encrypting[field_name] = original_clear_password[field_name]
                     else:
                         # original password does not exist, use '******' as password
@@ -304,9 +302,7 @@ class RestCredentials(object):
         # merge clear passwords to response data
         changed_item_list = []
 
-        password_dict = {
-            pwd["username"]: json.loads(pwd["clear_password"]) for pwd in passwords
-        }
+        password_dict = {pwd["username"]: json.loads(pwd["clear_password"]) for pwd in passwords}
         # existed passwords models: previously has encrypted value
         existing_encrypted_items = [x for x in data if x["name"] in password_dict]
 

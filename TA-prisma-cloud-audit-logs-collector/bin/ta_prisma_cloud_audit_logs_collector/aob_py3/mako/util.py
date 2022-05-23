@@ -37,9 +37,7 @@ class PluginLoader(object):
             else:
                 from mako import exceptions
 
-                raise exceptions.RuntimeException(
-                    "Can't load plugin %s %s" % (self.group, name)
-                )
+                raise exceptions.RuntimeException("Can't load plugin %s %s" % (self.group, name))
 
     def register(self, name, modulepath, objname):
         def load():
@@ -160,9 +158,7 @@ class FastEncodingBuffer(object):
 
     def getvalue(self):
         if self.encoding:
-            return self.delim.join(self.data).encode(
-                self.encoding, self.errors
-            )
+            return self.delim.join(self.data).encode(self.encoding, self.errors)
         else:
             return self.delim.join(self.data)
 
@@ -231,9 +227,7 @@ class LRUCache(dict):
 
 
 # Regexp to match python magic encoding line
-_PYTHON_MAGIC_COMMENT_re = re.compile(
-    r"[ \t\f]* \# .* coding[=:][ \t]*([-\w.]+)", re.VERBOSE
-)
+_PYTHON_MAGIC_COMMENT_re = re.compile(r"[ \t\f]* \# .* coding[=:][ \t]*([-\w.]+)", re.VERBOSE)
 
 
 def parse_encoding(fp):
@@ -268,15 +262,12 @@ def parse_encoding(fp):
                 pass
             else:
                 line2 = fp.readline()
-                m = _PYTHON_MAGIC_COMMENT_re.match(
-                    line2.decode("ascii", "ignore")
-                )
+                m = _PYTHON_MAGIC_COMMENT_re.match(line2.decode("ascii", "ignore"))
 
         if has_bom:
             if m:
                 raise SyntaxError(
-                    "python refuses to compile code with both a UTF8"
-                    " byte-order-mark and a magic encoding comment"
+                    "python refuses to compile code with both a UTF8" " byte-order-mark and a magic encoding comment"
                 )
             return "utf_8"
         elif m:

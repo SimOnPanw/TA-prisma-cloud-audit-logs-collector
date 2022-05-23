@@ -17,16 +17,16 @@ def _set_owner_to_document_fields(cls):
 
 # INHERITANCE CONSTANTS AND MAPPING
 
-INLINE = 'inline'  # default inheritance mode
-ALL_OF = 'all_of'
-ANY_OF = 'any_of'
-ONE_OF = 'one_of'
+INLINE = "inline"  # default inheritance mode
+ALL_OF = "all_of"
+ANY_OF = "any_of"
+ONE_OF = "one_of"
 
 _INHERITANCE_MODES = {
-    INLINE: 'allOf',  # used in the case that an inline class inherits from document bases
-    ALL_OF: 'allOf',
-    ANY_OF: 'anyOf',
-    ONE_OF: 'oneOf'
+    INLINE: "allOf",  # used in the case that an inline class inherits from document bases
+    ALL_OF: "allOf",
+    ANY_OF: "anyOf",
+    ONE_OF: "oneOf",
 }
 
 
@@ -55,13 +55,22 @@ class Options(object):
         .. versionadded:: 0.1.4
     """
 
-    def __init__(self, additional_properties=False, pattern_properties=None,
-                 min_properties=None, max_properties=None,
-                 title=None, description=None,
-                 default=None, enum=None,
-                 id='', schema_uri='http://json-schema.org/draft-04/schema#',
-                 definition_id=None, roles_to_propagate=None,
-                 inheritance_mode=INLINE):
+    def __init__(
+        self,
+        additional_properties=False,
+        pattern_properties=None,
+        min_properties=None,
+        max_properties=None,
+        title=None,
+        description=None,
+        default=None,
+        enum=None,
+        id="",
+        schema_uri="http://json-schema.org/draft-04/schema#",
+        definition_id=None,
+        roles_to_propagate=None,
+        inheritance_mode=INLINE,
+    ):
         self.pattern_properties = pattern_properties
         self.additional_properties = additional_properties
         self.min_properties = min_properties
@@ -77,11 +86,8 @@ class Options(object):
         self.roles_to_propagate = construct_matcher(roles_to_propagate or all_)
         if inheritance_mode not in _INHERITANCE_MODES:
             raise ValueError(
-                'Unknown inheritance mode: {0!r}. '
-                'Must be one of the following: {1!r}'.format(
-                    inheritance_mode,
-                    sorted([m for m in _INHERITANCE_MODES])
-                )
+                "Unknown inheritance mode: {0!r}. "
+                "Must be one of the following: {1!r}".format(inheritance_mode, sorted([m for m in _INHERITANCE_MODES]))
             )
         self.inheritance_mode = inheritance_mode
 
@@ -103,6 +109,7 @@ class DocumentMeta(with_metaclass(Prepareable, type)):
     options, fields and scopes registering the document in the registry, making
     it the owner of nested :class:`document fields <.DocumentField>` s and so on.
     """
+
     options_container = Options
     """
     A class to be used by :meth:`~.DocumentMeta.create_options`.
@@ -125,13 +132,12 @@ class DocumentMeta(with_metaclass(Prepareable, type)):
                     parent_documents.update(base._parent_documents)
         else:
             fields = mcs.collect_fields([], attrs)
-            parent_documents = [base for base in bases
-                                if issubclass(base, Document) and base is not Document]
+            parent_documents = [base for base in bases if issubclass(base, Document) and base is not Document]
 
-        attrs['_fields'] = fields
-        attrs['_parent_documents'] = sorted(parent_documents, key=lambda d: d.get_definition_id())
-        attrs['_options'] = options
-        attrs['_backend'] = DocumentBackend(
+        attrs["_fields"] = fields
+        attrs["_parent_documents"] = sorted(parent_documents, key=lambda d: d.get_definition_id())
+        attrs["_options"] = options
+        attrs["_backend"] = DocumentBackend(
             properties=fields,
             pattern_properties=options.pattern_properties,
             additional_properties=options.additional_properties,
@@ -159,7 +165,7 @@ class DocumentMeta(with_metaclass(Prepareable, type)):
         fields = OrderedDict()
         # fields from parent classes:
         for base in reversed(bases):
-            if hasattr(base, '_fields'):
+            if hasattr(base, "_fields"):
                 fields.update(base._fields)
 
         to_be_replaced = object()
@@ -197,15 +203,15 @@ class DocumentMeta(with_metaclass(Prepareable, type)):
         options = {}
         # options from parent classes:
         for base in reversed(bases):
-            if hasattr(base, '_options'):
+            if hasattr(base, "_options"):
                 for key, value in inspect.getmembers(base._options):
-                    if not key.startswith('_') and value is not None:
+                    if not key.startswith("_") and value is not None:
                         options[key] = value
 
         # options from the current class:
-        if 'Options' in attrs:
-            for key, value in inspect.getmembers(attrs['Options']):
-                if not key.startswith('_') and value is not None:
+        if "Options" in attrs:
+            for key, value in inspect.getmembers(attrs["Options"]):
+                if not key.startswith("_") and value is not None:
                     # HACK HACK HACK
                     if inspect.ismethod(value) and value.im_self is None:
                         value = value.im_func
@@ -248,8 +254,7 @@ class Document(with_metaclass(DocumentMeta)):
 
         :param str role: A current role.
         """
-        for field in cls.resolve_and_walk(through_document_fields=True,
-                                          role=role, visited_documents=set([cls])):
+        for field in cls.resolve_and_walk(through_document_fields=True, role=role, visited_documents=set([cls])):
             if isinstance(field, DocumentField):
                 if field.document_cls == cls:
                     return True
@@ -263,7 +268,7 @@ class Document(with_metaclass(DocumentMeta)):
         definition_id = cls._options.definition_id
         if isinstance(definition_id, Resolvable):
             definition_id = definition_id.resolve(role).value
-        return definition_id or '{0}.{1}'.format(cls.__module__, cls.__name__)
+        return definition_id or "{0}.{1}".format(cls.__module__, cls.__name__)
 
     @classmethod
     def resolve_field(cls, field, role=DEFAULT_ROLE):
@@ -291,14 +296,13 @@ class Document(with_metaclass(DocumentMeta)):
         return cls._backend.resolve_and_iter_properties(role=role)
 
     @classmethod
-    def resolve_and_walk(cls, role=DEFAULT_ROLE, through_document_fields=False,
-                         visited_documents=frozenset()):
+    def resolve_and_walk(cls, role=DEFAULT_ROLE, through_document_fields=False, visited_documents=frozenset()):
         """The same as :meth:`.walk`, but :class:`resolvables <.Resolvable>` are
         resolved using ``role``.
         """
         fields = cls._backend.resolve_and_walk(
-            role=role, through_document_fields=through_document_fields,
-            visited_documents=visited_documents)
+            role=role, through_document_fields=through_document_fields, visited_documents=visited_documents
+        )
         next(fields)  # we don't want to yield _field itself
         return fields
 
@@ -324,8 +328,7 @@ class Document(with_metaclass(DocumentMeta)):
             recursion when ``through_document_field`` is ``True``.
         :returns: iterable of :class:`.BaseField`
         """
-        fields = cls._backend.walk(through_document_fields=through_document_fields,
-                                   visited_documents=visited_documents)
+        fields = cls._backend.walk(through_document_fields=through_document_fields, visited_documents=visited_documents)
         next(fields)  # we don't want to yield _field itself
         return fields
 
@@ -343,22 +346,20 @@ class Document(with_metaclass(DocumentMeta)):
         :rtype: dict or OrderedDict
         """
         definitions, schema = cls.get_definitions_and_schema(
-            role=role, ordered=ordered,
-            res_scope=ResolutionScope(base=cls._options.id, current=cls._options.id)
+            role=role, ordered=ordered, res_scope=ResolutionScope(base=cls._options.id, current=cls._options.id)
         )
         rv = OrderedDict() if ordered else {}
         if cls._options.id:
-            rv['id'] = cls._options.id
+            rv["id"] = cls._options.id
         if cls._options.schema_uri is not None:
-            rv['$schema'] = cls._options.schema_uri
+            rv["$schema"] = cls._options.schema_uri
         if definitions:
-            rv['definitions'] = definitions
+            rv["definitions"] = definitions
         rv.update(schema)
         return rv
 
     @classmethod
-    def get_definitions_and_schema(cls, role=DEFAULT_ROLE, res_scope=EMPTY_SCOPE,
-                                   ordered=False, ref_documents=None):
+    def get_definitions_and_schema(cls, role=DEFAULT_ROLE, res_scope=EMPTY_SCOPE, ordered=False, ref_documents=None):
         """Returns a tuple of two elements.
 
         The second element is a JSON schema of the document, and the first is
@@ -389,14 +390,16 @@ class Document(with_metaclass(DocumentMeta)):
 
         with processing(DocumentStep(cls, role=role)):
             definitions, schema = cls._backend.get_definitions_and_schema(
-                role=role, res_scope=res_scope, ordered=ordered, ref_documents=ref_documents)
+                role=role, res_scope=res_scope, ordered=ordered, ref_documents=ref_documents
+            )
 
         if cls._parent_documents:
             mode = _INHERITANCE_MODES[cls._options.inheritance_mode]
             contents = []
             for parent_document in cls._parent_documents:
                 parent_definitions, parent_schema = parent_document.get_definitions_and_schema(
-                    role=role, res_scope=res_scope, ordered=ordered, ref_documents=ref_documents)
+                    role=role, res_scope=res_scope, ordered=ordered, ref_documents=ref_documents
+                )
                 parent_definition_id = parent_document.get_definition_id()
                 definitions.update(parent_definitions)
                 definitions[parent_definition_id] = parent_schema

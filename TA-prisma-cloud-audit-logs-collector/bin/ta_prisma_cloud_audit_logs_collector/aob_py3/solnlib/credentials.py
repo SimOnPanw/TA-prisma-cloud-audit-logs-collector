@@ -75,26 +75,10 @@ class CredentialManager(object):
         "U``splunk_cred_sep``N``splunk_cred_sep``K``splunk_cred_sep``"
     )
 
-    def __init__(
-        self,
-        session_key,
-        app,
-        owner="nobody",
-        realm=None,
-        scheme=None,
-        host=None,
-        port=None,
-        **context
-    ):
+    def __init__(self, session_key, app, owner="nobody", realm=None, scheme=None, host=None, port=None, **context):
         self._realm = realm
         self.service = rest_client.SplunkRestClient(
-            session_key,
-            app,
-            owner=owner,
-            scheme=scheme,
-            host=host,
-            port=port,
-            **context
+            session_key, app, owner=owner, scheme=scheme, host=host, port=port, **context
         )
         self._storage_passwords = self.service.storage_passwords
 
@@ -124,9 +108,7 @@ class CredentialManager(object):
             if password["username"] == user and password["realm"] == self._realm:
                 return password["clear_password"]
 
-        raise CredentialNotExistException(
-            "Failed to get password of realm=%s, user=%s." % (self._realm, user)
-        )
+        raise CredentialNotExistException("Failed to get password of realm=%s, user=%s." % (self._realm, user))
 
     @retry(exceptions=[binding.HTTPError])
     def set_password(self, user, password):
@@ -184,10 +166,7 @@ class CredentialManager(object):
                     if pwd_stanza.realm == self._realm and pwd_stanza.username == user:
                         pwd_stanza.update(password=password)
                         return
-                raise ValueError(
-                    "Can not get the password object for realm: %s user: %s"
-                    % (self._realm, user)
-                )
+                raise ValueError("Can not get the password object for realm: %s user: %s" % (self._realm, user))
             else:
                 raise ex
 
@@ -219,15 +198,11 @@ class CredentialManager(object):
                 deleted = True
 
         if not deleted:
-            raise CredentialNotExistException(
-                "Failed to delete password of realm=%s, user=%s" % (self._realm, user)
-            )
+            raise CredentialNotExistException("Failed to delete password of realm=%s, user=%s" % (self._realm, user))
 
     def _get_all_passwords_in_realm(self):
         if self._realm:
-            all_passwords = self._storage_passwords.list(
-                count=-1, search="realm={}".format(self._realm)
-            )
+            all_passwords = self._storage_passwords.list(count=-1, search="realm={}".format(self._realm))
         else:
             all_passwords = self._storage_passwords.list(count=-1, search="")
         return all_passwords
@@ -315,16 +290,10 @@ def get_session_key(username, password, scheme=None, host=None, port=None, **con
     if any([scheme is None, host is None, port is None]):
         scheme, host, port = get_splunkd_access_info()
 
-    uri = "{scheme}://{host}:{port}/{endpoint}".format(
-        scheme=scheme, host=host, port=port, endpoint="services/auth/login"
-    )
-    _rest_client = rest_client.SplunkRestClient(
-        None, "-", "nobody", scheme, host, port, **context
-    )
+    uri = "{scheme}://{host}:{port}/{endpoint}".format(scheme=scheme, host=host, port=port, endpoint="services/auth/login")
+    _rest_client = rest_client.SplunkRestClient(None, "-", "nobody", scheme, host, port, **context)
     try:
-        response = _rest_client.http.post(
-            uri, username=username, password=password, output_mode="json"
-        )
+        response = _rest_client.http.post(uri, username=username, password=password, output_mode="json")
     except binding.HTTPError as e:
         if e.status != 401:
             raise

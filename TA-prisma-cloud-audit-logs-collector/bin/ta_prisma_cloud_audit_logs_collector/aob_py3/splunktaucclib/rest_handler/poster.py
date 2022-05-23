@@ -31,9 +31,7 @@ class PosterHandler(base.BaseRestHandler):
         admin.MConfigHandler.__init__(self, *args, **kwargs)
 
         # check required attributes
-        assert hasattr(self, "modelMap") and isinstance(
-            self.modelMap, dict
-        ), RH_Err.ctl(
+        assert hasattr(self, "modelMap") and isinstance(self.modelMap, dict), RH_Err.ctl(
             1002, msgx="{}.modelMap".format(self.__class__.__name__), shouldPrint=False
         )
 
@@ -51,11 +49,7 @@ class PosterHandler(base.BaseRestHandler):
 
         # load attributes from model
         obj = self.model()
-        attrs = {
-            attr: getattr(obj, attr, None)
-            for attr in dir(obj)
-            if not attr.startswith("__") and attr != "endpoint"
-        }
+        attrs = {attr: getattr(obj, attr, None) for attr in dir(obj) if not attr.startswith("__") and attr != "endpoint"}
         self.__dict__.update(attrs)
 
     def handleEdit(self, confInfo):
@@ -80,11 +74,7 @@ class PosterHandler(base.BaseRestHandler):
             if method not in self.allowedMethods:
                 RH_Err.ctl(1104, msgx="Unsupported method to be posted")
 
-            payload = {
-                key: val[0]
-                for key, val in self.callerArgs.data.items()
-                if key in self.retransmittedArgs
-            }
+            payload = {key: val[0] for key, val in self.callerArgs.data.items() if key in self.retransmittedArgs}
             headers = {
                 "Content-Type": "application/x-www-form-urlencoded",
             }
@@ -163,9 +153,7 @@ class PosterMapping(object):
         if resp is None or resp.status != 200:
             RH_Err.ctl(
                 1104,
-                msgx="failed to load proxy info. {err}".format(
-                    err=code_to_msg(resp, cont) if resp else cont
-                ),
+                msgx="failed to load proxy info. {err}".format(err=code_to_msg(resp, cont) if resp else cont),
             )
 
         try:

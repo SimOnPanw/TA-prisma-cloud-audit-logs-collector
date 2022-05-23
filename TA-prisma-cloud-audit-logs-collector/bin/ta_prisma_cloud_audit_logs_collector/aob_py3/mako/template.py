@@ -287,9 +287,7 @@ class Template(object):
         u_norm = os.path.normpath(u_norm)
         if u_norm.startswith(".."):
             raise exceptions.TemplateLookupException(
-                'Template uri "%s" is invalid - '
-                "it cannot be relative outside "
-                "of the root path." % self.uri
+                'Template uri "%s" is invalid - ' "it cannot be relative outside " "of the root path." % self.uri
             )
 
         self.input_encoding = input_encoding
@@ -302,14 +300,9 @@ class Template(object):
         self.module_writer = module_writer
 
         if compat.py3k and disable_unicode:
-            raise exceptions.UnsupportedError(
-                "Mako for Python 3 does not " "support disabling Unicode"
-            )
+            raise exceptions.UnsupportedError("Mako for Python 3 does not " "support disabling Unicode")
         elif output_encoding and disable_unicode:
-            raise exceptions.UnsupportedError(
-                "output_encoding must be set to "
-                "None when disable_unicode is used."
-            )
+            raise exceptions.UnsupportedError("output_encoding must be set to " "None when disable_unicode is used.")
         if default_filters is None:
             if compat.py3k or self.disable_unicode:
                 self.default_filters = ["str"]
@@ -338,18 +331,12 @@ class Template(object):
             if module_filename is not None:
                 path = module_filename
             elif module_directory is not None:
-                path = os.path.abspath(
-                    os.path.join(
-                        os.path.normpath(module_directory), u_norm + ".py"
-                    )
-                )
+                path = os.path.abspath(os.path.join(os.path.normpath(module_directory), u_norm + ".py"))
             else:
                 path = None
             module = self._compile_from_file(path, filename)
         else:
-            raise exceptions.RuntimeException(
-                "Template requires text or filename"
-            )
+            raise exceptions.RuntimeException("Template requires text or filename")
 
         self.module = module
         self.filename = filename
@@ -405,21 +392,14 @@ class Template(object):
         if path is not None:
             util.verify_directory(os.path.dirname(path))
             filemtime = os.stat(filename)[stat.ST_MTIME]
-            if (
-                not os.path.exists(path)
-                or os.stat(path)[stat.ST_MTIME] < filemtime
-            ):
+            if not os.path.exists(path) or os.stat(path)[stat.ST_MTIME] < filemtime:
                 data = util.read_file(filename)
-                _compile_module_file(
-                    self, data, filename, path, self.module_writer
-                )
+                _compile_module_file(self, data, filename, path, self.module_writer)
             module = compat.load_module(self.module_id, path)
             del sys.modules[self.module_id]
             if module._magic_number != codegen.MAGIC_NUMBER:
                 data = util.read_file(filename)
-                _compile_module_file(
-                    self, data, filename, path, self.module_writer
-                )
+                _compile_module_file(self, data, filename, path, self.module_writer)
                 module = compat.load_module(self.module_id, path)
                 del sys.modules[self.module_id]
             ModuleInfo(module, path, self, filename, None, None, None)
@@ -478,9 +458,7 @@ class Template(object):
     def render_unicode(self, *args, **data):
         """Render the output of this template as a unicode object."""
 
-        return runtime._render(
-            self, self.callable_, args, data, as_unicode=True
-        )
+        return runtime._render(self, self.callable_, args, data, as_unicode=True)
 
     def render_context(self, context, *args, **kwargs):
         """Render this :class:`.Template` with the given context.
@@ -520,17 +498,17 @@ class ModuleTemplate(Template):
 
     """A Template which is constructed given an existing Python module.
 
-        e.g.::
+    e.g.::
 
-        t = Template("this is a template")
-        f = file("mymodule.py", "w")
-        f.write(t.code)
-        f.close()
+    t = Template("this is a template")
+    f = file("mymodule.py", "w")
+    f.write(t.code)
+    f.close()
 
-        import mymodule
+    import mymodule
 
-        t = ModuleTemplate(mymodule)
-        print t.render()
+    t = ModuleTemplate(mymodule)
+    print t.render()
 
     """
 
@@ -567,14 +545,9 @@ class ModuleTemplate(Template):
         self.enable_loop = module._enable_loop
 
         if compat.py3k and disable_unicode:
-            raise exceptions.UnsupportedError(
-                "Mako for Python 3 does not " "support disabling Unicode"
-            )
+            raise exceptions.UnsupportedError("Mako for Python 3 does not " "support disabling Unicode")
         elif output_encoding and disable_unicode:
-            raise exceptions.UnsupportedError(
-                "output_encoding must be set to "
-                "None when disable_unicode is used."
-            )
+            raise exceptions.UnsupportedError("output_encoding must be set to " "None when disable_unicode is used.")
 
         self.module = module
         self.filename = template_filename
@@ -631,7 +604,7 @@ class ModuleInfo(object):
     memory, provides reverse lookups of template source, module
     source code based on a module's identifier.
 
-     """
+    """
 
     _modules = weakref.WeakValueDictionary()
 
@@ -657,13 +630,9 @@ class ModuleInfo(object):
 
     @classmethod
     def get_module_source_metadata(cls, module_source, full_line_map=False):
-        source_map = re.search(
-            r"__M_BEGIN_METADATA(.+?)__M_END_METADATA", module_source, re.S
-        ).group(1)
+        source_map = re.search(r"__M_BEGIN_METADATA(.+?)__M_END_METADATA", module_source, re.S).group(1)
         source_map = json.loads(source_map)
-        source_map["line_map"] = dict(
-            (int(k), int(v)) for k, v in source_map["line_map"].items()
-        )
+        source_map["line_map"] = dict((int(k), int(v)) for k, v in source_map["line_map"].items())
         if full_line_map:
             f_line_map = source_map["full_line_map"] = []
             line_map = source_map["line_map"]
@@ -685,12 +654,8 @@ class ModuleInfo(object):
     @property
     def source(self):
         if self.template_source is not None:
-            if self.module._source_encoding and not isinstance(
-                self.template_source, compat.text_type
-            ):
-                return self.template_source.decode(
-                    self.module._source_encoding
-                )
+            if self.module._source_encoding and not isinstance(self.template_source, compat.text_type):
+                return self.template_source.decode(self.module._source_encoding)
             else:
                 return self.template_source
         else:
@@ -749,9 +714,7 @@ def _compile_text(template, text, filename):
 
 
 def _compile_module_file(template, text, filename, outputpath, module_writer):
-    source, lexer = _compile(
-        template, text, filename, generate_magic_comment=True
-    )
+    source, lexer = _compile(template, text, filename, generate_magic_comment=True)
 
     if isinstance(source, compat.text_type):
         source = source.encode(lexer.encoding or "ascii")

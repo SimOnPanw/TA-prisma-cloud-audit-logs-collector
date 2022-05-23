@@ -46,10 +46,7 @@ class Suite(object):
         remotes = subprocess.check_output(
             [sys.executable, jsonschema_suite.path, "remotes"],
         )
-        return {
-            "http://localhost:1234/" + name: schema
-            for name, schema in json.loads(remotes.decode("utf-8")).items()
-        }
+        return {"http://localhost:1234/" + name: schema for name, schema in json.loads(remotes.decode("utf-8")).items()}
 
     def benchmark(self, runner):  # pragma: no cover
         for name in validators:
@@ -115,10 +112,7 @@ class Version(object):
     def to_unittest_testcase(self, *suites, **kwargs):
         name = kwargs.pop("name", "Test" + self.name.title())
         methods = {
-            test.method_name: test.to_unittest_method(**kwargs)
-            for suite in suites
-            for tests in suite
-            for test in tests
+            test.method_name: test.to_unittest_method(**kwargs) for suite in suites for tests in suite for test in tests
         }
         cls = type(name, (unittest.TestCase,), methods)
 
@@ -142,7 +136,8 @@ class Version(object):
                     schema=each["schema"],
                     remotes=self._remotes,
                     **test
-                ) for test in each["tests"]
+                )
+                for test in each["tests"]
             )
 
 
@@ -191,9 +186,12 @@ class _Test(object):
 
     def to_unittest_method(self, skip=lambda test: None, **kwargs):
         if self.valid:
+
             def fn(this):
                 self.validate(**kwargs)
+
         else:
+
             def fn(this):
                 with this.assertRaises(jsonschema.ValidationError):
                     self.validate(**kwargs)
@@ -208,13 +206,7 @@ class _Test(object):
             store=self._remotes,
             id_of=Validator.ID_OF,
         )
-        jsonschema.validate(
-            instance=self.data,
-            schema=self.schema,
-            cls=Validator,
-            resolver=resolver,
-            **kwargs
-        )
+        jsonschema.validate(instance=self.data, schema=self.schema, cls=Validator, resolver=resolver, **kwargs)
 
     def validate_ignoring_errors(self, Validator):  # pragma: no cover
         try:

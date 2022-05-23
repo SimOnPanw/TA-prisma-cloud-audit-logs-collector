@@ -119,9 +119,7 @@ class Extension(with_metaclass(ExtensionRegistry, object)):
         """
         return nodes.ExtensionAttribute(self.identifier, name, lineno=lineno)
 
-    def call_method(
-        self, name, args=None, kwargs=None, dyn_args=None, dyn_kwargs=None, lineno=None
-    ):
+    def call_method(self, name, args=None, kwargs=None, dyn_args=None, dyn_kwargs=None, lineno=None):
         """Call a method of the extension.  This is a shortcut for
         :meth:`attr` + :class:`jinja2.nodes.Call`.
         """
@@ -205,9 +203,7 @@ class InternationalizationExtension(Extension):
         self._install_callables(gettext, ngettext, newstyle)
 
     def _install_null(self, newstyle=None):
-        self._install_callables(
-            lambda x: x, lambda s, p, n: (n != 1 and (p,) or (s,))[0], newstyle
-        )
+        self._install_callables(lambda x: x, lambda s, p, n: (n != 1 and (p,) or (s,))[0], newstyle)
 
     def _install_callables(self, gettext, ngettext, newstyle=None):
         if newstyle is not None:
@@ -268,9 +264,7 @@ class InternationalizationExtension(Extension):
                 if isinstance(var, nodes.Call):
                     plural_expr = nodes.Name("_trans", "load")
                     variables[name.value] = plural_expr
-                    plural_expr_assignment = nodes.Assign(
-                        nodes.Name("_trans", "store"), var
-                    )
+                    plural_expr_assignment = nodes.Assign(nodes.Name("_trans", "store"), var)
                 else:
                     plural_expr = var
                 num_called_num = name.value == "num"
@@ -365,12 +359,8 @@ class InternationalizationExtension(Extension):
                 elif parser.stream.current.test("name:pluralize"):
                     if allow_pluralize:
                         break
-                    parser.fail(
-                        "a translatable section can have only one pluralize section"
-                    )
-                parser.fail(
-                    "control structures in translatable sections are not allowed"
-                )
+                    parser.fail("a translatable section can have only one pluralize section")
+                parser.fail("control structures in translatable sections are not allowed")
             elif parser.stream.eos:
                 parser.fail("unclosed translation block")
             else:
@@ -378,9 +368,7 @@ class InternationalizationExtension(Extension):
 
         return referenced, concat(buf)
 
-    def _make_node(
-        self, singular, plural, variables, plural_expr, vars_referenced, num_called_num
-    ):
+    def _make_node(self, singular, plural, variables, plural_expr, vars_referenced, num_called_num):
         """Generates a useful node from the data provided."""
         # no variables referenced?  no need to escape for old style
         # gettext invocations only if there are vars.
@@ -424,12 +412,7 @@ class InternationalizationExtension(Extension):
             if variables:
                 node = nodes.Mod(
                     node,
-                    nodes.Dict(
-                        [
-                            nodes.Pair(nodes.Const(key), value)
-                            for key, value in variables.items()
-                        ]
-                    ),
+                    nodes.Dict([nodes.Pair(nodes.Const(key), value) for key, value in variables.items()]),
                 )
         return nodes.Output([node])
 
@@ -546,10 +529,7 @@ def extract_from_ast(node, gettext_functions=GETTEXT_FUNCTIONS, babel_style=True
     extraction interface or extract comments yourself.
     """
     for node in node.find_all(nodes.Call):
-        if (
-            not isinstance(node.node, nodes.Name)
-            or node.node.name not in gettext_functions
-        ):
+        if not isinstance(node.node, nodes.Name) or node.node.name not in gettext_functions:
             continue
 
         strings = []
@@ -593,9 +573,7 @@ class _CommentFinder(object):
 
     def find_backwards(self, offset):
         try:
-            for _, token_type, token_value in reversed(
-                self.tokens[self.offset : offset]
-            ):
+            for _, token_type, token_value in reversed(self.tokens[self.offset : offset]):
                 if token_type in ("comment", "linecomment"):
                     try:
                         prefix, comment = token_value.split(None, 1)

@@ -17,7 +17,7 @@ from splunk_aoblib.rest_helper import TARestHelper
 from splunk_aoblib.setup_util import Setup_Util
 
 DATA_INPUTS_OPTIONS = "data_inputs_options"
-AOB_TEST_FLAG = 'AOB_TEST'
+AOB_TEST_FLAG = "AOB_TEST"
 FIELD_TYPE = "type"
 FIELD_FORMAT = "format_type"
 CUSTOMIZED_VAR = "customized_var"
@@ -26,16 +26,19 @@ TYPE_ACCOUNT = "global_account"
 
 
 class BaseModInput(smi.Script):
-    '''
+    """
     This is a modular input wrapper, which provides some helper
     functions to read the paramters from setup pages and the arguments
     from input definition
-    '''
-    LogLevelMapping = {'debug': logging.DEBUG,
-                       'info': logging.INFO,
-                       'warning': logging.WARNING,
-                       'error': logging.ERROR,
-                       'critical': logging.CRITICAL}
+    """
+
+    LogLevelMapping = {
+        "debug": logging.DEBUG,
+        "info": logging.INFO,
+        "warning": logging.WARNING,
+        "error": logging.ERROR,
+        "critical": logging.CRITICAL,
+    }
 
     def __init__(self, app_namespace, input_name, use_single_instance=False):
         super(BaseModInput, self).__init__()
@@ -46,8 +49,7 @@ class BaseModInput(smi.Script):
         self.context_meta = {}
         self.namespace = app_namespace
         # redirect all the logging to one file
-        Logs.set_context(namespace=app_namespace,
-                         root_logger_log_file=input_name)
+        Logs.set_context(namespace=app_namespace, root_logger_log_file=input_name)
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)
         self.rest_helper = TARestHelper(self.logger)
@@ -103,7 +105,7 @@ class BaseModInput(smi.Script):
         self.context_meta = inputs.metadata
         # init setup util
         uri = inputs.metadata["server_uri"]
-        session_key = inputs.metadata['session_key']
+        session_key = inputs.metadata["session_key"]
         self.setup_util = Setup_Util(uri, session_key, self.logger)
 
         input_definition = smi.input_definition.InputDefinition()
@@ -113,6 +115,7 @@ class BaseModInput(smi.Script):
             self.parse_input_args(input_definition)
         except Exception as e:
             import traceback
+
             self.log_error(traceback.format_exc())
             print(traceback.format_exc(), file=sys.stderr)
             # print >> sys.stderr, traceback.format_exc()
@@ -123,12 +126,13 @@ class BaseModInput(smi.Script):
         try:
             self.set_log_level(self.log_level)
         except:
-            self.log_debug('set log level fails.')
+            self.log_debug("set log level fails.")
         try:
             self.collect_events(ew)
         except Exception as e:
             import traceback
-            self.log_error('Get error when collecting events.\n' + traceback.format_exc())
+
+            self.log_error("Get error when collecting events.\n" + traceback.format_exc())
             print(traceback.format_exc(), file=sys.stderr)
             # print >> sys.stderr, traceback.format_exc()
             raise RuntimeError(str(e))
@@ -148,7 +152,7 @@ class BaseModInput(smi.Script):
         :param inputs: An ``InputDefinition`` object.
         :return:
         """
-        if os.environ.get(AOB_TEST_FLAG, 'false') == 'true':
+        if os.environ.get(AOB_TEST_FLAG, "false") == "true":
             self._parse_input_args_from_env(inputs)
         else:
             self._parse_input_args_from_global_config(inputs)
@@ -161,14 +165,15 @@ class BaseModInput(smi.Script):
         :param inputs:
         """
         dirname = os.path.dirname
-        config_path = os.path.join(dirname(dirname(dirname(dirname(dirname(__file__))))), 'appserver', 'static', 'js', 'build',
-                                   'globalConfig.json')
+        config_path = os.path.join(
+            dirname(dirname(dirname(dirname(dirname(__file__))))), "appserver", "static", "js", "build", "globalConfig.json"
+        )
         with open(config_path) as f:
-            schema_json = ''.join([l for l in f])
+            schema_json = "".join([l for l in f])
         global_schema = GlobalConfigSchema(json.loads(schema_json))
 
         uri = inputs.metadata["server_uri"]
-        session_key = inputs.metadata['session_key']
+        session_key = inputs.metadata["session_key"]
         global_config = GlobalConfig(uri, session_key, global_schema)
         ucc_inputs = global_config.inputs.load(input_type=self.input_type)
         all_stanzas = ucc_inputs.get(self.input_type, {})
@@ -182,9 +187,9 @@ class BaseModInput(smi.Script):
         checkbox_fields = self.get_checkbox_fields()
         self.input_stanzas = {}
         for stanza in all_stanzas:
-            full_stanza_name = '{}://{}'.format(self.input_type, stanza.get('name'))
+            full_stanza_name = "{}://{}".format(self.input_type, stanza.get("name"))
             if full_stanza_name in inputs.inputs:
-                if stanza.get('disabled', False):
+                if stanza.get("disabled", False):
                     raise RuntimeError("Running disabled data input!")
                 stanza_params = {}
                 for k, v in stanza.items():
@@ -194,14 +199,14 @@ class BaseModInput(smi.Script):
                         stanza_params[k] = copy.deepcopy(v)
                     else:
                         stanza_params[k] = v
-                self.input_stanzas[stanza.get('name')] = stanza_params
+                self.input_stanzas[stanza.get("name")] = stanza_params
 
     def _parse_input_args_from_env(self, inputs):
         """Parse input arguments from os environment. This is used for testing inputs.
 
         :param inputs:
         """
-        data_inputs_options = json.loads(os.environ.get(DATA_INPUTS_OPTIONS, '[]'))
+        data_inputs_options = json.loads(os.environ.get(DATA_INPUTS_OPTIONS, "[]"))
         account_fields = self.get_account_fields()
         checkbox_fields = self.get_checkbox_fields()
         self.input_stanzas = {}
@@ -373,8 +378,9 @@ class BaseModInput(smi.Script):
         :param unbroken: ``boolean``, Is this event completely encapsulated in this ``Event`` object?
         :return: ``Event`` object
         """
-        return smi.Event(data=data, time=time, host=host, index=index,
-                         source=source, sourcetype=sourcetype, done=done, unbroken=unbroken)
+        return smi.Event(
+            data=data, time=time, host=host, index=index, source=source, sourcetype=sourcetype, done=done, unbroken=unbroken
+        )
 
     # Basic get functions. To get params in input stanza.
     def get_input_type(self):
@@ -427,8 +433,7 @@ class BaseModInput(smi.Script):
         :return: `dict` or `string` or None
         """
         if input_stanza_name is None:
-            args_dict = {k: args[
-                arg_name] for k, args in self.input_stanzas.items() if arg_name in args}
+            args_dict = {k: args[arg_name] for k, args in self.input_stanzas.items() if arg_name in args}
             if self.use_single_instance:
                 return args_dict
             else:
@@ -444,7 +449,7 @@ class BaseModInput(smi.Script):
         :param input_stanza_name: `string`
         :return: `string` output index
         """
-        return self.get_arg('index', input_stanza_name)
+        return self.get_arg("index", input_stanza_name)
 
     def get_sourcetype(self, input_stanza_name=None):
         """Get sourcetype to index.
@@ -452,11 +457,22 @@ class BaseModInput(smi.Script):
         :param input_stanza_name: `string`
         :return: the sourcetype to index to
         """
-        return self.get_arg('sourcetype', input_stanza_name)
+        return self.get_arg("sourcetype", input_stanza_name)
 
     # HTTP request helper
-    def send_http_request(self, url, method, parameters=None, payload=None, headers=None, cookies=None, verify=True,
-                          cert=None, timeout=None, use_proxy=True):
+    def send_http_request(
+        self,
+        url,
+        method,
+        parameters=None,
+        payload=None,
+        headers=None,
+        cookies=None,
+        verify=True,
+        cert=None,
+        timeout=None,
+        use_proxy=True,
+    ):
         """Send http request and get response.
 
         :param url: URL for the new Request object.
@@ -472,43 +488,54 @@ class BaseModInput(smi.Script):
         :param use_proxy: (optional) whether to use proxy. If set to True, proxy in global setting will be used.
         :return: Response
         """
-        return self.rest_helper.send_http_request(url=url, method=method, parameters=parameters, payload=payload,
-                                                  headers=headers, cookies=cookies, verify=verify, cert=cert,
-                                                  timeout=timeout,
-                                                  proxy_uri=self._get_proxy_uri() if use_proxy else None)
+        return self.rest_helper.send_http_request(
+            url=url,
+            method=method,
+            parameters=parameters,
+            payload=payload,
+            headers=headers,
+            cookies=cookies,
+            verify=verify,
+            cert=cert,
+            timeout=timeout,
+            proxy_uri=self._get_proxy_uri() if use_proxy else None,
+        )
 
     def _get_proxy_uri(self):
         uri = None
         proxy = self.get_proxy()
-        if proxy and proxy.get('proxy_url') and proxy.get('proxy_type'):
-            uri = proxy['proxy_url']
-            if proxy.get('proxy_port'):
-                uri = '{0}:{1}'.format(uri, proxy.get('proxy_port'))
-            if proxy.get('proxy_username') and proxy.get('proxy_password'):
-                uri = '{0}://{1}:{2}@{3}/'.format(proxy['proxy_type'], proxy[
-                    'proxy_username'], proxy['proxy_password'], uri)
+        if proxy and proxy.get("proxy_url") and proxy.get("proxy_type"):
+            uri = proxy["proxy_url"]
+            if proxy.get("proxy_port"):
+                uri = "{0}:{1}".format(uri, proxy.get("proxy_port"))
+            if proxy.get("proxy_username") and proxy.get("proxy_password"):
+                uri = "{0}://{1}:{2}@{3}/".format(proxy["proxy_type"], proxy["proxy_username"], proxy["proxy_password"], uri)
             else:
-                uri = '{0}://{1}'.format(proxy['proxy_type'], uri)
+                uri = "{0}://{1}".format(proxy["proxy_type"], uri)
         return uri
 
     # Checkpointing related functions
     def _init_ckpt(self):
         if self.ckpt is None:
-            if 'AOB_TEST' in os.environ:
-                ckpt_dir = self.context_meta.get('checkpoint_dir', tempfile.mkdtemp())
+            if "AOB_TEST" in os.environ:
+                ckpt_dir = self.context_meta.get("checkpoint_dir", tempfile.mkdtemp())
                 if not os.path.exists(ckpt_dir):
                     os.makedirs(ckpt_dir)
                 self.ckpt = checkpointer.FileCheckpointer(ckpt_dir)
             else:
-                if 'server_uri' not in self.context_meta:
-                    raise ValueError('server_uri not found in input meta.')
-                if 'session_key' not in self.context_meta:
-                    raise ValueError('session_key not found in input meta.')
-                dscheme, dhost, dport = sutils.extract_http_scheme_host_port(self.context_meta[
-                                                                                 'server_uri'])
-                self.ckpt = checkpointer.KVStoreCheckpointer(self.app + "_checkpointer",
-                                                             self.context_meta['session_key'], self.app,
-                                                             scheme=dscheme, host=dhost, port=dport)
+                if "server_uri" not in self.context_meta:
+                    raise ValueError("server_uri not found in input meta.")
+                if "session_key" not in self.context_meta:
+                    raise ValueError("session_key not found in input meta.")
+                dscheme, dhost, dport = sutils.extract_http_scheme_host_port(self.context_meta["server_uri"])
+                self.ckpt = checkpointer.KVStoreCheckpointer(
+                    self.app + "_checkpointer",
+                    self.context_meta["session_key"],
+                    self.app,
+                    scheme=dscheme,
+                    host=dhost,
+                    port=dport,
+                )
 
     def get_check_point(self, key):
         """Get checkpoint.

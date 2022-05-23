@@ -24,11 +24,7 @@ def split_template_path(template):
     """
     pieces = []
     for piece in template.split("/"):
-        if (
-            path.sep in piece
-            or (path.altsep and path.altsep in piece)
-            or piece == path.pardir
-        ):
+        if path.sep in piece or (path.altsep and path.altsep in piece) or piece == path.pardir:
             raise TemplateNotFound(template)
         elif piece and piece != ".":
             pieces.append(piece)
@@ -87,9 +83,7 @@ class BaseLoader(object):
         the template will be reloaded.
         """
         if not self.has_source_access:
-            raise RuntimeError(
-                "%s cannot provide access to the source" % self.__class__.__name__
-            )
+            raise RuntimeError("%s cannot provide access to the source" % self.__class__.__name__)
         raise TemplateNotFound(template)
 
     def list_templates(self):
@@ -133,9 +127,7 @@ class BaseLoader(object):
             bucket.code = code
             bcc.set_bucket(bucket)
 
-        return environment.template_class.from_code(
-            environment, code, globals, uptodate
-        )
+        return environment.template_class.from_code(environment, code, globals, uptodate)
 
 
 class FileSystemLoader(BaseLoader):
@@ -161,9 +153,7 @@ class FileSystemLoader(BaseLoader):
     """
 
     def __init__(self, searchpath, encoding="utf-8", followlinks=False):
-        if not isinstance(searchpath, abc.Iterable) or isinstance(
-            searchpath, string_types
-        ):
+        if not isinstance(searchpath, abc.Iterable) or isinstance(searchpath, string_types):
             searchpath = [searchpath]
 
         # In Python 3.5, os.path.join doesn't support Path. This can be
@@ -202,11 +192,7 @@ class FileSystemLoader(BaseLoader):
             walk_dir = os.walk(searchpath, followlinks=self.followlinks)
             for dirpath, _, filenames in walk_dir:
                 for filename in filenames:
-                    template = (
-                        os.path.join(dirpath, filename)[len(searchpath) :]
-                        .strip(os.path.sep)
-                        .replace(os.path.sep, "/")
-                    )
+                    template = os.path.join(dirpath, filename)[len(searchpath) :].strip(os.path.sep).replace(os.path.sep, "/")
                     if template[:2] == "./":
                         template = template[2:]
                     if template not in found:
@@ -466,9 +452,7 @@ class ModuleLoader(BaseLoader):
 
         mod.__path__ = [fspath(p) for p in path]
 
-        sys.modules[package_name] = weakref.proxy(
-            mod, lambda x: sys.modules.pop(package_name, None)
-        )
+        sys.modules[package_name] = weakref.proxy(mod, lambda x: sys.modules.pop(package_name, None))
 
         # the only strong reference, the sys.modules entry is weak
         # so that the garbage collector can remove it once the
@@ -499,6 +483,4 @@ class ModuleLoader(BaseLoader):
             # on the module object we have stored on the loader.
             sys.modules.pop(module, None)
 
-        return environment.template_class.from_module_dict(
-            environment, mod.__dict__, globals
-        )
+        return environment.template_class.from_module_dict(environment, mod.__dict__, globals)

@@ -142,7 +142,7 @@ class TADataLoader(object):
 
 
 class GlobalDataLoader(object):
-    """ Singleton, inited when started"""
+    """Singleton, inited when started"""
 
     __instance = None
 

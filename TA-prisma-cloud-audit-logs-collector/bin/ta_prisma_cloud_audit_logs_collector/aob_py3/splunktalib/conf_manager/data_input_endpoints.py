@@ -15,9 +15,7 @@ def _input_endpoint_ns(uri, owner, app, input_type):
     return INPUT_ENDPOINT % (uri, owner, app, input_type)
 
 
-def reload_data_input(
-    splunkd_uri, session_key, owner, app_name, input_type, throw=False
-):
+def reload_data_input(splunkd_uri, session_key, owner, app_name, input_type, throw=False):
     """
     :param splunkd_uri: splunkd uri, e.g. https://127.0.0.1:8089
     :param session_key: splunkd session key
@@ -38,9 +36,7 @@ def reload_data_input(
             raise
 
 
-def create_data_input(
-    splunkd_uri, session_key, owner, app_name, input_type, name, key_values
-):
+def create_data_input(splunkd_uri, session_key, owner, app_name, input_type, name, key_values):
     """
     :param splunkd_uri: splunkd uri, e.g. https://127.0.0.1:8089
     :param session_key: splunkd session key
@@ -95,9 +91,7 @@ def get_data_input(splunkd_uri, session_key, owner, app_name, input_type, name=N
     return xdp.parse_conf_xml_dom(content)
 
 
-def update_data_input(
-    splunkd_uri, session_key, owner, app_name, input_type, name, key_values
-):
+def update_data_input(splunkd_uri, session_key, owner, app_name, input_type, name, key_values):
     """
     :param splunkd_uri: splunkd uri, e.g. https://127.0.0.1:8089
     :param session_key: splunkd session key
@@ -148,9 +142,7 @@ def delete_data_input(splunkd_uri, session_key, owner, app_name, input_type, nam
     content_request(uri, session_key, "DELETE", None, msg)
 
 
-def operate_data_input(
-    splunkd_uri, session_key, owner, app_name, input_type, name, operation
-):
+def operate_data_input(splunkd_uri, session_key, owner, app_name, input_type, name, operation):
     """
     :param splunkd_uri: splunkd uri, e.g. https://127.0.0.1:8089
     :param session_key: splunkd session key

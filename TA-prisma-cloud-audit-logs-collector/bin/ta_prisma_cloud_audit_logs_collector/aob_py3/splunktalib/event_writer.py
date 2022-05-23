@@ -89,9 +89,7 @@ class EventWriter(object):
                 self._exception = True
                 break
 
-        log.logger.info(
-            "Event writer stopped, queue leftsize={}".format(event_queue.qsize())
-        )
+        log.logger.info("Event writer stopped, queue leftsize={}".format(event_queue.qsize()))
 
 
 class EventWriterWithCheckpoint(EventWriter):
@@ -146,6 +144,4 @@ class EventWriterWithCheckpoint(EventWriter):
                 self._exception = True
                 break
 
-        log.logger.info(
-            "Event writer stopped, queue leftsize={}".format(event_queue.qsize())
-        )
+        log.logger.info("Event writer stopped, queue leftsize={}".format(event_queue.qsize()))

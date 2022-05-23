@@ -4,9 +4,9 @@ import collections
 from ._compat import OrderedDict, iteritems, string_types
 
 
-__all__ = ['all_', 'not_', 'Var', 'Scope', 'DEFAULT_ROLE']
+__all__ = ["all_", "not_", "Var", "Scope", "DEFAULT_ROLE"]
 
-DEFAULT_ROLE = 'default'
+DEFAULT_ROLE = "default"
 """A default role."""
 
 
@@ -39,12 +39,12 @@ def construct_matcher(matcher):
         return lambda r: r in choices
     else:
         raise ValueError(
-            'Unknown matcher type {} ({!r}). Only callables, '
-            'strings and iterables are supported.'.format(type(matcher), matcher)
+            "Unknown matcher type {} ({!r}). Only callables, "
+            "strings and iterables are supported.".format(type(matcher), matcher)
         )
 
 
-Resolution = collections.namedtuple('Resolution', ['value', 'role'])
+Resolution = collections.namedtuple("Resolution", ["value", "role"])
 """
 A resolution result, a :class:`~collections.namedtuple`.
 
@@ -211,11 +211,11 @@ class Scope(object):
 
     def __init__(self, matcher):
         # names are chosen to avoid clashing with user field names
-        super(Scope, self).__setattr__('__fields__', OrderedDict())
-        super(Scope, self).__setattr__('__matcher__', matcher)
+        super(Scope, self).__setattr__("__fields__", OrderedDict())
+        super(Scope, self).__setattr__("__matcher__", matcher)
 
     def __getattr__(self, key):
-        odict = super(Scope, self).__getattribute__('__fields__')
+        odict = super(Scope, self).__getattribute__("__fields__")
         if key in odict:
             return odict[key]
         return super(Scope, self).__getattribute__(key)

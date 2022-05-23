@@ -119,9 +119,7 @@ class TimerQueueStruct(object):
         try:
             self._timers.remove(timer)
         except ValueError:
-            logging.info(
-                "Timer=%s is not in queue, move it to cancelling " "list", timer.ident
-            )
+            logging.info("Timer=%s is not in queue, move it to cancelling " "list", timer.ident)
         else:
             self._cancelling_timers[timer.ident] = timer
 

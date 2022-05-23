@@ -36,16 +36,13 @@ class CheckpointManagerAdapter(tacm.TACheckPointMgr):
 
     def save(self, ctx):
         """Save checkpoint"""
-        super(CheckpointManagerAdapter, self).update_ckpt(
-            ckpt=self.content.render(ctx),
-            namespaces=self._namespaces_for(ctx)
-        )
+        super(CheckpointManagerAdapter, self).update_ckpt(ckpt=self.content.render(ctx), namespaces=self._namespaces_for(ctx))
 
     def load(self, ctx):
         """Load checkpoint"""
         namespaces = self._namespaces_for(ctx)
         checkpoint = super(CheckpointManagerAdapter, self).get_ckpt(namespaces)
         if checkpoint is None:
-            logger.info('No existing checkpoint found')
+            logger.info("No existing checkpoint found")
             checkpoint = {}
         return checkpoint

@@ -147,12 +147,8 @@ def _asdict_anything(
         df = dict_factory
         rv = df(
             (
-                _asdict_anything(
-                    kk, filter, df, retain_collection_types, value_serializer
-                ),
-                _asdict_anything(
-                    vv, filter, df, retain_collection_types, value_serializer
-                ),
+                _asdict_anything(kk, filter, df, retain_collection_types, value_serializer),
+                _asdict_anything(vv, filter, df, retain_collection_types, value_serializer),
             )
             for kk, vv in iteritems(val)
         )
@@ -305,11 +301,7 @@ def assoc(inst, **changes):
     for k, v in iteritems(changes):
         a = getattr(attrs, k, NOTHING)
         if a is NOTHING:
-            raise AttrsAttributeNotFoundError(
-                "{k} is not an attrs attribute on {cl}.".format(
-                    k=k, cl=new.__class__
-                )
-            )
+            raise AttrsAttributeNotFoundError("{k} is not an attrs attribute on {cl}.".format(k=k, cl=new.__class__))
         _obj_setattr(new, k, v)
     return new
 

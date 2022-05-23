@@ -18,12 +18,7 @@ def escape(s: t.Any) -> Markup:
         return Markup(s.__html__())
 
     return Markup(
-        str(s)
-        .replace("&", "&amp;")
-        .replace(">", "&gt;")
-        .replace("<", "&lt;")
-        .replace("'", "&#39;")
-        .replace('"', "&#34;")
+        str(s).replace("&", "&amp;").replace(">", "&gt;").replace("<", "&lt;").replace("'", "&#39;").replace('"', "&#34;")
     )
 
 
@@ -67,8 +62,7 @@ def soft_unicode(s: t.Any) -> str:
     import warnings
 
     warnings.warn(
-        "'soft_unicode' has been renamed to 'soft_str'. The old name"
-        " will be removed in MarkupSafe 2.1.",
+        "'soft_unicode' has been renamed to 'soft_str'. The old name" " will be removed in MarkupSafe 2.1.",
         DeprecationWarning,
         stacklevel=2,
     )

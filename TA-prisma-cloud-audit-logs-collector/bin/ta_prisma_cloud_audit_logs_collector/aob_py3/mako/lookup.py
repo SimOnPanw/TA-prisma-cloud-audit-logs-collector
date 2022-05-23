@@ -34,7 +34,7 @@ class TemplateCollection(object):
     :class:`.TemplateCollection` is an abstract class,
     with the usual default implementation being :class:`.TemplateLookup`.
 
-     """
+    """
 
     def has_template(self, uri):
         """Return ``True`` if this :class:`.TemplateLookup` is
@@ -68,7 +68,7 @@ class TemplateCollection(object):
 
     def filename_to_uri(self, uri, filename):
         """Convert the given ``filename`` to a URI relative to
-           this :class:`.TemplateCollection`."""
+        this :class:`.TemplateCollection`."""
 
         return uri
 
@@ -185,9 +185,7 @@ class TemplateLookup(TemplateCollection):
         include_error_handler=None,
     ):
 
-        self.directories = [
-            posixpath.normpath(d) for d in util.to_list(directories, ())
-        ]
+        self.directories = [posixpath.normpath(d) for d in util.to_list(directories, ())]
         self.module_directory = module_directory
         self.modulename_callable = modulename_callable
         self.filesystem_checks = filesystem_checks
@@ -259,9 +257,7 @@ class TemplateLookup(TemplateCollection):
                 if os.path.isfile(srcfile):
                     return self._load(srcfile, uri)
             else:
-                raise exceptions.TopLevelLookupException(
-                    "Cant locate template for uri %r" % uri
-                )
+                raise exceptions.TopLevelLookupException("Cant locate template for uri %r" % uri)
 
     def adjust_uri(self, uri, relativeto):
         """Adjust the given ``uri`` based on the given relative URI."""
@@ -272,9 +268,7 @@ class TemplateLookup(TemplateCollection):
 
         if uri[0] != "/":
             if relativeto is not None:
-                v = self._uri_cache[key] = posixpath.join(
-                    posixpath.dirname(relativeto), uri
-                )
+                v = self._uri_cache[key] = posixpath.join(posixpath.dirname(relativeto), uri)
             else:
                 v = self._uri_cache[key] = "/" + uri
         else:
@@ -283,7 +277,7 @@ class TemplateLookup(TemplateCollection):
 
     def filename_to_uri(self, filename):
         """Convert the given ``filename`` to a URI relative to
-           this :class:`.TemplateCollection`."""
+        this :class:`.TemplateCollection`."""
 
         try:
             return self._uri_cache[filename]
@@ -294,7 +288,7 @@ class TemplateLookup(TemplateCollection):
 
     def _relativeize(self, filename):
         """Return the portion of a filename that is 'relative'
-           to the directories in this lookup.
+        to the directories in this lookup.
 
         """
 
@@ -349,9 +343,7 @@ class TemplateLookup(TemplateCollection):
                 return template
         except OSError:
             self._collection.pop(uri, None)
-            raise exceptions.TemplateLookupException(
-                "Cant locate template for uri %r" % uri
-            )
+            raise exceptions.TemplateLookupException("Cant locate template for uri %r" % uri)
 
     def put_string(self, uri, text):
         """Place a new :class:`.Template` object into this
@@ -359,9 +351,7 @@ class TemplateLookup(TemplateCollection):
         ``text``.
 
         """
-        self._collection[uri] = Template(
-            text, lookup=self, uri=uri, **self.template_args
-        )
+        self._collection[uri] = Template(text, lookup=self, uri=uri, **self.template_args)
 
     def put_template(self, uri, template):
         """Place a new :class:`.Template` object into this

@@ -89,10 +89,7 @@ def cmp_using(
         if not has_eq_function:
             # functools.total_ordering requires __eq__ to be defined,
             # so raise early error here to keep a nice stack.
-            raise ValueError(
-                "eq must be define is order to complete ordering from "
-                "lt, le, gt, ge."
-            )
+            raise ValueError("eq must be define is order to complete ordering from " "lt, le, gt, ge.")
         type_ = functools.total_ordering(type_)
 
     return type_
@@ -128,9 +125,7 @@ def _make_operator(name, func):
         return result
 
     method.__name__ = "__%s__" % (name,)
-    method.__doc__ = "Return a %s b.  Computed by attrs." % (
-        _operation_names[name],
-    )
+    method.__doc__ = "Return a %s b.  Computed by attrs." % (_operation_names[name],)
 
     return method
 

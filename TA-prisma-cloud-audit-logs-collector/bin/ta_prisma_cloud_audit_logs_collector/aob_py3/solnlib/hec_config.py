@@ -29,12 +29,7 @@ class HECConfig(object):
 
     def __init__(self, session_key, scheme=None, host=None, port=None, **context):
         self._rest_client = rest_client.SplunkRestClient(
-            session_key,
-            "splunk_httpinput",
-            scheme=scheme,
-            host=host,
-            port=port,
-            **context
+            session_key, "splunk_httpinput", scheme=scheme, host=host, port=port, **context
         )
 
     @retry(exceptions=[binding.HTTPError])

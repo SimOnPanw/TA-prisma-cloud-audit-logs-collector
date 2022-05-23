@@ -15,10 +15,8 @@ class BabelMakoExtractor(MessageExtractor):
         self.keywords = keywords
         self.options = options
         self.config = {
-            "comment-tags": u" ".join(comment_tags),
-            "encoding": options.get(
-                "input_encoding", options.get("encoding", None)
-            ),
+            "comment-tags": " ".join(comment_tags),
+            "encoding": options.get("input_encoding", options.get("encoding", None)),
         }
         super(BabelMakoExtractor, self).__init__()
 

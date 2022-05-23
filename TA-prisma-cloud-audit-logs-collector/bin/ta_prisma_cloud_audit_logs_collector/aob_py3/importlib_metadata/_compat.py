@@ -1,7 +1,7 @@
 import sys
 
 
-__all__ = ['install', 'NullFinder', 'PyPy_repr', 'Protocol']
+__all__ = ["install", "NullFinder", "PyPy_repr", "Protocol"]
 
 
 try:
@@ -38,9 +38,7 @@ def disable_stdlib_finder():
     """
 
     def matches(finder):
-        return getattr(
-            finder, '__module__', None
-        ) == '_frozen_importlib_external' and hasattr(finder, 'find_distributions')
+        return getattr(finder, "__module__", None) == "_frozen_importlib_external" and hasattr(finder, "find_distributions")
 
     for finder in filter(matches, sys.meta_path):  # pragma: nocover
         del finder.find_distributions
@@ -71,15 +69,15 @@ class PyPy_repr:
     Ref #97, #102.
     """
 
-    affected = hasattr(sys, 'pypy_version_info')
+    affected = hasattr(sys, "pypy_version_info")
 
     def __compat_repr__(self):  # pragma: nocover
         def make_param(name):
             value = getattr(self, name)
-            return f'{name}={value!r}'
+            return f"{name}={value!r}"
 
-        params = ', '.join(map(make_param, self._fields))
-        return f'EntryPoint({params})'
+        params = ", ".join(map(make_param, self._fields))
+        return f"EntryPoint({params})"
 
     if affected:  # pragma: nocover
         __repr__ = __compat_repr__

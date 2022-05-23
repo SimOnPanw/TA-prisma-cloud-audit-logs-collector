@@ -60,10 +60,7 @@ class Symbols(object):
     def ref(self, name):
         rv = self.find_ref(name)
         if rv is None:
-            raise AssertionError(
-                "Tried to resolve a name to a reference that "
-                "was unknown to the frame (%r)" % name
-            )
+            raise AssertionError("Tried to resolve a name to a reference that " "was unknown to the frame (%r)" % name)
         return rv
 
     def copy(self):
@@ -158,11 +155,7 @@ class RootVisitor(NodeVisitor):
 
     visit_Template = (
         visit_Block
-    ) = (
-        visit_Macro
-    ) = (
-        visit_FilterBlock
-    ) = visit_Scope = visit_If = visit_ScopedEvalContextModifier = _simple_visit
+    ) = visit_Macro = visit_FilterBlock = visit_Scope = visit_If = visit_ScopedEvalContextModifier = _simple_visit
 
     def visit_AssignBlock(self, node, **kwargs):
         for child in node.body:
@@ -199,9 +192,7 @@ class RootVisitor(NodeVisitor):
             self.sym_visitor.visit(child)
 
     def generic_visit(self, node, *args, **kwargs):
-        raise NotImplementedError(
-            "Cannot find symbols for %r" % node.__class__.__name__
-        )
+        raise NotImplementedError("Cannot find symbols for %r" % node.__class__.__name__)
 
 
 class FrameSymbolVisitor(NodeVisitor):

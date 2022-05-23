@@ -33,7 +33,5 @@ class KnowledgeObjectManager(object):
         return indexes
 
     def _do_request(self, uri, method, payload, err_msg):
-        _, content = req.content_request(
-            uri, self.session_key, method, payload, err_msg
-        )
+        _, content = req.content_request(uri, self.session_key, method, payload, err_msg)
         return xdp.parse_conf_xml_dom(content)

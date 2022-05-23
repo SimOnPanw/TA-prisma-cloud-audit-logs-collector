@@ -49,9 +49,7 @@ class TimeParser(object):
     URL = "/services/search/timeparser"
 
     def __init__(self, session_key, scheme=None, host=None, port=None, **context):
-        self._rest_client = rest_client.SplunkRestClient(
-            session_key, "-", scheme=scheme, host=host, port=port, **context
-        )
+        self._rest_client = rest_client.SplunkRestClient(session_key, "-", scheme=scheme, host=host, port=port, **context)
 
     @retry(exceptions=[binding.HTTPError])
     def to_seconds(self, time_str):
@@ -65,9 +63,7 @@ class TimeParser(object):
         """
 
         try:
-            response = self._rest_client.get(
-                self.URL, output_mode="json", time=time_str, output_time_format="%s"
-            ).body.read()
+            response = self._rest_client.get(self.URL, output_mode="json", time=time_str, output_time_format="%s").body.read()
         except binding.HTTPError as e:
             if e.status != 400:
                 raise
@@ -101,9 +97,7 @@ class TimeParser(object):
         """
 
         try:
-            response = self._rest_client.get(
-                self.URL, output_mode="json", time=time_str
-            ).body.read()
+            response = self._rest_client.get(self.URL, output_mode="json", time=time_str).body.read()
         except binding.HTTPError as e:
             if e.status != 400:
                 raise

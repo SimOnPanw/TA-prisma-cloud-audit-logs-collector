@@ -16,9 +16,7 @@ import splunktalib.common.log as log
 from httplib2 import socks, ProxyInfo, Http
 
 
-def splunkd_request(
-    splunkd_uri, session_key, method="GET", headers=None, data=None, timeout=30, retry=1
-):
+def splunkd_request(splunkd_uri, session_key, method="GET", headers=None, data=None, timeout=30, retry=1):
     """
     :return: httplib2.Response and content
     """
@@ -44,17 +42,13 @@ def splunkd_request(
     resp, content = None, None
     for _ in range(retry):
         try:
-            resp, content = http.request(
-                splunkd_uri, method=method, headers=headers, body=data
-            )
+            resp, content = http.request(splunkd_uri, method=method, headers=headers, body=data)
         except Exception:
             log.logger.error(msg_temp, splunkd_uri, "unknown", format_exc())
         else:
             if resp.status not in (200, 201):
                 if not (method == "GET" and resp.status == 404):
-                    log.logger.debug(
-                        msg_temp, splunkd_uri, resp.status, code_to_msg(resp, content)
-                    )
+                    log.logger.debug(msg_temp, splunkd_uri, resp.status, code_to_msg(resp, content))
             else:
                 return resp, content
     else:
@@ -70,10 +64,7 @@ def code_to_msg(resp, content):
         404: "Requested endpoint does not exist.",
         409: "Invalid operation for this endpoint. reason={}".format(content),
         500: "Unspecified internal server error. reason={}".format(content),
-        503: (
-            "Feature is disabled in the configuration file. "
-            "reason={}".format(content)
-        ),
+        503: ("Feature is disabled in the configuration file. " "reason={}".format(content)),
     }
 
     return code_msg_tbl.get(resp.status, content)
@@ -133,9 +124,7 @@ def build_http_connection(config, timeout=120, disable_ssl_validation=False):
             disable_ssl_certificate_validation=disable_ssl_validation,
         )
     else:
-        http = Http(
-            timeout=timeout, disable_ssl_certificate_validation=disable_ssl_validation
-        )
+        http = Http(timeout=timeout, disable_ssl_certificate_validation=disable_ssl_validation)
 
     if config.get("username") and config.get("password"):
         http.add_credentials(config["username"], config["password"])

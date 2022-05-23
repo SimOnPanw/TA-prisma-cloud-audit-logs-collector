@@ -97,9 +97,7 @@ class ZipHandler(object):
 
         files = decompressor.infolist()
         if len(files) > 1:
-            raise ValueError(
-                "Zip files containing multiple files not supported by this " "handler."
-            )
+            raise ValueError("Zip files containing multiple files not supported by this " "handler.")
 
         try:
             text = decompressor.read(files[0].filename)

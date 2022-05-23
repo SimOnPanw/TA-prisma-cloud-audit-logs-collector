@@ -8,5 +8,4 @@ else:
     try:
         from ttk import *
     except ImportError:
-        raise ImportError('The ttk module is missing. Does your Py2 '
-                          'installation include tkinter?')
+        raise ImportError("The ttk module is missing. Does your Py2 " "installation include tkinter?")

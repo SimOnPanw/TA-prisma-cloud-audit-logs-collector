@@ -388,9 +388,7 @@ def _generate_documentation(context, method_list):
     :param context: Dict with app, session, version and api fields
     :param method_list: List of API methods to call
     """
-    uri = "/services/{}/{}/{}".format(
-        context.get("app"), context.get("version"), context.get("api")
-    )
+    uri = "/services/{}/{}/{}".format(context.get("app"), context.get("version"), context.get("api"))
     _rest_client = rest.SplunkRestClient(context.get("session"), app="-")
 
     for method in method_list:
@@ -446,9 +444,7 @@ class _SwaggerSpecGenerator(object):
                 tempfile.gettempdir() + op.sep + "spec.yaml",
             )
         except Exception as e:
-            raise Exception(
-                "Spec file not found, please try again." " Exception: {}".format(e)
-            )
+            raise Exception("Spec file not found, please try again." " Exception: {}".format(e))
 
 
 class _SwaggerApi(object):
@@ -613,16 +609,12 @@ class _SwaggerApi(object):
             if prop_type and len(prop_type) > 0:
                 prop_type = prop_type[0]
             if prop_type in self.type_converter:
-                definition["properties"][param] = {
-                    "type": self.type_converter[prop_type]
-                }
+                definition["properties"][param] = {"type": self.type_converter[prop_type]}
             # check for array
             elif prop_type == "ListType":
                 if type_info != "ModelType":
                     definition["properties"][param] = {"type": "array"}
-                    definition["properties"][param]["items"] = {
-                        "type": self.type_converter[type_info]
-                    }
+                    definition["properties"][param]["items"] = {"type": self.type_converter[type_info]}
             else:
                 ref = type_info.replace("Model", "")
                 definition["properties"][param] = {"$ref": ref}
@@ -640,9 +632,7 @@ class _SwaggerApi(object):
                 and properties[prop]["type"] in self.default_values
                 and "example" not in properties[prop]
             ):
-                properties[prop]["example"] = self.default_values[
-                    properties[prop]["type"]
-                ]
+                properties[prop]["example"] = self.default_values[properties[prop]["type"]]
 
     def fix_types(self, properties):
         """
@@ -651,18 +641,10 @@ class _SwaggerApi(object):
         :type: ```dict```
         """
         for prop in properties:
-            if (
-                "type" in properties[prop]
-                and properties[prop]["type"] in self.swagger_types
-            ):
-                if (
-                    properties[prop]["type"]
-                    != self.swagger_types[properties[prop]["type"]]
-                ):
+            if "type" in properties[prop] and properties[prop]["type"] in self.swagger_types:
+                if properties[prop]["type"] != self.swagger_types[properties[prop]["type"]]:
                     properties[prop]["format"] = properties[prop]["type"]
-                    properties[prop]["type"] = self.swagger_types[
-                        properties[prop]["type"]
-                    ]
+                    properties[prop]["type"] = self.swagger_types[properties[prop]["type"]]
             if "$ref" in properties[prop]:
                 properties[prop]["$ref"] = "#/definitions/" + properties[prop]["$ref"]
 

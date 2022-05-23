@@ -120,9 +120,7 @@ class DataInputHandler(base.BaseRestHandler):
     def handleDisable(self, confInfo):
         try:
             rest.simpleRequest(
-                self.makeRequestURL().replace(
-                    "?output_mode=json", "/disable?output_mode=json"
-                ),
+                self.makeRequestURL().replace("?output_mode=json", "/disable?output_mode=json"),
                 sessionKey=self.getSessionKey(),
                 method="POST",
                 raiseAllErrors=True,
@@ -134,9 +132,7 @@ class DataInputHandler(base.BaseRestHandler):
     def handleEnable(self, confInfo):
         try:
             rest.simpleRequest(
-                self.makeRequestURL().replace(
-                    "?output_mode=json", "/enable?output_mode=json"
-                ),
+                self.makeRequestURL().replace("?output_mode=json", "/enable?output_mode=json"),
                 sessionKey=self.getSessionKey(),
                 method="POST",
                 raiseAllErrors=True,
@@ -156,17 +152,9 @@ class DataInputHandler(base.BaseRestHandler):
 
     def makeRequestURL(self):
         user, app = self.user_app()
-        eid = (
-            None
-            if self.callerArgs.id is None
-            else quote(self.callerArgs.id.encode("utf-8"), safe="")
-        )
+        eid = None if self.callerArgs.id is None else quote(self.callerArgs.id.encode("utf-8"), safe="")
         actions = (admin.ACTION_EDIT, admin.ACTION_LIST, admin.ACTION_REMOVE)
-        name = (
-            (self.requestedAction in actions and self.callerArgs.id is not None)
-            and ("/" + eid)
-            or ""
-        )
+        name = (self.requestedAction in actions and self.callerArgs.id is not None) and ("/" + eid) or ""
         return (
             rest.makeSplunkdUri()
             + "servicesNS/"
@@ -194,9 +182,7 @@ class DataInputHandler(base.BaseRestHandler):
             return data
 
     def _makeStanzaName(self, name):
-        return "{dataInputName}://{name}".format(
-            dataInputName=self.dataInputName, name=name
-        )
+        return "{dataInputName}://{name}".format(dataInputName=self.dataInputName, name=name)
 
 
 class DataInputModel(base.BaseModel):

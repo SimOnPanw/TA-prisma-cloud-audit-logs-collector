@@ -93,10 +93,7 @@ def define(
         for base_cls in cls.__bases__:
             if base_cls.__setattr__ is _frozen_setattrs:
                 if had_on_setattr:
-                    raise ValueError(
-                        "Frozen classes can't use on_setattr "
-                        "(frozen-ness was inherited)."
-                    )
+                    raise ValueError("Frozen classes can't use on_setattr " "(frozen-ness was inherited).")
 
                 on_setattr = setters.NO_OP
                 break

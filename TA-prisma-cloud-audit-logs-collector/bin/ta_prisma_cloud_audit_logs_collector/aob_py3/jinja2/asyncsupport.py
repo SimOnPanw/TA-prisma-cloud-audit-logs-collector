@@ -144,9 +144,7 @@ def patch_template():
     Template.render = wrap_render_func(Template.render)
     Template._get_default_module = wrap_default_module(Template._get_default_module)
     Template._get_default_module_async = get_default_module_async
-    Template.make_module_async = update_wrapper(
-        make_module_async, Template.make_module_async
-    )
+    Template.make_module_async = update_wrapper(make_module_async, Template.make_module_async)
 
 
 def patch_runtime():
@@ -253,8 +251,7 @@ async def make_async_loop_context(iterable, undefined, recurse=None, depth0=0):
     import warnings
 
     warnings.warn(
-        "This template must be recompiled with at least Jinja 2.11, or"
-        " it will fail in 3.0.",
+        "This template must be recompiled with at least Jinja 2.11, or" " it will fail in 3.0.",
         DeprecationWarning,
         stacklevel=2,
     )

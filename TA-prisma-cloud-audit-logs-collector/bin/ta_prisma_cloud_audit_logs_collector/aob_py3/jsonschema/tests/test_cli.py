@@ -50,7 +50,8 @@ class TestParser(TestCase):
             [
                 "--validator",
                 "jsonschema.tests.test_cli.TestParser.FakeValidator",
-                "--instance", self.instance_file,
+                "--instance",
+                self.instance_file,
                 self.schema_file,
             ]
         )
@@ -59,8 +60,10 @@ class TestParser(TestCase):
     def test_find_validator_in_jsonschema(self):
         arguments = cli.parse_args(
             [
-                "--validator", "Draft4Validator",
-                "--instance", self.instance_file,
+                "--validator",
+                "Draft4Validator",
+                "--instance",
+                self.instance_file,
                 self.schema_file,
             ]
         )

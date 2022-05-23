@@ -93,9 +93,7 @@ ALL_SETTING_TYPES = [
 def get_schema_path():
     dirname = os.path.dirname
     basedir = dirname(dirname(dirname((dirname(__file__)))))
-    return os.path.join(
-        basedir, "appserver", "static", "js", "build", "globalConfig.json"
-    )
+    return os.path.join(basedir, "appserver", "static", "js", "build", "globalConfig.json")
 
 
 class Setup_Util(object):
@@ -103,9 +101,7 @@ class Setup_Util(object):
         self.__uri = uri
         self.__session_key = session_key
         self.__logger = logger
-        self.scheme, self.host, self.port = utils.extract_http_scheme_host_port(
-            self.__uri
-        )
+        self.scheme, self.host, self.port = utils.extract_http_scheme_host_port(self.__uri)
         self.__cached_global_settings = {}
         self.__global_config = None
 
@@ -139,9 +135,7 @@ class Setup_Util(object):
 
     def _parse_conf(self, key):
         if os.environ.get(AOB_TEST_FLAG, "false") == "true":
-            global_settings = self._parse_conf_from_env(
-                json.loads(os.environ.get(GLOBAL_SETTING_KEY, "{}"))
-            )
+            global_settings = self._parse_conf_from_env(json.loads(os.environ.get(GLOBAL_SETTING_KEY, "{}")))
             return global_settings.get(key)
         else:
             return self._parse_conf_from_global_config(key)
@@ -164,9 +158,7 @@ class Setup_Util(object):
                         s_v[PROXY_RDNS_KEY] = utils.is_true(proxy_rdns)
                     self.__cached_global_settings[PROXY_SETTINGS] = s_v
                 elif s_k == LOG_SETTINGS:
-                    self.__cached_global_settings[LOG_SETTINGS] = {
-                        LOG_LEVEL_KEY: s_v.get(LOG_LEVEL_KEY_ENV)
-                    }
+                    self.__cached_global_settings[LOG_SETTINGS] = {LOG_LEVEL_KEY: s_v.get(LOG_LEVEL_KEY_ENV)}
                 elif s_k == CREDENTIAL_SETTINGS:
                     # add account id to accounts
                     for i in range(0, len(s_v)):
@@ -177,13 +169,11 @@ class Setup_Util(object):
                     for s in s_v:
                         field_type = s.get("type")
                         if not field_type:
-                            self.log_error(
-                                "unknown type for customized var:{}".format(s)
-                            )
+                            self.log_error("unknown type for customized var:{}".format(s))
                             continue
-                        self.__cached_global_settings["customized_settings"][
-                            s.get("name", "")
-                        ] = self._transform(s.get("value", ""), field_type)
+                        self.__cached_global_settings["customized_settings"][s.get("name", "")] = self._transform(
+                            s.get("value", ""), field_type
+                        )
 
         return self.__cached_global_settings
 
@@ -202,27 +192,19 @@ class Setup_Util(object):
             self.__cached_global_settings[CREDENTIAL_SETTINGS] = accounts
         elif key in SETTINGS:
             settings = self.__global_config.settings.load()
-            self.__cached_global_settings.update(
-                {UCC_PROXY: None, UCC_LOGGING: None, UCC_CUSTOMIZED: None}
-            )
+            self.__cached_global_settings.update({UCC_PROXY: None, UCC_LOGGING: None, UCC_CUSTOMIZED: None})
             customized_setting = {}
             for setting in settings.get("settings", []):
                 # filter out disabled setting page and 'disabled' field
                 if setting.get("disabled", False):
                     continue
                 if setting["name"] == UCC_LOGGING:
-                    self.__cached_global_settings[LOG_SETTINGS] = {
-                        LOG_LEVEL_KEY: setting.get(LOG_LEVEL_KEY)
-                    }
+                    self.__cached_global_settings[LOG_SETTINGS] = {LOG_LEVEL_KEY: setting.get(LOG_LEVEL_KEY)}
                 elif setting["name"] == UCC_PROXY:
                     if "disabled" in setting:
                         del setting["disabled"]
-                    setting[PROXY_ENABLE_KEY] = utils.is_true(
-                        setting.get(PROXY_ENABLE_KEY, "0")
-                    )
-                    setting[PROXY_RDNS_KEY] = utils.is_true(
-                        setting.get(PROXY_RDNS_KEY, "0")
-                    )
+                    setting[PROXY_ENABLE_KEY] = utils.is_true(setting.get(PROXY_ENABLE_KEY, "0"))
+                    setting[PROXY_RDNS_KEY] = utils.is_true(setting.get(PROXY_RDNS_KEY, "0"))
                     self.__cached_global_settings[PROXY_SETTINGS] = setting
                 else:  # should be customized settings
                     if "disabled" in setting:
@@ -269,9 +251,7 @@ class Setup_Util(object):
         for account in credential_settings:
             if account.get("name", None) == account_id:
                 return account
-        self.log_error(
-            "Credential account with account id {} can not be found".format(account_id)
-        )
+        self.log_error("Credential account with account id {} can not be found".format(account_id))
         return None
 
     def get_credential_by_username(self, username):
@@ -279,9 +259,7 @@ class Setup_Util(object):
         for account in credential_settings:
             if account.get("username", None) == username:
                 return account
-        self.log_error(
-            "Credential account with username {} can not be found".format(username)
-        )
+        self.log_error("Credential account with username {} can not be found".format(username))
         return None
 
     def get_customized_setting(self, key):
@@ -318,11 +296,7 @@ class Setup_Util(object):
         elif field_type in ALL_SETTING_TYPES:
             return value
         else:
-            raise Exception(
-                "Type of this customized setting is corrupted. Value: {}, type: {}".format(
-                    value, field_type
-                )
-            )
+            raise Exception("Type of this customized setting is corrupted. Value: {}, type: {}".format(value, field_type))
 
     """
     # the following methods is used by AoB internally

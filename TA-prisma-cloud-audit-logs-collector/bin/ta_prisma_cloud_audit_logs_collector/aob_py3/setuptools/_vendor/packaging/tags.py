@@ -54,7 +54,7 @@ INTERPRETER_SHORT_NAMES = {
 }  # type: Dict[str, str]
 
 
-_32_BIT_INTERPRETER = sys.maxsize <= 2 ** 32
+_32_BIT_INTERPRETER = sys.maxsize <= 2**32
 
 
 class Tag(object):
@@ -93,11 +93,7 @@ class Tag(object):
         if not isinstance(other, Tag):
             return NotImplemented
 
-        return (
-            (self.platform == other.platform)
-            and (self.abi == other.abi)
-            and (self.interpreter == other.interpreter)
-        )
+        return (self.platform == other.platform) and (self.abi == other.abi) and (self.interpreter == other.interpreter)
 
     def __hash__(self):
         # type: () -> int
@@ -139,9 +135,7 @@ def _warn_keyword_parameter(func_name, kwargs):
     elif len(kwargs) > 1 or "warn" not in kwargs:
         kwargs.pop("warn", None)
         arg = next(iter(kwargs.keys()))
-        raise TypeError(
-            "{}() got an unexpected keyword argument {!r}".format(func_name, arg)
-        )
+        raise TypeError("{}() got an unexpected keyword argument {!r}".format(func_name, arg))
     return kwargs["warn"]
 
 
@@ -149,9 +143,7 @@ def _get_config_var(name, warn=False):
     # type: (str, bool) -> Union[int, str, None]
     value = sysconfig.get_config_var(name)
     if value is None and warn:
-        logger.debug(
-            "Config variable '%s' is unset, Python ABI tag may be incorrect", name
-        )
+        logger.debug("Config variable '%s' is unset, Python ABI tag may be incorrect", name)
     return value
 
 
@@ -190,9 +182,7 @@ def _cpython_abis(py_version, warn=False):
             pymalloc = "m"
         if py_version < (3, 3):
             unicode_size = _get_config_var("Py_UNICODE_SIZE", warn)
-            if unicode_size == 4 or (
-                unicode_size is None and sys.maxunicode == 0x10FFFF
-            ):
+            if unicode_size == 4 or (unicode_size is None and sys.maxunicode == 0x10FFFF):
                 ucs4 = "u"
     elif debug:
         # Debug builds can also load "normal" extension modules.
@@ -200,9 +190,7 @@ def _cpython_abis(py_version, warn=False):
         abis.append("cp{version}".format(version=version))
     abis.insert(
         0,
-        "cp{version}{debug}{pymalloc}{ucs4}".format(
-            version=version, debug=debug, pymalloc=pymalloc, ucs4=ucs4
-        ),
+        "cp{version}{debug}{pymalloc}{ucs4}".format(version=version, debug=debug, pymalloc=pymalloc, ucs4=ucs4),
     )
     return abis
 
@@ -261,9 +249,7 @@ def cpython_tags(
     if _abi3_applies(python_version):
         for minor_version in range(python_version[1] - 1, 1, -1):
             for platform_ in platforms:
-                interpreter = "cp{version}".format(
-                    version=_version_nodot((python_version[0], minor_version))
-                )
+                interpreter = "cp{version}".format(version=_version_nodot((python_version[0], minor_version)))
                 yield Tag(interpreter, "abi3", platform_)
 
 
@@ -448,9 +434,7 @@ def _glibc_version_string_confstr():
     # https://github.com/python/cpython/blob/fcf1d003bf4f0100c9d0921ff3d70e1127ca1b71/Lib/platform.py#L175-L183
     try:
         # os.confstr("CS_GNU_LIBC_VERSION") returns a string like "glibc 2.17".
-        version_string = os.confstr(  # type: ignore[attr-defined] # noqa: F821
-            "CS_GNU_LIBC_VERSION"
-        )
+        version_string = os.confstr("CS_GNU_LIBC_VERSION")  # type: ignore[attr-defined] # noqa: F821
         assert version_string is not None
         _, version = version_string.split()  # type: Tuple[str, str]
     except (AssertionError, AttributeError, OSError, ValueError):
@@ -505,15 +489,11 @@ def _check_glibc_version(version_str, required_major, minimum_minor):
     m = re.match(r"(?P<major>[0-9]+)\.(?P<minor>[0-9]+)", version_str)
     if not m:
         warnings.warn(
-            "Expected glibc version with 2 components major.minor,"
-            " got: %s" % version_str,
+            "Expected glibc version with 2 components major.minor," " got: %s" % version_str,
             RuntimeWarning,
         )
         return False
-    return (
-        int(m.group("major")) == required_major
-        and int(m.group("minor")) >= minimum_minor
-    )
+    return int(m.group("major")) == required_major and int(m.group("minor")) >= minimum_minor
 
 
 def _have_compatible_glibc(required_major, minimum_minor):
@@ -553,9 +533,7 @@ class _ELFFileHeader(object):
         def unpack(fmt):
             # type: (str) -> int
             try:
-                (result,) = struct.unpack(
-                    fmt, file.read(struct.calcsize(fmt))
-                )  # type: (int, )
+                (result,) = struct.unpack(fmt, file.read(struct.calcsize(fmt)))  # type: (int, )
             except struct.error:
                 raise _ELFFileHeader._InvalidELFFileHeader()
             return result
@@ -613,12 +591,8 @@ def _is_linux_armhf():
     result = elf_header.e_ident_class == elf_header.ELFCLASS32
     result &= elf_header.e_ident_data == elf_header.ELFDATA2LSB
     result &= elf_header.e_machine == elf_header.EM_ARM
-    result &= (
-        elf_header.e_flags & elf_header.EF_ARM_ABIMASK
-    ) == elf_header.EF_ARM_ABI_VER5
-    result &= (
-        elf_header.e_flags & elf_header.EF_ARM_ABI_FLOAT_HARD
-    ) == elf_header.EF_ARM_ABI_FLOAT_HARD
+    result &= (elf_header.e_flags & elf_header.EF_ARM_ABIMASK) == elf_header.EF_ARM_ABI_VER5
+    result &= (elf_header.e_flags & elf_header.EF_ARM_ABI_FLOAT_HARD) == elf_header.EF_ARM_ABI_FLOAT_HARD
     return result
 
 
@@ -654,16 +628,10 @@ def _linux_platforms(is_32bit=_32_BIT_INTERPRETER):
     _, arch = linux.split("_", 1)
     if _have_compatible_manylinux_abi(arch):
         if arch in {"x86_64", "i686", "aarch64", "armv7l", "ppc64", "ppc64le", "s390x"}:
-            manylinux_support.append(
-                ("manylinux2014", (2, 17))
-            )  # CentOS 7 w/ glibc 2.17 (PEP 599)
+            manylinux_support.append(("manylinux2014", (2, 17)))  # CentOS 7 w/ glibc 2.17 (PEP 599)
         if arch in {"x86_64", "i686"}:
-            manylinux_support.append(
-                ("manylinux2010", (2, 12))
-            )  # CentOS 6 w/ glibc 2.12 (PEP 571)
-            manylinux_support.append(
-                ("manylinux1", (2, 5))
-            )  # CentOS 5 w/ glibc 2.5 (PEP 513)
+            manylinux_support.append(("manylinux2010", (2, 12)))  # CentOS 6 w/ glibc 2.12 (PEP 571)
+            manylinux_support.append(("manylinux1", (2, 5)))  # CentOS 5 w/ glibc 2.5 (PEP 513)
     manylinux_support_iter = iter(manylinux_support)
     for name, glibc_version in manylinux_support_iter:
         if _is_manylinux_compatible(name, glibc_version):

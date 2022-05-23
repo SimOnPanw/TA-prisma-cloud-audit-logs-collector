@@ -12,7 +12,8 @@ class TestBestMatch(TestCase):
         reversed_best = exceptions.best_match(reversed(errors))
         msg = "Didn't return a consistent best match!\nGot: {0}\n\nThen: {1}"
         self.assertEqual(
-            best._contents(), reversed_best._contents(),
+            best._contents(),
+            reversed_best._contents(),
             msg=msg.format(best, reversed_best),
         )
         return best
@@ -145,7 +146,7 @@ class TestBestMatch(TestCase):
 
     def test_one_error(self):
         validator = Draft4Validator({"minProperties": 2})
-        error, = validator.iter_errors({})
+        (error,) = validator.iter_errors({})
         self.assertEqual(
             exceptions.best_match(validator.iter_errors({})).validator,
             "minProperties",
@@ -211,10 +212,7 @@ class TestByRelevance(TestCase):
 class TestErrorTree(TestCase):
     def test_it_knows_how_many_total_errors_it_contains(self):
         # FIXME: https://github.com/Julian/jsonschema/issues/442
-        errors = [
-            exceptions.ValidationError("Something", validator=i)
-            for i in range(8)
-        ]
+        errors = [exceptions.ValidationError("Something", validator=i) for i in range(8)]
         tree = exceptions.ErrorTree(errors)
         self.assertEqual(tree.total_errors, 8)
 
@@ -252,16 +250,8 @@ class TestErrorTree(TestCase):
 
     def test_multiple_errors_with_instance(self):
         e1, e2 = (
-            exceptions.ValidationError(
-                "1",
-                validator="foo",
-                path=["bar", "bar2"],
-                instance="i1"),
-            exceptions.ValidationError(
-                "2",
-                validator="quux",
-                path=["foobar", 2],
-                instance="i2"),
+            exceptions.ValidationError("1", validator="foo", path=["bar", "bar2"], instance="i1"),
+            exceptions.ValidationError("2", validator="quux", path=["foobar", 2], instance="i2"),
         )
         exceptions.ErrorTree([e1, e2])
 
@@ -280,7 +270,10 @@ class TestErrorTree(TestCase):
         """
 
         error = exceptions.ValidationError(
-            "a message", validator="foo", instance={}, path=["foo"],
+            "a message",
+            validator="foo",
+            instance={},
+            path=["foo"],
         )
         tree = exceptions.ErrorTree([error])
         self.assertIsInstance(tree["foo"], exceptions.ErrorTree)
@@ -289,11 +282,11 @@ class TestErrorTree(TestCase):
 class TestErrorInitReprStr(TestCase):
     def make_error(self, **kwargs):
         defaults = dict(
-            message=u"hello",
-            validator=u"type",
-            validator_value=u"string",
+            message="hello",
+            validator="type",
+            validator_value="string",
             instance=5,
-            schema={u"type": u"string"},
+            schema={"type": "string"},
         )
         defaults.update(kwargs)
         return exceptions.ValidationError(**defaults)
@@ -370,8 +363,8 @@ class TestErrorInitReprStr(TestCase):
             On instance[0][u'a']:
                 5
             """,
-            path=[0, u"a"],
-            schema_path=[u"items", 0, 1],
+            path=[0, "a"],
+            schema_path=["items", 0, 1],
         )
 
     def test_uses_pprint(self):
@@ -428,7 +421,7 @@ class TestErrorInitReprStr(TestCase):
             """,
             instance=list(range(25)),
             schema=dict(zip(range(20), range(20))),
-            validator=u"maxLength",
+            validator="maxLength",
         )
 
     def test_str_works_with_instances_having_overriden_eq_operator(self):

@@ -19,7 +19,7 @@ from jsonschema.tests._helpers import bug
 
 def startswith(validator, startswith, instance, schema):
     if not instance.startswith(startswith):
-        yield exceptions.ValidationError(u"Whoops!")
+        yield exceptions.ValidationError("Whoops!")
 
 
 class TestCreateAndExtend(SynchronousTestCase):
@@ -30,8 +30,8 @@ class TestCreateAndExtend(SynchronousTestCase):
             dict(validators.meta_schemas),
         )
 
-        self.meta_schema = {u"$id": "some://meta/schema"}
-        self.validators = {u"startswith": startswith}
+        self.meta_schema = {"$id": "some://meta/schema"}
+        self.validators = {"startswith": startswith}
         self.type_checker = TypeChecker()
         self.Validator = validators.create(
             meta_schema=self.meta_schema,
@@ -45,7 +45,8 @@ class TestCreateAndExtend(SynchronousTestCase):
                 self.Validator.VALIDATORS,
                 self.Validator.META_SCHEMA,
                 self.Validator.TYPE_CHECKER,
-            ), (
+            ),
+            (
                 self.validators,
                 self.meta_schema,
                 self.type_checker,
@@ -53,32 +54,32 @@ class TestCreateAndExtend(SynchronousTestCase):
         )
 
     def test_init(self):
-        schema = {u"startswith": u"foo"}
+        schema = {"startswith": "foo"}
         self.assertEqual(self.Validator(schema).schema, schema)
 
     def test_iter_errors(self):
-        schema = {u"startswith": u"hel"}
+        schema = {"startswith": "hel"}
         iter_errors = self.Validator(schema).iter_errors
 
-        errors = list(iter_errors(u"hello"))
+        errors = list(iter_errors("hello"))
         self.assertEqual(errors, [])
 
         expected_error = exceptions.ValidationError(
-            u"Whoops!",
-            instance=u"goodbye",
+            "Whoops!",
+            instance="goodbye",
             schema=schema,
-            validator=u"startswith",
-            validator_value=u"hel",
-            schema_path=deque([u"startswith"]),
+            validator="startswith",
+            validator_value="hel",
+            schema_path=deque(["startswith"]),
         )
 
-        errors = list(iter_errors(u"goodbye"))
+        errors = list(iter_errors("goodbye"))
         self.assertEqual(len(errors), 1)
         self.assertEqual(errors[0]._contents(), expected_error._contents())
 
     def test_if_a_version_is_provided_it_is_registered(self):
         Validator = validators.create(
-            meta_schema={u"$id": "something"},
+            meta_schema={"$id": "something"},
             version="my version",
         )
         self.addCleanup(validators.meta_schemas.pop, "something")
@@ -86,12 +87,12 @@ class TestCreateAndExtend(SynchronousTestCase):
 
     def test_if_a_version_is_not_provided_it_is_not_registered(self):
         original = dict(validators.meta_schemas)
-        validators.create(meta_schema={u"id": "id"})
+        validators.create(meta_schema={"id": "id"})
         self.assertEqual(validators.meta_schemas, original)
 
     def test_validates_registers_meta_schema_id(self):
         meta_schema_key = "meta schema id"
-        my_meta_schema = {u"id": meta_schema_key}
+        my_meta_schema = {"id": meta_schema_key}
 
         validators.create(
             meta_schema=my_meta_schema,
@@ -104,7 +105,7 @@ class TestCreateAndExtend(SynchronousTestCase):
 
     def test_validates_registers_meta_schema_draft6_id(self):
         meta_schema_key = "meta schema $id"
-        my_meta_schema = {u"$id": meta_schema_key}
+        my_meta_schema = {"$id": meta_schema_key}
 
         validators.create(
             meta_schema=my_meta_schema,
@@ -120,13 +121,13 @@ class TestCreateAndExtend(SynchronousTestCase):
             all(
                 Validator({}).is_type(instance=instance, type=type)
                 for type, instance in [
-                    (u"array", []),
-                    (u"boolean", True),
-                    (u"integer", 12),
-                    (u"null", None),
-                    (u"number", 12.0),
-                    (u"object", {}),
-                    (u"string", u"foo"),
+                    ("array", []),
+                    ("boolean", True),
+                    ("integer", 12),
+                    ("null", None),
+                    ("number", 12.0),
+                    ("object", {}),
+                    ("string", "foo"),
                 ]
             ),
         )
@@ -137,7 +138,7 @@ class TestCreateAndExtend(SynchronousTestCase):
 
         Extended = validators.extend(
             self.Validator,
-            validators={u"new": new},
+            validators={"new": new},
         )
         self.assertEqual(
             (
@@ -145,7 +146,8 @@ class TestCreateAndExtend(SynchronousTestCase):
                 Extended.META_SCHEMA,
                 Extended.TYPE_CHECKER,
                 self.Validator.VALIDATORS,
-            ), (
+            ),
+            (
                 dict(original, new=new),
                 self.Validator.META_SCHEMA,
                 self.Validator.TYPE_CHECKER,
@@ -157,12 +159,14 @@ class TestCreateAndExtend(SynchronousTestCase):
         """
         Extending a validator preserves its notion of schema IDs.
         """
+
         def id_of(schema):
-            return schema.get(u"__test__", self.Validator.ID_OF(schema))
+            return schema.get("__test__", self.Validator.ID_OF(schema))
+
         correct_id = "the://correct/id/"
         meta_schema = {
-            u"$id": "the://wrong/id/",
-            u"__test__": correct_id,
+            "$id": "the://wrong/id/",
+            "__test__": correct_id,
         }
         Original = validators.create(
             meta_schema=meta_schema,
@@ -180,13 +184,15 @@ class TestLegacyTypeChecking(SynchronousTestCase):
     def test_create_default_types(self):
         Validator = validators.create(meta_schema={}, validators=())
         self.assertEqual(
-            set(Validator.DEFAULT_TYPES), {
-                u"array",
-                u"boolean",
-                u"integer",
-                u"null",
-                u"number",
-                u"object", u"string",
+            set(Validator.DEFAULT_TYPES),
+            {
+                "array",
+                "boolean",
+                "integer",
+                "null",
+                "number",
+                "object",
+                "string",
             },
         )
         self.flushWarnings()
@@ -198,7 +204,7 @@ class TestLegacyTypeChecking(SynchronousTestCase):
 
         Extended = validators.extend(
             Validator,
-            validators={u"new": new},
+            validators={"new": new},
         )
         self.assertEqual(
             (
@@ -206,16 +212,15 @@ class TestLegacyTypeChecking(SynchronousTestCase):
                 Extended.META_SCHEMA,
                 Extended.TYPE_CHECKER,
                 Validator.VALIDATORS,
-
                 Extended.DEFAULT_TYPES,
                 Extended({}).DEFAULT_TYPES,
                 self.flushWarnings()[0]["message"],
-            ), (
+            ),
+            (
                 dict(original, new=new),
                 Validator.META_SCHEMA,
                 Validator.TYPE_CHECKER,
                 original,
-
                 Validator.DEFAULT_TYPES,
                 Validator.DEFAULT_TYPES,
                 self.flushWarnings()[0]["message"],
@@ -236,13 +241,9 @@ class TestLegacyTypeChecking(SynchronousTestCase):
     def test_providing_default_types_warns(self):
         self.assertWarns(
             category=DeprecationWarning,
-            message=(
-                "The default_types argument is deprecated. "
-                "Use the type_checker argument instead."
-            ),
+            message=("The default_types argument is deprecated. " "Use the type_checker argument instead."),
             # https://tm.tl/9363 :'(
             filename=sys.modules[self.assertWarns.__module__].__file__,
-
             f=validators.create,
             meta_schema={},
             validators={},
@@ -311,11 +312,7 @@ class TestLegacyTypeChecking(SynchronousTestCase):
         self.assertFalse(self.flushWarnings())
 
     def test_extending_a_legacy_validator_with_a_type_checker_errors(self):
-        Validator = validators.create(
-            meta_schema={},
-            validators={},
-            default_types={u"array": list}
-        )
+        Validator = validators.create(meta_schema={}, validators={}, default_types={"array": list})
         with self.assertRaises(TypeError) as e:
             validators.extend(
                 Validator,
@@ -346,13 +343,9 @@ class TestLegacyTypeChecking(SynchronousTestCase):
 
         self.assertWarns(
             DeprecationWarning,
-            (
-                "The DEFAULT_TYPES attribute is deprecated. "
-                "See the type checker attached to this validator instead."
-            ),
+            ("The DEFAULT_TYPES attribute is deprecated. " "See the type checker attached to this validator instead."),
             # https://tm.tl/9363 :'(
             sys.modules[self.assertWarns.__module__].__file__,
-
             getattr,
             Validator,
             "DEFAULT_TYPES",
@@ -364,13 +357,9 @@ class TestLegacyTypeChecking(SynchronousTestCase):
 
         self.assertWarns(
             DeprecationWarning,
-            (
-                "The DEFAULT_TYPES attribute is deprecated. "
-                "See the type checker attached to this validator instead."
-            ),
+            ("The DEFAULT_TYPES attribute is deprecated. " "See the type checker attached to this validator instead."),
             # https://tm.tl/9363 :'(
             sys.modules[self.assertWarns.__module__].__file__,
-
             getattr,
             Validator({}),
             "DEFAULT_TYPES",
@@ -383,13 +372,10 @@ class TestLegacyTypeChecking(SynchronousTestCase):
         self.assertWarns(
             category=DeprecationWarning,
             message=(
-                "The types argument is deprecated. "
-                "Provide a type_checker to jsonschema.validators.extend "
-                "instead."
+                "The types argument is deprecated. " "Provide a type_checker to jsonschema.validators.extend " "instead."
             ),
             # https://tm.tl/9363 :'(
             filename=sys.modules[self.assertWarns.__module__].__file__,
-
             f=Validator,
             schema={},
             types={"bar": object},
@@ -403,9 +389,9 @@ class TestIterErrors(TestCase):
     def test_iter_errors(self):
         instance = [1, 2]
         schema = {
-            u"disallow": u"array",
-            u"enum": [["a", "b", "c"], ["d", "e", "f"]],
-            u"minItems": 3,
+            "disallow": "array",
+            "enum": [["a", "b", "c"], ["d", "e", "f"]],
+            "minItems": 3,
         }
 
         got = (e.message for e in self.validator.iter_errors(instance, schema))
@@ -419,10 +405,10 @@ class TestIterErrors(TestCase):
     def test_iter_errors_multiple_failures_one_validator(self):
         instance = {"foo": 2, "bar": [1], "baz": 15, "quux": "spam"}
         schema = {
-            u"properties": {
-                "foo": {u"type": "string"},
-                "bar": {u"minItems": 2},
-                "baz": {u"maximum": 10, u"enum": [2, 4, 6, 8]},
+            "properties": {
+                "foo": {"type": "string"},
+                "bar": {"minItems": 2},
+                "baz": {"maximum": 10, "enum": [2, 4, 6, 8]},
             },
         }
 
@@ -438,25 +424,25 @@ class TestValidationErrorMessages(TestCase):
         return e.exception.message
 
     def test_single_type_failure(self):
-        message = self.message_for(instance=1, schema={u"type": u"string"})
-        self.assertEqual(message, "1 is not of type %r" % u"string")
+        message = self.message_for(instance=1, schema={"type": "string"})
+        self.assertEqual(message, "1 is not of type %r" % "string")
 
     def test_single_type_list_failure(self):
-        message = self.message_for(instance=1, schema={u"type": [u"string"]})
-        self.assertEqual(message, "1 is not of type %r" % u"string")
+        message = self.message_for(instance=1, schema={"type": ["string"]})
+        self.assertEqual(message, "1 is not of type %r" % "string")
 
     def test_multiple_type_failure(self):
-        types = u"string", u"object"
-        message = self.message_for(instance=1, schema={u"type": list(types)})
+        types = "string", "object"
+        message = self.message_for(instance=1, schema={"type": list(types)})
         self.assertEqual(message, "1 is not of type %r, %r" % types)
 
     def test_object_without_title_type_failure(self):
-        type = {u"type": [{u"minimum": 3}]}
-        message = self.message_for(instance=1, schema={u"type": [type]})
+        type = {"type": [{"minimum": 3}]}
+        message = self.message_for(instance=1, schema={"type": [type]})
         self.assertEqual(message, "1 is less than the minimum of 3")
 
     def test_object_with_named_type_failure(self):
-        schema = {u"type": [{u"name": "Foo", u"minimum": 3}]}
+        schema = {"type": [{"name": "Foo", "minimum": 3}]}
         message = self.message_for(instance=1, schema=schema)
         self.assertEqual(message, "1 is less than the minimum of 3")
 
@@ -470,7 +456,7 @@ class TestValidationErrorMessages(TestCase):
 
     def test_dependencies_single_element(self):
         depend, on = "bar", "foo"
-        schema = {u"dependencies": {depend: on}}
+        schema = {"dependencies": {depend: on}}
         message = self.message_for(
             instance={"bar": 2},
             schema=schema,
@@ -480,7 +466,7 @@ class TestValidationErrorMessages(TestCase):
 
     def test_dependencies_list_draft3(self):
         depend, on = "bar", "foo"
-        schema = {u"dependencies": {depend: [on]}}
+        schema = {"dependencies": {depend: [on]}}
         message = self.message_for(
             instance={"bar": 2},
             schema=schema,
@@ -490,7 +476,7 @@ class TestValidationErrorMessages(TestCase):
 
     def test_dependencies_list_draft7(self):
         depend, on = "bar", "foo"
-        schema = {u"dependencies": {depend: [on]}}
+        schema = {"dependencies": {depend: [on]}}
         message = self.message_for(
             instance={"bar": 2},
             schema=schema,
@@ -501,25 +487,22 @@ class TestValidationErrorMessages(TestCase):
     def test_additionalItems_single_failure(self):
         message = self.message_for(
             instance=[2],
-            schema={u"items": [], u"additionalItems": False},
+            schema={"items": [], "additionalItems": False},
         )
         self.assertIn("(2 was unexpected)", message)
 
     def test_additionalItems_multiple_failures(self):
-        message = self.message_for(
-            instance=[1, 2, 3],
-            schema={u"items": [], u"additionalItems": False}
-        )
+        message = self.message_for(instance=[1, 2, 3], schema={"items": [], "additionalItems": False})
         self.assertIn("(1, 2, 3 were unexpected)", message)
 
     def test_additionalProperties_single_failure(self):
         additional = "foo"
-        schema = {u"additionalProperties": False}
+        schema = {"additionalProperties": False}
         message = self.message_for(instance={additional: 2}, schema=schema)
         self.assertIn("(%r was unexpected)" % (additional,), message)
 
     def test_additionalProperties_multiple_failures(self):
-        schema = {u"additionalProperties": False}
+        schema = {"additionalProperties": False}
         message = self.message_for(
             instance=dict.fromkeys(["foo", "bar"]),
             schema=schema,
@@ -530,7 +513,7 @@ class TestValidationErrorMessages(TestCase):
         self.assertIn("were unexpected)", message)
 
     def test_const(self):
-        schema = {u"const": 12}
+        schema = {"const": 12}
         message = self.message_for(
             instance={"foo": "bar"},
             schema=schema,
@@ -539,7 +522,7 @@ class TestValidationErrorMessages(TestCase):
         self.assertIn("12 was expected", message)
 
     def test_contains(self):
-        schema = {u"contains": {u"const": 12}}
+        schema = {"contains": {"const": 12}}
         message = self.message_for(
             instance=[2, {}, []],
             schema=schema,
@@ -552,9 +535,9 @@ class TestValidationErrorMessages(TestCase):
 
     def test_invalid_format_default_message(self):
         checker = FormatChecker(formats=())
-        checker.checks(u"thing")(lambda value: False)
+        checker.checks("thing")(lambda value: False)
 
-        schema = {u"format": u"thing"}
+        schema = {"format": "thing"}
         message = self.message_for(
             instance="bla",
             schema=schema,
@@ -566,33 +549,35 @@ class TestValidationErrorMessages(TestCase):
         self.assertIn("is not a", message)
 
     def test_additionalProperties_false_patternProperties(self):
-        schema = {u"type": u"object",
-                  u"additionalProperties": False,
-                  u"patternProperties": {
-                      u"^abc$": {u"type": u"string"},
-                      u"^def$": {u"type": u"string"},
-                  }}
+        schema = {
+            "type": "object",
+            "additionalProperties": False,
+            "patternProperties": {
+                "^abc$": {"type": "string"},
+                "^def$": {"type": "string"},
+            },
+        }
         message = self.message_for(
-            instance={u"zebra": 123},
+            instance={"zebra": 123},
             schema=schema,
             cls=validators.Draft4Validator,
         )
         self.assertEqual(
             message,
             "{} does not match any of the regexes: {}, {}".format(
-                repr(u"zebra"), repr(u"^abc$"), repr(u"^def$"),
+                repr("zebra"),
+                repr("^abc$"),
+                repr("^def$"),
             ),
         )
         message = self.message_for(
-            instance={u"zebra": 123, u"fish": 456},
+            instance={"zebra": 123, "fish": 456},
             schema=schema,
             cls=validators.Draft4Validator,
         )
         self.assertEqual(
             message,
-            "{}, {} do not match any of the regexes: {}, {}".format(
-                repr(u"fish"), repr(u"zebra"), repr(u"^abc$"), repr(u"^def$")
-            ),
+            "{}, {} do not match any of the regexes: {}, {}".format(repr("fish"), repr("zebra"), repr("^abc$"), repr("^def$")),
         )
 
     def test_False_schema(self):
@@ -652,7 +637,8 @@ class TestValidationErrorDetails(TestCase):
         self.assertEqual(e1.schema_path, deque([0, "minimum"]))
         self.assertEqual(e1.relative_schema_path, deque([0, "minimum"]))
         self.assertEqual(
-            e1.absolute_schema_path, deque(["anyOf", 0, "minimum"]),
+            e1.absolute_schema_path,
+            deque(["anyOf", 0, "minimum"]),
         )
 
         self.assertFalse(e1.context)
@@ -727,7 +713,7 @@ class TestValidationErrorDetails(TestCase):
         self.assertEqual(e2.validator, "enum")
         self.assertEqual(e2.validator_value, [2])
         self.assertEqual(e2.instance, 1)
-        self.assertEqual(e2.schema, {u"enum": [2]})
+        self.assertEqual(e2.schema, {"enum": [2]})
         self.assertIs(e2.parent, e)
 
         self.assertEqual(e2.path, deque(["foo"]))
@@ -735,10 +721,12 @@ class TestValidationErrorDetails(TestCase):
         self.assertEqual(e2.absolute_path, deque(["foo"]))
 
         self.assertEqual(
-            e2.schema_path, deque([1, "properties", "foo", "enum"]),
+            e2.schema_path,
+            deque([1, "properties", "foo", "enum"]),
         )
         self.assertEqual(
-            e2.relative_schema_path, deque([1, "properties", "foo", "enum"]),
+            e2.relative_schema_path,
+            deque([1, "properties", "foo", "enum"]),
         )
         self.assertEqual(
             e2.absolute_schema_path,
@@ -814,18 +802,17 @@ class TestValidationErrorDetails(TestCase):
         self.assertEqual(e1.schema_path, deque(["type"]))
         self.assertEqual(e2.schema_path, deque(["items", "type"]))
         self.assertEqual(
-            list(e3.schema_path), ["items", "properties", "bar", "type"],
+            list(e3.schema_path),
+            ["items", "properties", "bar", "type"],
         )
         self.assertEqual(
             list(e4.schema_path),
             ["items", "properties", "bar", "properties", "bar", "required"],
         )
+        self.assertEqual(list(e5.schema_path), ["items", "properties", "bar", "properties", "baz", "minItems"])
         self.assertEqual(
-            list(e5.schema_path),
-            ["items", "properties", "bar", "properties", "baz", "minItems"]
-        )
-        self.assertEqual(
-            list(e6.schema_path), ["items", "properties", "foo", "enum"],
+            list(e6.schema_path),
+            ["items", "properties", "foo", "enum"],
         )
 
         self.assertEqual(e1.validator, "type")
@@ -839,23 +826,25 @@ class TestValidationErrorDetails(TestCase):
         schema = {
             "definitions": {
                 "node": {
-                    "anyOf": [{
-                        "type": "object",
-                        "required": ["name", "children"],
-                        "properties": {
-                            "name": {
-                                "type": "string",
-                            },
-                            "children": {
-                                "type": "object",
-                                "patternProperties": {
-                                    "^.*$": {
-                                        "$ref": "#/definitions/node",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "required": ["name", "children"],
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                },
+                                "children": {
+                                    "type": "object",
+                                    "patternProperties": {
+                                        "^.*$": {
+                                            "$ref": "#/definitions/node",
+                                        },
                                     },
                                 },
                             },
-                        },
-                    }],
+                        }
+                    ],
                 },
             },
             "type": "object",
@@ -881,16 +870,18 @@ class TestValidationErrorDetails(TestCase):
         }
         validator = validators.Draft4Validator(schema)
 
-        e, = validator.iter_errors(instance)
+        (e,) = validator.iter_errors(instance)
         self.assertEqual(e.absolute_path, deque(["root"]))
         self.assertEqual(
-            e.absolute_schema_path, deque(["properties", "root", "anyOf"]),
+            e.absolute_schema_path,
+            deque(["properties", "root", "anyOf"]),
         )
 
-        e1, = e.context
+        (e1,) = e.context
         self.assertEqual(e1.absolute_path, deque(["root", "children", "a"]))
         self.assertEqual(
-            e1.absolute_schema_path, deque(
+            e1.absolute_schema_path,
+            deque(
                 [
                     "properties",
                     "root",
@@ -905,14 +896,16 @@ class TestValidationErrorDetails(TestCase):
             ),
         )
 
-        e2, = e1.context
+        (e2,) = e1.context
         self.assertEqual(
-            e2.absolute_path, deque(
+            e2.absolute_path,
+            deque(
                 ["root", "children", "a", "children", "ab"],
             ),
         )
         self.assertEqual(
-            e2.absolute_schema_path, deque(
+            e2.absolute_schema_path,
+            deque(
                 [
                     "properties",
                     "root",
@@ -1005,7 +998,7 @@ class TestValidationErrorDetails(TestCase):
         schema = {"propertyNames": {"not": {"const": "foo"}}}
 
         validator = validators.Draft7Validator(schema)
-        error, = validator.iter_errors(instance)
+        (error,) = validator.iter_errors(instance)
 
         self.assertEqual(error.validator, "not")
         self.assertEqual(
@@ -1022,7 +1015,7 @@ class TestValidationErrorDetails(TestCase):
         }
 
         validator = validators.Draft7Validator(schema)
-        error, = validator.iter_errors(12)
+        (error,) = validator.iter_errors(12)
 
         self.assertEqual(error.validator, "const")
         self.assertEqual(error.message, "13 was expected")
@@ -1036,7 +1029,7 @@ class TestValidationErrorDetails(TestCase):
         }
 
         validator = validators.Draft7Validator(schema)
-        error, = validator.iter_errors(15)
+        (error,) = validator.iter_errors(15)
 
         self.assertEqual(error.validator, "const")
         self.assertEqual(error.message, "13 was expected")
@@ -1045,7 +1038,7 @@ class TestValidationErrorDetails(TestCase):
 
     def test_boolean_schema_False(self):
         validator = validators.Draft7Validator(False)
-        error, = validator.iter_errors(12)
+        (error,) = validator.iter_errors(12)
 
         self.assertEqual(
             (
@@ -1072,7 +1065,7 @@ class TestValidationErrorDetails(TestCase):
             {"$ref": ref},
             resolver=validators.RefResolver("", {}, store={ref: schema}),
         )
-        error, = validator.iter_errors({"foo": "notAnInteger"})
+        (error,) = validator.iter_errors({"foo": "notAnInteger"})
 
         self.assertEqual(
             (
@@ -1195,9 +1188,11 @@ class ValidatorTestMixin(MetaSchemaTestsMixin, object):
             type_checker=self.Validator.TYPE_CHECKER.redefine(
                 "number",
                 lambda checker, thing: isinstance(
-                    thing, (int, float, Decimal),
-                ) and not isinstance(thing, bool),
-            )
+                    thing,
+                    (int, float, Decimal),
+                )
+                and not isinstance(thing, bool),
+            ),
         )
 
         validator = Validator(schema)
@@ -1211,7 +1206,8 @@ class ValidatorTestMixin(MetaSchemaTestsMixin, object):
 
     def test_it_returns_true_for_formats_it_does_not_know_about(self):
         validator = self.Validator(
-            {"format": "carrot"}, format_checker=FormatChecker(),
+            {"format": "carrot"},
+            format_checker=FormatChecker(),
         )
         validator.validate("bugs")
 
@@ -1233,7 +1229,8 @@ class ValidatorTestMixin(MetaSchemaTestsMixin, object):
                 self.fail("What is {}? [Baby Don't Hurt Me]".format(value))
 
         validator = self.Validator(
-            {"format": "foo"}, format_checker=checker,
+            {"format": "foo"},
+            format_checker=checker,
         )
 
         validator.validate("good")
@@ -1251,7 +1248,7 @@ class ValidatorTestMixin(MetaSchemaTestsMixin, object):
             type_checker=self.Validator.TYPE_CHECKER.redefine(
                 non_string_type,
                 lambda checker, thing: isinstance(thing, int),
-            )
+            ),
         )
         Crazy(schema).validate(15)
 
@@ -1266,7 +1263,7 @@ class ValidatorTestMixin(MetaSchemaTestsMixin, object):
             type_checker=self.Validator.TYPE_CHECKER.redefine(
                 "array",
                 lambda checker, thing: isinstance(thing, tuple),
-            )
+            ),
         )
         with self.assertRaises(exceptions.ValidationError) as e:
             TupleValidator({"uniqueItems": True}).validate((1, 1))
@@ -1319,8 +1316,9 @@ class TestDraft3Validator(AntiDraft6LeakMixin, ValidatorTestMixin, TestCase):
         Crazy = validators.extend(
             self.Validator,
             type_checker=self.Validator.TYPE_CHECKER.redefine(
-                "any", lambda checker, thing: isinstance(thing, int),
-            )
+                "any",
+                lambda checker, thing: isinstance(thing, int),
+            ),
         )
         validator = Crazy({"type": "any"})
         validator.validate(12)
@@ -1457,9 +1455,8 @@ class TestValidatorFor(SynchronousTestCase):
             ),
             # https://tm.tl/9363 :'(
             filename=sys.modules[self.assertWarns.__module__].__file__,
-
             f=validators.validator_for,
-            schema={u"$schema": "unknownSchema"},
+            schema={"$schema": "unknownSchema"},
             default={},
         )
 
@@ -1556,7 +1553,9 @@ class TestRefResolver(SynchronousTestCase):
         self.referrer = {}
         self.store = {self.stored_uri: self.stored_schema}
         self.resolver = validators.RefResolver(
-            self.base_uri, self.referrer, self.store,
+            self.base_uri,
+            self.referrer,
+            self.store,
         )
 
     def test_it_does_not_retrieve_schema_urls_from_the_network(self):
@@ -1580,7 +1579,7 @@ class TestRefResolver(SynchronousTestCase):
         schema = {"id": "http://bar/schema#", "a": {"foo": "bar"}}
         resolver = validators.RefResolver.from_schema(
             schema,
-            id_of=lambda schema: schema.get(u"id", u""),
+            id_of=lambda schema: schema.get("id", ""),
         )
         with resolver.resolving("#/a") as resolved:
             self.assertEqual(resolved, schema["a"])
@@ -1601,7 +1600,9 @@ class TestRefResolver(SynchronousTestCase):
 
         if "requests" in sys.modules:
             self.addCleanup(
-                sys.modules.__setitem__, "requests", sys.modules["requests"],
+                sys.modules.__setitem__,
+                "requests",
+                sys.modules["requests"],
             )
         sys.modules["requests"] = ReallyFakeRequests({"http://bar": schema})
 
@@ -1614,7 +1615,9 @@ class TestRefResolver(SynchronousTestCase):
 
         if "requests" in sys.modules:
             self.addCleanup(
-                sys.modules.__setitem__, "requests", sys.modules["requests"],
+                sys.modules.__setitem__,
+                "requests",
+                sys.modules["requests"],
             )
         sys.modules["requests"] = None
 
@@ -1643,7 +1646,7 @@ class TestRefResolver(SynchronousTestCase):
         schema = {"id": "foo"}
         resolver = validators.RefResolver.from_schema(
             schema,
-            id_of=lambda schema: schema.get(u"id", u""),
+            id_of=lambda schema: schema.get("id", ""),
         )
         self.assertEqual(resolver.base_uri, "foo")
         self.assertEqual(resolver.resolution_scope, "foo")
@@ -1688,7 +1691,10 @@ class TestRefResolver(SynchronousTestCase):
 
         ref = "foo://bar"
         resolver = validators.RefResolver(
-            "", {}, cache_remote=True, handlers={"foo": handler},
+            "",
+            {},
+            cache_remote=True,
+            handlers={"foo": handler},
         )
         with resolver.resolving(ref):
             pass
@@ -1706,7 +1712,10 @@ class TestRefResolver(SynchronousTestCase):
 
         ref = "foo://bar"
         resolver = validators.RefResolver(
-            "", {}, cache_remote=False, handlers={"foo": handler},
+            "",
+            {},
+            cache_remote=False,
+            handlers={"foo": handler},
         )
         with resolver.resolving(ref):
             pass
@@ -1738,6 +1747,7 @@ def sorted_errors(errors):
             [str(e) for e in error.path],
             [str(e) for e in error.schema_path],
         )
+
     return sorted(errors, key=key)
 
 

@@ -51,45 +51,31 @@ if PY2:
 
         def __setitem__(self, key, val):
             # We gently pretend we're a Python 3 mappingproxy.
-            raise TypeError(
-                "'mappingproxy' object does not support item assignment"
-            )
+            raise TypeError("'mappingproxy' object does not support item assignment")
 
         def update(self, _):
             # We gently pretend we're a Python 3 mappingproxy.
-            raise AttributeError(
-                "'mappingproxy' object has no attribute 'update'"
-            )
+            raise AttributeError("'mappingproxy' object has no attribute 'update'")
 
         def __delitem__(self, _):
             # We gently pretend we're a Python 3 mappingproxy.
-            raise TypeError(
-                "'mappingproxy' object does not support item deletion"
-            )
+            raise TypeError("'mappingproxy' object does not support item deletion")
 
         def clear(self):
             # We gently pretend we're a Python 3 mappingproxy.
-            raise AttributeError(
-                "'mappingproxy' object has no attribute 'clear'"
-            )
+            raise AttributeError("'mappingproxy' object has no attribute 'clear'")
 
         def pop(self, key, default=None):
             # We gently pretend we're a Python 3 mappingproxy.
-            raise AttributeError(
-                "'mappingproxy' object has no attribute 'pop'"
-            )
+            raise AttributeError("'mappingproxy' object has no attribute 'pop'")
 
         def popitem(self):
             # We gently pretend we're a Python 3 mappingproxy.
-            raise AttributeError(
-                "'mappingproxy' object has no attribute 'popitem'"
-            )
+            raise AttributeError("'mappingproxy' object has no attribute 'popitem'")
 
         def setdefault(self, key, default=None):
             # We gently pretend we're a Python 3 mappingproxy.
-            raise AttributeError(
-                "'mappingproxy' object has no attribute 'setdefault'"
-            )
+            raise AttributeError("'mappingproxy' object has no attribute 'setdefault'")
 
         def __repr__(self):
             # Override to be identical to the Python 3 version.
@@ -105,7 +91,6 @@ if PY2:
         We only warn on Python 3 because we are not aware of any concrete
         consequences of not setting the cell on Python 2.
         """
-
 
 else:  # Python 3 and later.
     from collections.abc import Mapping, Sequence  # noqa
@@ -179,9 +164,7 @@ def make_set_closure_cell():
             # CPython 3.8+ has an incompatible CodeType signature
             # (added a posonlyargcount argument) but also added
             # CodeType.replace() to do this without counting parameters.
-            set_first_freevar_code = co.replace(
-                co_cellvars=co.co_freevars, co_freevars=co.co_cellvars
-            )
+            set_first_freevar_code = co.replace(co_cellvars=co.co_freevars, co_freevars=co.co_cellvars)
         else:
             args = [co.co_argcount]
             if not PY2:
@@ -210,9 +193,7 @@ def make_set_closure_cell():
             # Create a function using the set_first_freevar_code,
             # whose first closure cell is `cell`. Calling it will
             # change the value of that cell.
-            setter = types.FunctionType(
-                set_first_freevar_code, {}, "setter", (), (cell,)
-            )
+            setter = types.FunctionType(set_first_freevar_code, {}, "setter", (), (cell,))
             # And call it to set the cell.
             setter(value)
 

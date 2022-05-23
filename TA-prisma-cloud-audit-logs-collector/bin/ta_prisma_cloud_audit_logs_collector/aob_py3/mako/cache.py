@@ -90,9 +90,7 @@ class Cache(object):
         if not self.template.cache_enabled:
             return creation_function()
 
-        return self.impl.get_or_create(
-            key, creation_function, **self._get_cache_kw(kw, context)
-        )
+        return self.impl.get_or_create(key, creation_function, **self._get_cache_kw(kw, context))
 
     def set(self, key, value, **kw):
         r"""Place a value in the cache.

@@ -40,9 +40,7 @@ class Lexer(object):
         self.encoding = input_encoding
 
         if compat.py3k and disable_unicode:
-            raise exceptions.UnsupportedError(
-                "Mako for Python 3 does not " "support disabling Unicode"
-            )
+            raise exceptions.UnsupportedError("Mako for Python 3 does not " "support disabling Unicode")
 
         if preprocessor is None:
             self.preprocessor = []
@@ -114,20 +112,13 @@ class Lexer(object):
             match = self.match(r"#.*\n")
             if match:
                 continue
-            match = self.match(
-                r"(\"\"\"|\'\'\'|\"|\')[^\\]*?(\\.[^\\]*?)*\1", re.S
-            )
+            match = self.match(r"(\"\"\"|\'\'\'|\"|\')[^\\]*?(\\.[^\\]*?)*\1", re.S)
             if match:
                 continue
             match = self.match(r"(%s)" % text_re)
-            if match and not (
-                watch_nesting
-                and (brace_level > 0 or paren_level > 0 or bracket_level > 0)
-            ):
+            if match and not (watch_nesting and (brace_level > 0 or paren_level > 0 or bracket_level > 0)):
                 return (
-                    self.text[
-                        startpos : self.match_position - len(match.group(1))
-                    ],
+                    self.text[startpos : self.match_position - len(match.group(1))],
                     match.group(1),
                 )
             elif not match:
@@ -140,9 +131,7 @@ class Lexer(object):
                 bracket_level += match.group(1).count("[")
                 bracket_level -= match.group(1).count("]")
                 continue
-            raise exceptions.SyntaxException(
-                "Expected: %s" % ",".join(text), **self.exception_kwargs
-            )
+            raise exceptions.SyntaxException("Expected: %s" % ",".join(text), **self.exception_kwargs)
 
     def append_node(self, nodecls, *args, **kwargs):
         kwargs.setdefault("source", self.text)
@@ -161,10 +150,7 @@ class Lexer(object):
         if self.control_line:
             control_frame = self.control_line[-1]
             control_frame.nodes.append(node)
-            if not (
-                isinstance(node, parsetree.ControlLine)
-                and control_frame.is_ternary(node.keyword)
-            ):
+            if not (isinstance(node, parsetree.ControlLine) and control_frame.is_ternary(node.keyword)):
                 if self.ternary_stack and self.ternary_stack[-1]:
                     self.ternary_stack[-1][-1].nodes.append(node)
         if isinstance(node, parsetree.Tag):
@@ -178,16 +164,11 @@ class Lexer(object):
             elif node.is_primary:
                 self.control_line.append(node)
                 self.ternary_stack.append([])
-            elif self.control_line and self.control_line[-1].is_ternary(
-                node.keyword
-            ):
+            elif self.control_line and self.control_line[-1].is_ternary(node.keyword):
                 self.ternary_stack[-1].append(node)
-            elif self.control_line and not self.control_line[-1].is_ternary(
-                node.keyword
-            ):
+            elif self.control_line and not self.control_line[-1].is_ternary(node.keyword):
                 raise exceptions.SyntaxException(
-                    "Keyword '%s' not a legal ternary for keyword '%s'"
-                    % (node.keyword, self.control_line[-1].keyword),
+                    "Keyword '%s' not a legal ternary for keyword '%s'" % (node.keyword, self.control_line[-1].keyword),
                     **self.exception_kwargs
                 )
 
@@ -195,8 +176,8 @@ class Lexer(object):
 
     def decode_raw_stream(self, text, decode_raw, known_encoding, filename):
         """given string/unicode or bytes/string, determine encoding
-           from magic encoding comment, return body as unicode
-           or raw if decode_raw=False
+        from magic encoding comment, return body as unicode
+        or raw if decode_raw=False
 
         """
         if isinstance(text, compat.text_type):
@@ -210,8 +191,7 @@ class Lexer(object):
             m = self._coding_re.match(text.decode("utf-8", "ignore"))
             if m is not None and m.group(1) != "utf-8":
                 raise exceptions.CompileException(
-                    "Found utf-8 BOM in file, with conflicting "
-                    "magic encoding comment of '%s'" % m.group(1),
+                    "Found utf-8 BOM in file, with conflicting " "magic encoding comment of '%s'" % m.group(1),
                     text.decode("utf-8", "ignore"),
                     0,
                     0,
@@ -229,8 +209,7 @@ class Lexer(object):
                 text = text.decode(parsed_encoding)
             except UnicodeDecodeError:
                 raise exceptions.CompileException(
-                    "Unicode decode operation of encoding '%s' failed"
-                    % parsed_encoding,
+                    "Unicode decode operation of encoding '%s' failed" % parsed_encoding,
                     text.decode("utf-8", "ignore"),
                     0,
                     0,
@@ -240,9 +219,7 @@ class Lexer(object):
         return parsed_encoding, text
 
     def parse(self):
-        self.encoding, self.text = self.decode_raw_stream(
-            self.text, not self.disable_unicode, self.encoding, self.filename
-        )
+        self.encoding, self.text = self.decode_raw_stream(self.text, not self.disable_unicode, self.encoding, self.filename)
 
         for preproc in self.preprocessor:
             self.text = preproc(self.text)
@@ -279,14 +256,10 @@ class Lexer(object):
             raise exceptions.CompileException("assertion failed")
 
         if len(self.tag):
-            raise exceptions.SyntaxException(
-                "Unclosed tag: <%%%s>" % self.tag[-1].keyword,
-                **self.exception_kwargs
-            )
+            raise exceptions.SyntaxException("Unclosed tag: <%%%s>" % self.tag[-1].keyword, **self.exception_kwargs)
         if len(self.control_line):
             raise exceptions.SyntaxException(
-                "Unterminated control keyword: '%s'"
-                % self.control_line[-1].keyword,
+                "Unterminated control keyword: '%s'" % self.control_line[-1].keyword,
                 self.text,
                 self.control_line[-1].lineno,
                 self.control_line[-1].pos,
@@ -317,9 +290,7 @@ class Lexer(object):
             self.keyword = keyword
             attributes = {}
             if attr:
-                for att in re.findall(
-                    r"\s*(\w+)\s*=\s*(?:'([^']*)'|\"([^\"]*)\")", attr
-                ):
+                for att in re.findall(r"\s*(\w+)\s*=\s*(?:'([^']*)'|\"([^\"]*)\")", attr):
                     key, val1, val2 = att
                     text = val1 or val2
                     text = text.replace("\r\n", "\n")
@@ -332,8 +303,7 @@ class Lexer(object):
                     match = self.match(r"(.*?)(?=\</%text>)", re.S)
                     if not match:
                         raise exceptions.SyntaxException(
-                            "Unclosed tag: <%%%s>" % self.tag[-1].keyword,
-                            **self.exception_kwargs
+                            "Unclosed tag: <%%%s>" % self.tag[-1].keyword, **self.exception_kwargs
                         )
                     self.append_node(parsetree.Text, match.group(1))
                     return self.match_tag_end()
@@ -346,14 +316,11 @@ class Lexer(object):
         if match:
             if not len(self.tag):
                 raise exceptions.SyntaxException(
-                    "Closing tag without opening tag: </%%%s>"
-                    % match.group(1),
-                    **self.exception_kwargs
+                    "Closing tag without opening tag: </%%%s>" % match.group(1), **self.exception_kwargs
                 )
             elif self.tag[-1].keyword != match.group(1):
                 raise exceptions.SyntaxException(
-                    "Closing tag </%%%s> does not match tag: <%%%s>"
-                    % (match.group(1), self.tag[-1].keyword),
+                    "Closing tag </%%%s> does not match tag: <%%%s>" % (match.group(1), self.tag[-1].keyword),
                     **self.exception_kwargs
                 )
             self.tag.pop()
@@ -443,8 +410,7 @@ class Lexer(object):
 
     def match_control_line(self):
         match = self.match(
-            r"(?<=^)[\t ]*(%(?!%)|##)[\t ]*((?:(?:\\r?\n)|[^\r\n])*)"
-            r"(?:\r?\n|\Z)",
+            r"(?<=^)[\t ]*(%(?!%)|##)[\t ]*((?:(?:\\r?\n)|[^\r\n])*)" r"(?:\r?\n|\Z)",
             re.M,
         )
         if match:
@@ -453,24 +419,18 @@ class Lexer(object):
             if operator == "%":
                 m2 = re.match(r"(end)?(\w+)\s*(.*)", text)
                 if not m2:
-                    raise exceptions.SyntaxException(
-                        "Invalid control line: '%s'" % text,
-                        **self.exception_kwargs
-                    )
+                    raise exceptions.SyntaxException("Invalid control line: '%s'" % text, **self.exception_kwargs)
                 isend, keyword = m2.group(1, 2)
                 isend = isend is not None
 
                 if isend:
                     if not len(self.control_line):
                         raise exceptions.SyntaxException(
-                            "No starting keyword '%s' for '%s'"
-                            % (keyword, text),
-                            **self.exception_kwargs
+                            "No starting keyword '%s' for '%s'" % (keyword, text), **self.exception_kwargs
                         )
                     elif self.control_line[-1].keyword != keyword:
                         raise exceptions.SyntaxException(
-                            "Keyword '%s' doesn't match keyword '%s'"
-                            % (text, self.control_line[-1].keyword),
+                            "Keyword '%s' doesn't match keyword '%s'" % (text, self.control_line[-1].keyword),
                             **self.exception_kwargs
                         )
                 self.append_node(parsetree.ControlLine, keyword, isend, text)

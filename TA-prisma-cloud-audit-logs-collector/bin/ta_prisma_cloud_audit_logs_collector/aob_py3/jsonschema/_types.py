@@ -61,6 +61,7 @@ class TypeChecker(object):
 
             The initial mapping of types to their checking functions.
     """
+
     _type_checkers = attr.ib(default=pmap(), converter=pmap)
 
     def is_type(self, instance, type):
@@ -132,7 +133,8 @@ class TypeChecker(object):
             A new `TypeChecker` instance.
         """
         return attr.evolve(
-            self, type_checkers=self._type_checkers.update(definitions),
+            self,
+            type_checkers=self._type_checkers.update(definitions),
         )
 
     def remove(self, *types):
@@ -167,22 +169,19 @@ class TypeChecker(object):
 
 draft3_type_checker = TypeChecker(
     {
-        u"any": is_any,
-        u"array": is_array,
-        u"boolean": is_bool,
-        u"integer": is_integer,
-        u"object": is_object,
-        u"null": is_null,
-        u"number": is_number,
-        u"string": is_string,
+        "any": is_any,
+        "array": is_array,
+        "boolean": is_bool,
+        "integer": is_integer,
+        "object": is_object,
+        "null": is_null,
+        "number": is_number,
+        "string": is_string,
     },
 )
-draft4_type_checker = draft3_type_checker.remove(u"any")
+draft4_type_checker = draft3_type_checker.remove("any")
 draft6_type_checker = draft4_type_checker.redefine(
-    u"integer",
-    lambda checker, instance: (
-        is_integer(checker, instance) or
-        isinstance(instance, float) and instance.is_integer()
-    ),
+    "integer",
+    lambda checker, instance: (is_integer(checker, instance) or isinstance(instance, float) and instance.is_integer()),
 )
 draft7_type_checker = draft6_type_checker
