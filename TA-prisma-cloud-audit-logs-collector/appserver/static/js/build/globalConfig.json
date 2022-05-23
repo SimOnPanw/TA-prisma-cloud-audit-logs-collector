@@ -209,7 +209,6 @@
                             "help": "You can create a access key within your prisma cloud console from settings menu then access keys",
                             "required": true,
                             "type": "text",
-                            "encrypted": true,
                             "validators": [
                                 {
                                     "type": "string",
@@ -228,7 +227,6 @@
                             "help": "You can create a secret key within your prisma cloud console from settings menu then access key",
                             "required": true,
                             "type": "text",
-                            "encrypted": true,
                             "validators": [
                                 {
                                     "type": "string",
